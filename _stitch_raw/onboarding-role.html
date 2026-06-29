@@ -1,0 +1,276 @@
+<!DOCTYPE html><html lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>KAVICT - Onboarding Bước 2</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c1e",
+                        "tertiary-container": "#656d84",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1e",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "tertiary-fixed": "#dae2fd",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#4d556b",
+                        "outline": "#737686",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "on-primary-fixed": "#00174b",
+                        "surface-tint": "#0053db",
+                        "secondary-container": "#dfe0e0",
+                        "on-surface-variant": "#434655",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-secondary-container": "#616363",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-bright": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "surface-container": "#eceef0",
+                        "inverse-primary": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "secondary-fixed": "#e2e2e2",
+                        "secondary": "#5d5f5f",
+                        "on-primary-container": "#eeefff",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "xl": "64px",
+                        "sm": "16px",
+                        "md": "24px",
+                        "lg": "40px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Geist"],
+                        "label-md": ["Geist"],
+                        "body-md": ["Inter"],
+                        "display": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            /* Applying base background and text color from theme */
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Shadow for ambient depth */
+        .ambient-shadow {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        }
+        .hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Hide radio inputs visually but keep them accessible */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Selection styling logic via CSS based on radio state */
+        input[type="radio"]:checked + div {
+            border-color: theme('colors.primary');
+            background-color: theme('colors.primary-fixed');
+        }
+        input[type="radio"]:checked + div .icon-container {
+            color: theme('colors.on-primary-fixed-variant');
+            font-variation-settings: 'FILL' 1; /* Fill icon on selection */
+        }
+        input[type="radio"]:checked + div .label-text {
+            color: theme('colors.on-primary-fixed-variant');
+            font-weight: 600;
+        }
+        
+        /* Focus ring for accessibility */
+        input[type="radio"]:focus-visible + div {
+            outline: 2px solid theme('colors.primary');
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-sm md:p-gutter font-body-md antialiased relative overflow-hidden">
+<!-- Decorative background blobs (Subtle) -->
+<div class="absolute top-[-10%] left-[-5%] w-[40vw] h-[40vw] rounded-full bg-primary-fixed-dim opacity-30 blur-[100px] pointer-events-none z-0"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[30vw] h-[30vw] rounded-full bg-tertiary-fixed-dim opacity-20 blur-[80px] pointer-events-none z-0"></div>
+<!-- Main Container -->
+<main class="w-full max-w-[720px] bg-surface-container-lowest rounded-xl ambient-shadow flex flex-col relative z-10 overflow-hidden">
+<!-- Top Progress Bar Container -->
+<div class="w-full bg-surface-container-high h-[4px]">
+<div aria-valuemax="6" aria-valuemin="1" aria-valuenow="1" class="bg-primary h-full w-[16.66%] rounded-r-full transition-all duration-700 ease-out" role="progressbar"></div>
+</div>
+<div class="p-md md:p-xl flex flex-col gap-lg md:gap-xl">
+<!-- Header Section -->
+<header class="flex flex-col gap-xs text-center">
+<span class="font-label-sm text-label-sm text-primary font-bold tracking-wider uppercase">Bước 1 / 6</span>
+<h1 class="font-headline-md text-headline-md text-on-surface">Bạn thuộc nhóm nào?</h1>
+
+</header>
+<!-- Selection Grid Form -->
+<form class="flex flex-col gap-xl" id="onboarding-form">
+<fieldset class="grid grid-cols-2 md:grid-cols-3 gap-sm md:gap-md">
+<legend class="visually-hidden">Chọn nhóm đối tượng của bạn</legend>
+<!-- Option 1: Học sinh -->
+<label class="cursor-pointer relative group">
+<input class="visually-hidden" name="user_group" required="" type="radio" value="hoc_sinh">
+<div class="flex flex-col items-center justify-center gap-sm p-md rounded-lg border border-outline-variant bg-surface hover:border-primary-fixed-dim transition-all duration-200 h-full text-center hover-lift">
+<span class="material-symbols-outlined icon-container text-tertiary text-[32px] transition-colors duration-200">school</span>
+<span class="font-label-md text-label-md text-on-surface label-text transition-colors duration-200">Học sinh</span>
+</div>
+</label>
+<!-- Option 2: Sinh viên -->
+<label class="cursor-pointer relative group">
+<input class="visually-hidden" name="user_group" type="radio" value="sinh_vien">
+<div class="flex flex-col items-center justify-center gap-sm p-md rounded-lg border border-outline-variant bg-surface hover:border-primary-fixed-dim transition-all duration-200 h-full text-center hover-lift">
+<span class="material-symbols-outlined icon-container text-tertiary text-[32px] transition-colors duration-200">local_library</span>
+<span class="font-label-md text-label-md text-on-surface label-text transition-colors duration-200">Sinh viên</span>
+</div>
+</label>
+<!-- Option 3: Nhân viên văn phòng -->
+<label class="cursor-pointer relative group">
+<input class="visually-hidden" name="user_group" type="radio" value="nhan_vien_vp">
+<div class="flex flex-col items-center justify-center gap-sm p-md rounded-lg border border-outline-variant bg-surface hover:border-primary-fixed-dim transition-all duration-200 h-full text-center hover-lift">
+<span class="material-symbols-outlined icon-container text-tertiary text-[32px] transition-colors duration-200">work</span>
+<span class="font-label-md text-label-md text-on-surface label-text transition-colors duration-200">Nhân viên văn phòng</span>
+</div>
+</label>
+<!-- Option 4: Freelancer -->
+<label class="cursor-pointer relative group">
+<input class="visually-hidden" name="user_group" type="radio" value="freelancer">
+<div class="flex flex-col items-center justify-center gap-sm p-md rounded-lg border border-outline-variant bg-surface hover:border-primary-fixed-dim transition-all duration-200 h-full text-center hover-lift">
+<span class="material-symbols-outlined icon-container text-tertiary text-[32px] transition-colors duration-200">laptop_mac</span>
+<span class="font-label-md text-label-md text-on-surface label-text transition-colors duration-200">Freelancer</span>
+</div>
+</label>
+<!-- Option 5: Chủ doanh nghiệp -->
+<label class="cursor-pointer relative group">
+<input class="visually-hidden" name="user_group" type="radio" value="chu_doanh_nghiep">
+<div class="flex flex-col items-center justify-center gap-sm p-md rounded-lg border border-outline-variant bg-surface hover:border-primary-fixed-dim transition-all duration-200 h-full text-center hover-lift">
+<span class="material-symbols-outlined icon-container text-tertiary text-[32px] transition-colors duration-200">storefront</span>
+<span class="font-label-md text-label-md text-on-surface label-text transition-colors duration-200">Chủ doanh nghiệp</span>
+</div>
+</label>
+<!-- Option 6: Khác -->
+<label class="cursor-pointer relative group">
+<input class="visually-hidden" name="user_group" type="radio" value="khac">
+<div class="flex flex-col items-center justify-center gap-sm p-md rounded-lg border border-outline-variant bg-surface hover:border-primary-fixed-dim transition-all duration-200 h-full text-center hover-lift">
+<span class="material-symbols-outlined icon-container text-tertiary text-[32px] transition-colors duration-200">category</span>
+<span class="font-label-md text-label-md text-on-surface label-text transition-colors duration-200">Khác</span>
+</div>
+</label>
+</fieldset>
+<!-- Actions / Footer -->
+<div class="flex items-center pt-lg border-t border-surface-container-high mt-auto justify-center">
+
+<button class="flex items-center justify-center gap-xs px-xl py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-surface-tint shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed h-[48px]" disabled="" id="btn-continue" type="submit">
+                        Tiếp tục
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</main>
+<script>
+        // Simple script to enable the 'Continue' button only when a selection is made
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('onboarding-form');
+            const radioButtons = form.querySelectorAll('input[type="radio"]');
+            const btnContinue = document.getElementById('btn-continue');
+
+            function checkSelection() {
+                const isSelected = Array.from(radioButtons).some(radio => radio.checked);
+                btnContinue.disabled = !isSelected;
+            }
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', checkSelection);
+            });
+            
+            // Prevent default form submission for demo purposes
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Add success animation or transition logic here
+                btnContinue.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>';
+                setTimeout(() => {
+                    alert('Chuyển sang Bước 3...');
+                    btnContinue.innerHTML = 'Tiếp tục <span class="material-symbols-outlined text-[20px]">arrow_forward</span>';
+                }, 800);
+            });
+        });
+    </script>
+
+
+</body></html>

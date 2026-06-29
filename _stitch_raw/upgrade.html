@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nâng cấp KAVICT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Geist:wght@400;500;600&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        [data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#dfe0e0",
+                        "on-secondary-container": "#616363",
+                        "tertiary-container": "#656d84",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "outline": "#737686",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "secondary-fixed": "#e2e2e2",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-background": "#191c1e",
+                        "surface-tint": "#0053db",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-high": "#e6e8ea",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed-variant": "#454747",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "primary": "#004ac6",
+                        "background": "#f7f9fb",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#434655",
+                        "secondary": "#5d5f5f",
+                        "tertiary": "#4d556b",
+                        "primary-container": "#2563eb",
+                        "on-primary-container": "#eeefff",
+                        "surface": "#f7f9fb",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-tertiary-fixed": "#131b2e",
+                        "success": "#22C55E"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.25rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "40px",
+                        "xl": "64px",
+                        "container-max": "1200px",
+                        "xs": "8px",
+                        "gutter": "24px",
+                        "md": "24px",
+                        "base": "4px",
+                        "sm": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "display": ["Hanken Grotesk"],
+                        "label-md": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    },
+                    "boxShadow": {
+                        "soft": "0 8px 30px rgba(0, 0, 0, 0.04)",
+                        "hover": "0 12px 40px rgba(0, 0, 0, 0.08)"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#F8FAFC] text-on-surface font-body-md antialiased min-h-screen pb-xl">
+<!-- Main Content Area -->
+<main class="max-w-container-max mx-auto px-md md:px-gutter pt-lg">
+<!-- 1. Current Plan Status -->
+<section class="mb-xl flex justify-center">
+<div class="bg-surface-container-lowest rounded-2xl shadow-soft p-md flex flex-col md:flex-row items-center gap-md border border-outline-variant/30 transition-shadow hover:shadow-hover">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tài khoản hiện tại</p>
+<h3 class="font-label-md text-label-md font-semibold text-on-surface">Bạn đang sử dụng: Gói Miễn phí</h3>
+</div>
+</div>
+<div class="h-8 w-px bg-outline-variant/30 hidden md:block"></div>
+<div class="flex gap-md">
+<div class="bg-surface p-sm rounded-xl">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Lượt hỏi AI còn lại</p>
+<p class="font-label-md text-label-md font-semibold text-primary">5/10</p>
+</div>
+<div class="bg-surface p-sm rounded-xl">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Tiến độ học tập</p>
+<div class="flex items-center gap-2">
+<p class="font-label-md text-label-md font-semibold text-success">12%</p>
+<div class="w-16 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-[12%] h-full bg-success rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Hero Section -->
+<section class="text-center mb-xl">
+<h1 class="font-display text-display text-on-surface mb-sm hidden md:block">Nâng cấp để học thông minh hơn cùng AI</h1>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-sm md:hidden">Nâng cấp để học thông minh hơn cùng AI</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-lg">Mở khóa toàn bộ tính năng AI, lộ trình học chuyên sâu và công cụ quản lý tài chính cá nhân.</p>
+<div class="inline-flex items-center bg-surface-container-low p-1 rounded-full border border-outline-variant/30">
+<button class="px-sm py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface shadow-sm" id="billing-monthly">Thanh toán theo tháng</button>
+<button class="px-sm py-2 rounded-full font-label-md text-label-md text-on-surface-variant flex items-center gap-2 hover:text-on-surface transition-colors" id="billing-yearly">
+                    Thanh toán theo năm
+                    <span class="bg-primary-container/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold">Tiết kiệm 20%</span>
+</button>
+</div>
+</section>
+<!-- 3. Pricing Cards -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md mb-xl items-start">
+<!-- Free Plan -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-soft p-md border border-outline-variant/30 flex flex-col h-full hover:shadow-hover transition-shadow">
+<div class="mb-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Miễn phí</h3>
+<p class="font-body-md text-body-md text-on-surface-variant h-12">Khởi đầu hành trình tài chính cơ bản.</p>
+<div class="mt-sm flex items-baseline gap-1">
+<span class="font-display text-display text-on-surface">0đ</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/tháng</span>
+</div>
+</div>
+<ul class="flex-1 space-y-sm mb-lg">
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        Bài học tài chính cơ bản
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        10 lượt hỏi AI Tutor/tháng
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        Tính năng theo dõi chi tiêu cơ bản
+                    </li>
+</ul>
+<button class="w-full h-12 rounded-xl font-label-md text-label-md border border-outline-variant text-on-surface-variant bg-surface-container-lowest cursor-default" disabled="">Đang sử dụng</button>
+</div>
+<!-- Premium Plan (Highlighted) -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-hover p-md border-2 border-primary relative flex flex-col h-full transform md:-translate-y-4">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-sm text-label-sm px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                    LỰA CHỌN PHỔ BIẾN NHẤT
+                </div>
+<div class="mb-lg mt-2">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Premium</h3>
+<p class="font-body-md text-body-md text-on-surface-variant h-12">Trải nghiệm học tập AI cá nhân hóa hoàn toàn.</p>
+<div class="mt-sm flex items-baseline gap-1">
+<span class="font-display text-display text-on-surface">199k</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/tháng</span>
+</div>
+</div>
+<ul class="flex-1 space-y-sm mb-lg">
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md font-medium">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                        Không giới hạn AI Tutor
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                        Trợ lý Tài chính AI (Phân tích chi tiêu)
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                        Lộ trình học cá nhân hóa
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                        Flashcards &amp; Quiz AI
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+                        Báo cáo học tập chi tiết
+                    </li>
+</ul>
+<button class="w-full h-12 rounded-xl font-label-md text-label-md bg-primary-container text-on-primary-container hover:bg-primary transition-colors shadow-sm font-semibold">Nâng cấp ngay</button>
+</div>
+<!-- Pro Plan -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-soft p-md border border-outline-variant/30 flex flex-col h-full hover:shadow-hover transition-shadow">
+<div class="mb-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Pro</h3>
+<p class="font-body-md text-body-md text-on-surface-variant h-12">Dành cho nhà đầu tư nghiêm túc.</p>
+<div class="mt-sm flex items-baseline gap-1">
+<span class="font-display text-display text-on-surface">499k</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/tháng</span>
+</div>
+</div>
+<ul class="flex-1 space-y-sm mb-lg">
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        Tất cả tính năng Premium
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        Phân tích danh mục đầu tư AI
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        Nội dung độc quyền (Báo cáo thị trường)
+                    </li>
+<li class="flex items-start gap-2 text-on-surface font-body-md text-body-md">
+<span class="material-symbols-outlined text-outline-variant text-[20px]" data-icon="check">check</span>
+                        Quyền truy cập sớm tính năng mới
+                    </li>
+</ul>
+<button class="w-full h-12 rounded-xl font-label-md text-label-md border border-primary text-primary bg-surface-container-lowest hover:bg-primary-fixed transition-colors">Liên hệ tư vấn</button>
+</div>
+</section>
+</main>
+<script>
+        // Simple toggle logic for billing
+        document.getElementById('billing-monthly').addEventListener('click', function() {
+            this.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+            this.classList.remove('text-on-surface-variant');
+            
+            const yearly = document.getElementById('billing-yearly');
+            yearly.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+            yearly.classList.add('text-on-surface-variant');
+        });
+
+        document.getElementById('billing-yearly').addEventListener('click', function() {
+            this.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+            this.classList.remove('text-on-surface-variant');
+            
+            const monthly = document.getElementById('billing-monthly');
+            monthly.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+            monthly.classList.add('text-on-surface-variant');
+        });
+    </script>
+</body></html>

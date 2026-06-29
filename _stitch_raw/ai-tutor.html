@@ -1,0 +1,335 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Học cùng AI - KAVICT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#4d556b",
+                    "secondary-container": "#dfe0e0",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#434655",
+                    "on-error-container": "#93000a",
+                    "surface": "#f7f9fb",
+                    "inverse-surface": "#2d3133",
+                    "tertiary-container": "#656d84",
+                    "on-primary-fixed": "#00174b",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary": "#004ac6",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#5d5f5f",
+                    "error-container": "#ffdad6",
+                    "outline": "#737686",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-background": "#191c1e",
+                    "secondary-fixed": "#e2e2e2",
+                    "surface-tint": "#0053db",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-container": "#eceef0",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-variant": "#e0e3e5",
+                    "tertiary-fixed": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "background": "#f7f9fb",
+                    "outline-variant": "#c3c6d7",
+                    "on-tertiary-fixed": "#131b2e",
+                    "on-primary-container": "#eeefff",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-dim": "#d8dadc",
+                    "on-secondary-container": "#616363",
+                    "inverse-on-surface": "#eff1f3",
+                    "primary-container": "#2563eb",
+                    "inverse-primary": "#b4c5ff",
+                    "on-tertiary-container": "#eef0ff",
+                    "on-surface": "#191c1e",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "20px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "sm": "16px",
+                    "md": "24px",
+                    "xl": "64px",
+                    "lg": "40px",
+                    "gutter": "24px",
+                    "container-max": "1200px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "label-sm": ["Geist"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "label-md": ["Geist"],
+                    "display": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            },
+            "boxShadow": {
+                "ambient": "0 8px 30px rgba(0, 0, 0, 0.04)",
+                "ambient-hover": "0 12px 40px rgba(0, 0, 0, 0.08)"
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #F8FAFC;
+        }
+        .ai-message-highlight {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: #2563EB;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .sound-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 24px;
+        }
+        .bar {
+            width: 4px;
+            background-color: #2563EB;
+            border-radius: 2px;
+            animation: sound 1.5s infinite ease-in-out;
+        }
+        .bar:nth-child(1) { animation-delay: 0.1s; }
+        .bar:nth-child(2) { animation-delay: 0.3s; }
+        .bar:nth-child(3) { animation-delay: 0.5s; }
+        .bar:nth-child(4) { animation-delay: 0.2s; }
+        .bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes sound {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+
+        /* Typewriter effect for AI */
+        .typing::after {
+            content: '▌';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-on-surface h-screen flex flex-col font-body-md overflow-hidden">
+<!-- Top Navigation (Contextual) -->
+
+<!-- Main Layout -->
+<main class="flex-1 flex overflow-hidden p-md gap-md max-w-[1600px] mx-auto w-full">
+<!-- Left Column: AI Avatar (30%) -->
+<aside class="w-[30%] bg-surface-container-lowest rounded-2xl shadow-ambient p-md flex flex-col items-center justify-center relative border border-surface-container-high">
+<div class="absolute top-md left-md flex items-center gap-2 bg-surface px-3 py-1.5 rounded-full border border-surface-container-high">
+<div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Đang lắng nghe</span>
+</div>
+<div class="absolute top-md right-md bg-surface px-3 py-1.5 rounded-full border border-surface-container-high">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">14:23</span>
+</div>
+<div class="flex flex-col items-center mt-xl">
+<!-- Avatar -->
+<div class="relative w-48 h-48 rounded-full border-4 border-surface shadow-ambient-hover mb-md overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="A highly detailed, modern 3D illustration of an AI avatar representing a friendly, professional financial tutor. The character has a sleek, minimalist design with a clean white and primary blue color palette, set against a pristine, well-lit light mode background. Soft, diffused lighting creates a premium, approachable atmosphere, emphasizing clarity and modern SaaS aesthetics." src="https://lh3.googleusercontent.com/aida/AP1WRLviK1C5QGY-MA8toZfN83_xj_Tv-j83xb2hIeLmALyJaxGqmmn4Mg2CwQClzCZ00epE7Rxt3Vusl5lrbLhXggBZo3DSCPH5EJN0b9a2jWB_1oZywKkPabIkbgzue149DG4di-zSU0K_rIBmMfrCdtTaYuBCtCTuAnSO2PD5-1VE5J7tkWV58euJVs4oyVCo0w_n0Kxknv7lot-NZj9LN0LbSd8aBnxVPxlIqmc3ChTgm5XIFoDwoSjyOLg">
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs">Kavi</h2>
+<p class="font-label-md text-label-md text-secondary mb-xl">Chuyên gia Tài chính Cá nhân</p>
+<!-- Sound Wave Indicator -->
+<div class="sound-wave mb-md">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+<div class="bg-primary-fixed px-4 py-2 rounded-full text-on-primary-fixed font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+                    Chế độ Giọng nói
+                </div>
+</div>
+</aside>
+<!-- Middle Column: Chat (55% -> flex-1) -->
+<section class="flex-1 bg-surface-container-lowest rounded-2xl shadow-ambient flex flex-col border border-surface-container-high overflow-hidden">
+<!-- Header -->
+<div class="p-md border-b border-surface-container-high flex justify-between items-center bg-surface-container-lowest">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Quản lý tài chính cá nhân</h2>
+<p class="font-label-md text-label-md text-secondary">Bài 3 / 12</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md text-secondary">Tiến độ 25%</span>
+<div class="w-32 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full w-1/4"></div>
+</div>
+</div>
+</div>
+<!-- Chat Transcript -->
+<div class="flex-1 overflow-y-auto p-md flex flex-col gap-lg hide-scrollbar scroll-smooth">
+<!-- System Message -->
+<div class="text-center">
+<span class="font-label-sm text-label-sm text-secondary bg-surface px-4 py-1.5 rounded-full border border-surface-container">Hôm nay</span>
+</div>
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="max-w-[75%] bg-surface text-on-surface p-sm rounded-2xl rounded-tr-sm border border-surface-container shadow-sm">
+<p class="font-body-md text-body-md">Chào Kavi, ở bài trước mình đã học về lập ngân sách. Hôm nay chúng ta sẽ tiếp tục với phần nào?</p>
+</div>
+</div>
+<!-- AI Message -->
+<div class="flex justify-start gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0 text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">robot_2</span>
+</div>
+<div class="max-w-[75%]">
+<div class="text-on-surface p-sm rounded-2xl rounded-tl-sm border border-surface-container shadow-sm bg-surface-container-lowest">
+<p class="font-body-md text-body-md mb-2">Chào bạn! Rất tuyệt khi bạn đã nắm vững cách lập ngân sách. Hôm nay, chúng ta sẽ chuyển sang một khái niệm quan trọng tiếp theo: <span class="ai-message-highlight">Quỹ Dự Phòng (Emergency Fund)</span>.</p>
+<p class="font-body-md text-body-md mb-3">Quỹ dự phòng là số tiền bạn tiết kiệm riêng biệt để sử dụng cho những tình huống khẩn cấp, không lường trước được như mất việc, ốm đau, hoặc sửa chữa lớn.</p>
+<div class="bg-surface p-3 rounded-lg border border-surface-container-high">
+<p class="font-label-md text-label-md text-secondary mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">info</span>
+                                    Nguyên tắc cơ bản
+                                </p>
+<p class="font-body-md text-body-md">Các chuyên gia tài chính khuyến nghị nên duy trì quỹ dự phòng tương đương <span class="font-medium text-on-surface">3 đến 6 tháng chi phí sinh hoạt thiết yếu</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="max-w-[75%] bg-surface text-on-surface p-sm rounded-2xl rounded-tr-sm border border-surface-container shadow-sm">
+<p class="font-body-md text-body-md">Vậy làm sao để xây dựng nó khi lương mình không cao?</p>
+</div>
+</div>
+<!-- AI Message (Typing) -->
+<div class="flex justify-start gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0 text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">robot_2</span>
+</div>
+<div class="max-w-[75%]">
+<div class="text-on-surface p-sm rounded-2xl rounded-tl-sm border border-surface-container shadow-sm bg-surface-container-lowest">
+<p class="font-body-md text-body-md typing">Đó là một câu hỏi rất thực tế. Ngay cả khi thu nhập chưa cao, bạn vẫn có thể xây dựng quỹ dự phòng bằng chiến lược <span class="ai-message-highlight">Tích lũy nhỏ từng bước</span>. Bạn có thể bắt đầu với việc trích ra 5%</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-md bg-surface-container-lowest border-t border-surface-container-high">
+<!-- Suggestion Chips -->
+<div class="flex gap-2 mb-sm overflow-x-auto hide-scrollbar pb-1">
+<button class="whitespace-nowrap px-4 py-1.5 bg-surface rounded-full border border-surface-container-high font-label-sm text-label-sm text-secondary hover:bg-surface-container transition-colors">
+                        Giải thích đơn giản hơn
+                    </button>
+<button class="whitespace-nowrap px-4 py-1.5 bg-surface rounded-full border border-surface-container-high font-label-sm text-label-sm text-secondary hover:bg-surface-container transition-colors">
+                        Cho ví dụ thực tế
+                    </button>
+<button class="whitespace-nowrap px-4 py-1.5 bg-surface rounded-full border border-surface-container-high font-label-sm text-label-sm text-secondary hover:bg-surface-container transition-colors">
+                        Kiểm tra kiến thức
+                    </button>
+</div>
+<!-- Input Box -->
+<div class="flex items-end gap-2 bg-surface border border-outline-variant rounded-2xl p-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-fixed transition-all relative shadow-sm">
+<button class="p-2 text-secondary hover:bg-surface-container rounded-xl transition-colors flex-shrink-0" title="Tải lên (PDF, Hình ảnh)">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">attach_file</span>
+</button>
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none font-body-md text-body-md text-on-surface placeholder-secondary py-2 max-h-32 hide-scrollbar" placeholder="Nhập câu hỏi hoặc nói với Kavi..." rows="1"></textarea>
+<div class="flex items-center gap-1 flex-shrink-0">
+<button class="p-2 text-primary hover:bg-primary-fixed rounded-xl transition-colors" title="Bật/Tắt Mic">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+<button class="p-2 bg-primary-container text-on-primary rounded-xl hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center h-10 w-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Floating Toolbar -->
+<aside class="w-16 flex flex-col gap-2 items-center pt-xl">
+<div class="bg-surface-container-lowest rounded-full shadow-ambient p-2 border border-surface-container-high flex flex-col gap-2">
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors group relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">summarize</span>
+<!-- Tooltip -->
+<span class="absolute right-full mr-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">Tóm tắt</span>
+</button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors group relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">edit_note</span>
+<span class="absolute right-full mr-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">Ghi chú</span>
+</button>
+<div class="w-8 h-px bg-surface-container-high mx-auto my-1"></div>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors group relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">quiz</span>
+<span class="absolute right-full mr-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">Tạo Quiz</span>
+</button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors group relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">style</span>
+<span class="absolute right-full mr-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">Flashcard</span>
+</button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors group relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu_book</span>
+<span class="absolute right-full mr-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">Thuật ngữ</span>
+</button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors group relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">assignment</span>
+<span class="absolute right-full mr-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">Bài tập</span>
+</button>
+</div>
+</aside>
+</main>
+<script>
+        // Auto-resize textarea
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+
+
+
+
+</body></html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Đăng ký - KAVICT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-dim": "#d8dadc",
+                        "secondary": "#5d5f5f",
+                        "on-secondary-container": "#616363",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dbe1ff",
+                        "primary-container": "#2563eb",
+                        "on-secondary-fixed-variant": "#454747",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-surface-variant": "#434655",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "on-primary-container": "#eeefff",
+                        "inverse-primary": "#b4c5ff",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-tint": "#0053db",
+                        "secondary-container": "#dfe0e0",
+                        "on-tertiary-container": "#eef0ff",
+                        "surface-variant": "#e0e3e5",
+                        "outline-variant": "#c3c6d7",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#00174b",
+                        "on-surface": "#191c1e",
+                        "background": "#f7f9fb",
+                        "tertiary-container": "#656d84",
+                        "outline": "#737686",
+                        "tertiary": "#4d556b",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed": "#dae2fd",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#004ac6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.25rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "16px",
+                        "xl": "64px",
+                        "md": "24px",
+                        "lg": "40px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "gutter": "24px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Geist"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "display": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Geist"],
+                        "headline-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center p-md text-on-surface font-body-md">
+<!-- Main Container -->
+<main class="w-full max-w-[460px] bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-lg flex flex-col gap-lg">
+<!-- Header & Brand -->
+<header class="flex flex-col items-center text-center gap-sm">
+<img alt="KAVICT Logo" class="h-8 mb-sm" src="https://lh3.googleusercontent.com/aida/AP1WRLsw9C38IEcFBVvYTdnNr0NaSTgwG6OOiMy5-Sx5fpZjHqeaXWFJII0vlvdjcDyeOHRKUvoI77-v_p-Y6gyXZAPmclSCXPiE_xeDp8d0GOMinqmERdh3DDK_qtlI6BRZST0WCLyXlA9v1vu_WtLVrHHtAJuvxfR28K2RZvoOikxy1v3g4NH4AaffxwQUDRqkbokny37nQytdcQZqdUK6H0hCUnUIHNJREcK_l23-kNXHA2AY3pLuW20LO54">
+<h1 class="font-headline-md text-headline-md text-on-surface">Tạo tài khoản</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Bắt đầu hành trình quản lý tài chính cá nhân cùng KAVICT.</p>
+</header>
+<!-- Sign Up Form -->
+<form action="#" class="flex flex-col gap-md" method="POST">
+<!-- Họ và tên -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="fullname">Họ và tên</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">person</span>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary-container focus:ring-4 focus:ring-primary-container/10 transition-all font-body-md text-on-surface placeholder:text-outline outline-none" id="fullname" name="fullname" placeholder="Nguyễn Văn A" type="text">
+</div>
+</div>
+<!-- Email -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">mail</span>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary-container focus:ring-4 focus:ring-primary-container/10 transition-all font-body-md text-on-surface placeholder:text-outline outline-none" id="email" name="email" placeholder="name@example.com" type="email">
+</div>
+</div>
+<!-- Mật khẩu (with validation state) -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Mật khẩu</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-error pointer-events-none">lock</span>
+<input class="w-full h-12 pl-10 pr-10 bg-surface-bright border border-error rounded-lg focus:border-error focus:ring-4 focus:ring-error/10 transition-all font-body-md text-on-surface placeholder:text-outline outline-none" id="password" name="password" placeholder="••••••••" type="password" value="123">
+<button class="absolute right-sm top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+<p class="font-label-sm text-label-sm text-error flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                    Mật khẩu phải có ít nhất 8 ký tự
+                </p>
+</div>
+<!-- Xác nhận mật khẩu -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="confirm_password">Xác nhận mật khẩu</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">lock</span>
+<input class="w-full h-12 pl-10 pr-10 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary-container focus:ring-4 focus:ring-primary-container/10 transition-all font-body-md text-on-surface placeholder:text-outline outline-none" id="confirm_password" name="confirm_password" placeholder="••••••••" type="password">
+</div>
+</div>
+<!-- Terms Checkbox -->
+<div class="flex items-start gap-sm mt-xs">
+<div class="flex items-center h-5">
+<input class="w-4 h-4 border border-outline-variant rounded bg-surface-bright checked:bg-primary-container checked:border-primary-container focus:ring-primary-container/20 text-primary-container transition-colors cursor-pointer" id="terms" type="checkbox">
+</div>
+<label class="font-label-md text-label-md text-on-surface-variant cursor-pointer" for="terms">
+                    Tôi đồng ý với <a class="text-primary hover:underline font-medium" href="#">Điều khoản sử dụng</a> và <a class="text-primary hover:underline font-medium" href="#">Chính sách bảo mật</a>.
+                </label>
+</div>
+<!-- Submit Button -->
+<button class="w-full h-12 mt-sm bg-primary-container hover:bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-xs transition-all shadow-sm" type="submit">
+                Tạo tài khoản
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Social Divider -->
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink-0 mx-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">Hoặc</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- Social Login -->
+<button class="w-full h-12 bg-surface-bright border border-outline-variant hover:border-outline hover:bg-surface-container-low text-on-surface rounded-lg font-label-md text-label-md font-medium flex items-center justify-center gap-sm transition-all" type="button">
+<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+            Tiếp tục với Google
+        </button>
+<!-- Footer Link -->
+<div class="text-center mt-xs">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Đã có tài khoản? 
+                <a class="text-primary hover:text-primary-container font-medium hover:underline transition-colors" href="#">Đăng nhập</a>
+</p>
+</div>
+</main>
+</body></html>
