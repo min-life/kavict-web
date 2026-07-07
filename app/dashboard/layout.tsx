@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/app/components/Sidebar";
+import ProtectedRoute from "@/app/components/ProtectedRoute";
 
 export default function DashboardLayout({
   children,
@@ -12,6 +13,8 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement>(null);
 
+  const isOnboarding = pathname.startsWith("/dashboard/onboarding");
+
   useEffect(() => {
     if (mainRef.current) {
       mainRef.current.scrollTop = 0;
@@ -19,15 +22,17 @@ export default function DashboardLayout({
   }, [pathname]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar />
-      <main
-        ref={mainRef}
-        className="flex-1 transition-all duration-200 p-8 overflow-y-auto"
-        id="main-content"
-      >
-        {children}
-      </main>
-    </div>
+    <ProtectedRoute>
+      <div className={`h-screen overflow-hidden bg-background ${isOnboarding ? "block w-screen" : "flex w-full"}`}>
+        {!isOnboarding && <Sidebar />}
+        <main
+          ref={mainRef}
+          className={`h-full overflow-y-auto transition-all duration-200 ${!isOnboarding ? "flex-1 p-8" : "w-full block"}`}
+          id="main-content"
+        >
+          {children}
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -49,7 +49,7 @@ export default function ContactSection() {
           transition={{ duration: 0.6 }}
         >
           <div className="space-y-sm">
-            <h2 className="font-headline-lg text-headline-lg text-on-surface">
+            <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
               Liên hệ với chúng tôi
             </h2>
             <p className="font-body-lg text-body-lg text-on-surface-variant">

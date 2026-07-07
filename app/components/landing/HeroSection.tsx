@@ -36,7 +36,7 @@ export default function HeroSection() {
         viewport={{ once: true, margin: "-100px" }}
       >
         <motion.div className="space-y-sm" variants={itemVariants}>
-          <h1 className="font-display text-display text-on-surface">
+          <h1 className="font-display text-headline-lg-mobile md:text-display text-on-surface">
             Làm chủ tài chính cá nhân cùng KAVICT
           </h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[576px]">

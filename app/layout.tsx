@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk, Inter, Geist } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken-grotesk",
@@ -34,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${hankenGrotesk.variable} ${inter.variable} ${geistSans.variable} h-full antialiased`}
+      className={`${hankenGrotesk.variable} ${inter.variable} ${geistSans.variable} h-full w-full antialiased`}
     >
       <head>
         {/* Google Material Symbols Outlined - Icon font used by Stitch designs */}
@@ -43,8 +44,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col font-body-md text-body-md text-on-surface bg-background">
-        {children}
+      <body className="min-h-full w-full flex flex-col font-body-md text-body-md text-on-surface bg-background">
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,4 +1,10 @@
+"use client";
+
+import { useAuth } from "@/contexts/AuthContext";
+
 export default function UserProfile() {
+  const { user } = useAuth();
+  
   return (
     <>
 
@@ -10,13 +16,13 @@ export default function UserProfile() {
 <div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
 <div className="flex flex-col items-center text-center">
 <div className="relative mb-4 group">
-<img className="w-24 h-24 rounded-full object-cover border-4 border-surface shadow-sm" data-alt="A highly detailed portrait of a young professional in a minimalist setting. High-key lighting, bright modern SaaS aesthetic. Deep blacks and pristine whites with vibrant blue accents. Calm, confident mood, soft rounded features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhXHkdDj6h60s8VmIBtl2_gYPDCSAN84hELqW2hbQw6jLCjZjdXiFKHYOABqQhHvTN4wHsKiOC9IOEOiMcmdMA6wpUGfz7yat_euYPpMFcl4qYuy-m-TZ2RsZuIW7KfknJSL1pth_7fUgBGArFRl5tAzQhnzhQfiSXr3z9simZoZMz0HhRuwXmgKv7emWYs9JFYx9k7sVoMZzhBg1usfdSJMeCzDj9tRLTDaC3yKSuxW5NQR7dk4YfWLrSH-L5TpwVQwCkaNw1UHc"/>
+<img className="w-24 h-24 rounded-full object-cover border-4 border-surface shadow-sm" src={user?.photoURL || "https://lh3.googleusercontent.com/aida-public/AB6AXuAhXHkdDj6h60s8VmIBtl2_gYPDCSAN84hELqW2hbQw6jLCjZjdXiFKHYOABqQhHvTN4wHsKiOC9IOEOiMcmdMA6wpUGfz7yat_euYPpMFcl4qYuy-m-TZ2RsZuIW7KfknJSL1pth_7fUgBGArFRl5tAzQhnzhQfiSXr3z9simZoZMz0HhRuwXmgKv7emWYs9JFYx9k7sVoMZzhBg1usfdSJMeCzDj9tRLTDaC3yKSuxW5NQR7dk4YfWLrSH-L5TpwVQwCkaNw1UHc"} alt="Avatar" />
 <button className="absolute bottom-0 right-0 bg-primary-container text-on-primary-container rounded-full p-1.5 shadow-md hover:bg-primary transition-colors">
 <span className="material-symbols-outlined text-[16px]">edit</span>
 </button>
 </div>
-<h2 className="font-headline-md text-headline-md text-on-surface mb-1">Nguyễn Văn A</h2>
-<p className="font-body-md text-body-md text-on-surface-variant mb-4">nguyenvana@example.com</p>
+<h2 className="font-headline-md text-headline-md text-on-surface mb-1">{user?.displayName || "Người dùng"}</h2>
+<p className="font-body-md text-body-md text-on-surface-variant mb-4">{user?.email || "Chưa cập nhật email"}</p>
 <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-container/10 text-primary-container rounded-full mb-6">
 <span className="material-symbols-outlined text-[18px]">workspace_premium</span>
 <span className="font-label-md text-label-md font-semibold">Gói Premium</span>

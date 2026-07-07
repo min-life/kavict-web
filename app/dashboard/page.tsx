@@ -3,166 +3,34 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
+import { useAuth } from "@/contexts/AuthContext";
 
-function AnimatedCounter({ target, suffix = "" }: { target: number, suffix?: string }) {
-  const [value, setValue] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        observer.disconnect();
-        const duration = 2000;
-        const stepTime = Math.abs(Math.floor(duration / 60));
-        let current = 0;
-        const increment = target / (duration / stepTime);
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            setValue(target);
-            clearInterval(timer);
-          } else {
-            setValue(Math.ceil(current));
-          }
-        }, stepTime);
-      }
-    }, { threshold: 0.1 });
-    
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target]);
-
-  return <span ref={ref}>{new Intl.NumberFormat('vi-VN').format(value)}{suffix}</span>;
-}
-
-function AnimatedProgressBar({ percent, className }: { percent: number, className?: string }) {
-  const [width, setWidth] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        observer.disconnect();
-        setTimeout(() => setWidth(percent), 200);
-      }
-    }, { threshold: 0.1 });
-    
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [percent]);
-
-  return (
-    <div ref={ref} className={className} style={{ width: `${width}%`, transition: 'width 1.5s ease-out' }}></div>
-  );
-}
-
-function AnimatedProgressRing({ percent }: { percent: number }) {
-  const [offset, setOffset] = useState(251.2);
-  const ref = useRef<SVGCircleElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        observer.disconnect();
-        setTimeout(() => {
-          const radius = 40;
-          const circumference = radius * 2 * Math.PI;
-          setOffset(circumference - (percent / 100) * circumference);
-        }, 500);
-      }
-    }, { threshold: 0.1 });
-    
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [percent]);
-
-  return (
-    <svg className="w-full h-full" viewBox="0 0 100 100">
-      <circle className="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8"></circle>
-      <circle ref={ref} className="text-primary stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeDasharray="251.2" strokeDashoffset={offset} strokeLinecap="round" strokeWidth="8" style={{ transition: 'stroke-dashoffset 1s ease-in-out', transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}></circle>
-    </svg>
-  );
-}
+import { FinancialPlan, Transaction } from "@/lib/financeTypes";
+import { getFinancialPlan, getTransactions } from "@/lib/financeStore";
+import { AnimatedCounter, AnimatedProgressBar, AnimatedProgressRing } from "./components/SharedUI";
+import { FinancialOverview } from "./components/FinancialOverview";
 
 export default function DashboardHome() {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const [currentDate, setCurrentDate] = useState("");
+  const { user } = useAuth();
+  const userName = user?.displayName || "Người dùng";
 
   useEffect(() => {
     // Set Current Date
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     setCurrentDate(new Date().toLocaleDateString('vi-VN', dateOptions));
-
-    // Chart.js Setup
-    if (chartRef.current) {
-        const ctx = chartRef.current.getContext('2d');
-        if (ctx) {
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-
-            const chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-                    datasets: [{
-                        label: 'Tổng tài sản',
-                        data: [120, 125, 132, 130, 142, 148, 154],
-                        borderColor: '#2563eb',
-                        backgroundColor: gradient,
-                        borderWidth: 2,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#2563eb',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#2d3133',
-                            titleFont: { family: 'Geist', size: 12 },
-                            bodyFont: { family: 'Geist', size: 14, weight: 'bold' },
-                            padding: 12,
-                            displayColors: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y + ' Tr VNĐ';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false, drawBorder: false } as any,
-                            ticks: { font: { family: 'Geist', size: 12 }, color: '#737686' }
-                        },
-                        y: {
-                            grid: { color: '#e6e8ea', drawBorder: false, borderDash: [5, 5] } as any,
-                            ticks: { font: { family: 'Geist', size: 12 }, color: '#737686', maxTicksLimit: 5 }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            });
-
-            return () => chartInstance.destroy();
-        }
-    }
   }, []);
+
+  const [plan, setPlan] = useState<FinancialPlan | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getFinancialPlan(user.uid).then(setPlan);
+      getTransactions(user.uid).then(setTransactions);
+    }
+  }, [user]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -184,7 +52,7 @@ export default function DashboardHome() {
 <header className="mb-lg fade-in">
 <div className="flex flex-col md:flex-row md:items-end justify-between gap-sm">
 <div>
-<h1 className="font-headline-lg text-headline-lg text-on-surface mb-xs">Xin chào, Nguyễn Văn A 👋</h1>
+<h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-xs">Xin chào, {userName} 👋</h1>
 <p className="font-body-lg text-body-lg text-on-surface-variant">Tiếp tục hành trình làm chủ tài chính của bạn.</p>
 </div>
 <div className="text-on-surface-variant font-label-md text-label-md bg-surface-container px-sm py-xs rounded-full inline-flex items-center gap-xs">
@@ -196,54 +64,22 @@ export default function DashboardHome() {
 {/* Mid Section: Two Columns */}
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-lg">
 {/* Left Card: Tổng quan tài chính (70% -> 8 cols) */}
-<div className="lg:col-span-8 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient hover:shadow-hover transition-shadow duration-300 p-md fade-in delay-100 flex flex-col h-full">
-<div className="flex justify-between items-center mb-md">
-<h2 className="font-headline-md text-headline-md text-on-surface">Tổng quan tài chính</h2>
-<Link href="/dashboard/ai-assistant" className="text-on-surface-variant hover:text-primary transition-colors" title="Xem chi tiết (Trợ lý tài chính AI)">
-<span className="material-symbols-outlined">more_horiz</span>
-</Link>
-</div>
-{/* Chart Area */}
-<div className="relative h-64 w-full mb-lg flex-grow">
-<canvas id="financeChart" ref={chartRef}></canvas>
-</div>
-{/* Metrics Grid */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-sm mt-auto">
-{/* Metric 1 */}
-<div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors">
-<div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-<span>💰</span> Tổng tài sản
-                        </div>
-<div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={154200000} /></div>
-<div className="text-[12px] text-primary mt-1">+2.4% so với tháng trước</div>
-</div>
-{/* Metric 2 */}
-<div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors">
-<div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-<span>📈</span> Tăng trưởng
-                        </div>
-<div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={3600000} /></div>
-<div className="text-[12px] text-on-surface-variant mt-1">Tháng này</div>
-</div>
-{/* Metric 3 */}
-<div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors">
-<div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-<span>💳</span> Chi tiêu
-                        </div>
-<div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={12800000} /></div>
-<div className="text-[12px] text-error mt-1">-5% so với tháng trước</div>
-</div>
-{/* Metric 4 */}
-<div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors flex flex-col justify-between">
-<div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-<span>🎯</span> Mục tiêu tiết kiệm
-                        </div>
-<div className="w-full bg-surface-variant rounded-full h-2 mt-2 mb-1 overflow-hidden">
-<AnimatedProgressBar percent={68} className="bg-primary h-2 rounded-full" />
-</div>
-<div className="font-label-md text-label-md text-on-surface text-right"><AnimatedCounter target={68} suffix="%" /></div>
-</div>
-</div>
+<div className="lg:col-span-8 flex flex-col h-full relative group">
+  {plan ? (
+    <FinancialOverview 
+      plan={plan} 
+      transactions={transactions} 
+      titleAction={
+        <Link href="/dashboard/ai-assistant" className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+          <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+        </Link>
+      }
+    />
+  ) : (
+    <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col h-full items-center justify-center min-h-[400px]">
+      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  )}
 </div>
 {/* Right Card: Chuỗi học tập (30% -> 4 cols) */}
 <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient hover:shadow-hover transition-shadow duration-300 p-md fade-in delay-200 flex flex-col items-center text-center h-full">
@@ -285,74 +121,112 @@ export default function DashboardHome() {
 </Link>
 </div>
 </div>
-{/* Bottom Section: Bảng xếp hạng */}
-<div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md fade-in delay-300">
-<div className="flex justify-between items-center mb-md">
-<h2 className="font-headline-md text-headline-md text-on-surface">Bảng xếp hạng học tập</h2>
-<button className="text-primary font-label-md text-label-md hover:text-on-primary-fixed-variant transition-colors flex items-center gap-xs">
-                    Xem đầy đủ
-                    <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-</button>
-</div>
-<div className="overflow-x-auto">
-<table className="w-full text-left border-collapse">
-<thead>
-<tr className="border-b border-surface-variant text-on-surface-variant font-label-md text-label-md">
-<th className="py-sm px-md font-medium">Hạng</th>
-<th className="py-sm px-md font-medium">Người dùng</th>
-<th className="py-sm px-md font-medium">Chuỗi học tập</th>
-<th className="py-sm px-md font-medium text-right">Điểm XP</th>
-<th className="py-sm px-md font-medium text-center">Huy hiệu</th>
-</tr>
-</thead>
-<tbody className="font-body-md text-body-md">
-{/* Row 1 */}
-<tr className="border-b border-surface-variant hover:bg-surface transition-colors">
-<td className="py-sm px-md font-bold text-on-surface">1</td>
-<td className="py-sm px-md flex items-center gap-sm">
-<div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-sm">T</div>
-<span>Trần Thị B</span>
-</td>
-<td className="py-sm px-md text-on-surface-variant">42 ngày 🔥</td>
-<td className="py-sm px-md text-right font-label-md text-label-md">12,450</td>
-<td className="py-sm px-md text-center"><span className="text-xl">🏆</span></td>
-</tr>
-{/* Row 2 */}
-<tr className="border-b border-surface-variant hover:bg-surface transition-colors">
-<td className="py-sm px-md font-bold text-on-surface">2</td>
-<td className="py-sm px-md flex items-center gap-sm">
-<div className="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm">L</div>
-<span>Lê Văn C</span>
-</td>
-<td className="py-sm px-md text-on-surface-variant">38 ngày 🔥</td>
-<td className="py-sm px-md text-right font-label-md text-label-md">11,200</td>
-<td className="py-sm px-md text-center"><span className="text-xl">🥈</span></td>
-</tr>
-{/* Row 3 (Current User Highlighted) */}
-<tr className="bg-primary-fixed/30 border-b border-surface-variant hover:bg-primary-fixed/50 transition-colors">
-<td className="py-sm px-md font-bold text-primary">3</td>
-<td className="py-sm px-md flex items-center gap-sm font-medium">
-<div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">N</div>
-<span>Nguyễn Văn A (Bạn)</span>
-</td>
-<td className="py-sm px-md text-primary font-medium">15 ngày 🔥</td>
-<td className="py-sm px-md text-right font-label-md text-label-md text-primary font-bold">8,950</td>
-<td className="py-sm px-md text-center"><span className="text-xl">🥉</span></td>
-</tr>
-{/* Row 4 */}
-<tr className="hover:bg-surface transition-colors">
-<td className="py-sm px-md text-on-surface-variant">4</td>
-<td className="py-sm px-md flex items-center gap-sm">
-<div className="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-bold text-sm">P</div>
-<span>Phạm Thị D</span>
-</td>
-<td className="py-sm px-md text-on-surface-variant">12 ngày 🔥</td>
-<td className="py-sm px-md text-right font-label-md text-label-md">7,300</td>
-<td className="py-sm px-md text-center"><span className="text-xl">🏅</span></td>
-</tr>
-</tbody>
-</table>
-</div>
+{/* Bottom Section: 3 Columns */}
+<div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+  
+  {/* Game Card */}
+  <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col fade-in delay-300">
+    <div className="flex justify-between items-center mb-md">
+      <h2 className="font-headline-md text-headline-md text-on-surface">Trò chơi</h2>
+    </div>
+    <div className="flex flex-col items-center justify-center flex-grow text-center gap-4 py-4">
+      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+        <span className="material-symbols-outlined text-[40px]">stadia_controller</span>
+      </div>
+      <div>
+        <h3 className="font-bold text-on-surface">Thử thách Tài chính</h3>
+        <p className="text-sm text-on-surface-variant mt-1">Chơi game để ôn tập kiến thức và nhận thêm XP.</p>
+      </div>
+      <Link href="/dashboard/games" className="mt-2 px-6 py-2.5 bg-primary text-on-primary rounded-full font-bold hover:bg-primary-fixed-variant transition-colors shadow-sm inline-block">
+        Chơi ngay
+      </Link>
+    </div>
+  </div>
+
+  {/* Weekly Missions Card */}
+  <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col fade-in delay-400">
+    <div className="flex justify-between items-center mb-md">
+      <h2 className="font-headline-md text-headline-md text-on-surface">Nhiệm vụ tuần</h2>
+    </div>
+    <div className="flex flex-col gap-3">
+      <Link href="/dashboard/learning" className="flex items-center justify-between p-3 bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-success/20 text-success flex items-center justify-center">
+            <span className="material-symbols-outlined text-[20px]">check</span>
+          </div>
+          <div>
+            <div className="font-bold text-sm text-on-surface-variant line-through group-hover:text-primary transition-colors">Hoàn thành 3 bài học</div>
+            <div className="text-xs text-success font-medium">Đã nhận 150 XP</div>
+          </div>
+        </div>
+      </Link>
+      
+      <Link href="/dashboard/learning" className="flex items-center justify-between p-3 bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center">
+            <span className="material-symbols-outlined text-[20px]">menu_book</span>
+          </div>
+          <div>
+            <div className="font-bold text-sm text-on-surface group-hover:text-primary transition-colors">Đọc 1 bài báo tài chính</div>
+            <div className="mt-1.5 w-24 bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+              <div className="bg-primary h-1.5 rounded-full" style={{ width: '0%' }}></div>
+            </div>
+          </div>
+        </div>
+        <div className="text-sm font-bold text-primary">+50 XP</div>
+      </Link>
+
+      <Link href="/dashboard/ai-assistant" className="flex items-center justify-between p-3 bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center">
+            <span className="material-symbols-outlined text-[20px]">savings</span>
+          </div>
+          <div>
+            <div className="font-bold text-sm text-on-surface group-hover:text-primary transition-colors">Cập nhật chi tiêu 5 ngày</div>
+            <div className="mt-1.5 w-24 bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+              <div className="bg-primary h-1.5 rounded-full" style={{ width: '40%' }}></div>
+            </div>
+          </div>
+        </div>
+        <div className="text-sm font-bold text-primary">+100 XP</div>
+      </Link>
+    </div>
+  </div>
+
+  {/* Leaderboard Card */}
+  <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col fade-in delay-500">
+    <div className="flex justify-between items-center mb-md">
+      <h2 className="font-headline-md text-headline-md text-on-surface">Bảng xếp hạng</h2>
+      <Link href="/dashboard/leaderboard" className="text-primary font-label-sm text-label-sm hover:text-on-primary-fixed-variant transition-colors">
+        Tất cả
+      </Link>
+    </div>
+    <div className="flex flex-col gap-2 flex-grow justify-center">
+      {[
+        { rank: 1, name: 'Trần Thị B', xp: '12,450', isMe: false, badge: '🏆', color: 'bg-tertiary-container text-on-tertiary-container' },
+        { rank: 2, name: 'Lê Văn C', xp: '11,200', isMe: false, badge: '🥈', color: 'bg-secondary-container text-on-secondary-container' },
+        { rank: 3, name: userName + ' (Bạn)', xp: '8,950', isMe: true, badge: '🥉', color: 'bg-primary text-on-primary' },
+        { rank: 4, name: 'Phạm Thị D', xp: '7,300', isMe: false, badge: '🏅', color: 'bg-surface-variant text-on-surface-variant' }
+      ].map(user => (
+        <div key={user.rank} className={`flex items-center justify-between p-2 rounded-xl transition-colors ${user.isMe ? 'bg-primary-fixed/30 border border-primary/30' : 'hover:bg-surface'}`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-4 text-center font-bold text-sm ${user.isMe ? 'text-primary' : 'text-on-surface-variant'}`}>{user.rank}</div>
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${user.color}`}>
+                {user.name.charAt(0)}
+              </div>
+              <div className={`text-sm font-medium ${user.isMe ? 'text-primary' : 'text-on-surface'}`}>{user.name}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`text-sm font-bold ${user.isMe ? 'text-primary' : 'text-on-surface-variant'}`}>{user.xp}</div>
+            <div className="text-lg leading-none">{user.badge}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
 </div>
 
     </>

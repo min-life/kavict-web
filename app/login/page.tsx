@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,23 +17,32 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
     
-    // Simulate API request
-    setTimeout(() => {
-      if (email === "test@kavict.com" && password === "password123") {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userName', 'Người dùng KAVICT');
-        localStorage.setItem('userEmail', 'test@kavict.com');
-        router.push("/dashboard");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
+    } catch (err: any) {
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setError("Email hoặc mật khẩu không chính xác.");
       } else {
-        setError("Email hoặc mật khẩu không chính xác. Thử test@kavict.com / password123");
-        setIsLoading(false);
+        setError("Có lỗi xảy ra khi đăng nhập.");
       }
-    }, 1000);
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Lỗi đăng nhập bằng Google.");
+    }
   };
 
   return (
@@ -155,7 +166,7 @@ export default function LoginPage() {
           </div>
 
           {/* Social Login */}
-          <button className="w-full h-12 flex items-center justify-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors focus:ring-4 focus:ring-outline-variant/20 focus:outline-none" type="button">
+          <button onClick={handleGoogleSignIn} className="w-full h-12 flex items-center justify-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors focus:ring-4 focus:ring-outline-variant/20 focus:outline-none" type="button">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>

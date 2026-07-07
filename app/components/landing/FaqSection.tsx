@@ -38,7 +38,7 @@ export default function FaqSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">
+          <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
             Câu hỏi thường gặp
           </h2>
         </motion.div>

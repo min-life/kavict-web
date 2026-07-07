@@ -2,29 +2,37 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "home", label: "Trang chủ", fill: true },
   { href: "/dashboard/learning", icon: "school", label: "Học tập" },
-  { href: "/dashboard/news", icon: "newspaper", label: "Tin tức" },
   { href: "/dashboard/ai-assistant", icon: "smart_toy", label: "Trợ lý tài chính AI" },
+  { href: "/dashboard/games", icon: "stadia_controller", label: "Trò chơi" },
   { href: "/dashboard/leaderboard", icon: "leaderboard", label: "Bảng xếp hạng" },
 ];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [userName, setUserName] = useState("Người dùng");
-  const [userEmail, setUserEmail] = useState("user@kavict.com");
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const name = localStorage.getItem("userName");
-    const email = localStorage.getItem("userEmail");
-    if (name) setUserName(name);
-    if (email) setUserEmail(email);
-  }, []);
+  const userName = user?.displayName || "Người dùng";
+  const userEmail = user?.email || "user@kavict.com";
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error", error);
+    }
+  };
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -127,13 +135,8 @@ export default function Sidebar() {
               </span>
               {!collapsed && <span className="text-label-md font-label-md whitespace-nowrap">Hồ sơ</span>}
             </Link>
-            <Link
-              href="/login"
-              onClick={() => {
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userName');
-                localStorage.removeItem('userEmail');
-              }}
+            <button
+              onClick={handleLogout}
               className={`flex items-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors ${
                 collapsed ? "justify-center w-full py-3 px-0" : "gap-3 px-3 py-2"
               }`}
@@ -142,7 +145,7 @@ export default function Sidebar() {
                 logout
               </span>
               {!collapsed && <span className="text-label-md font-label-md whitespace-nowrap">Đăng xuất</span>}
-            </Link>
+            </button>
           </div>
         )}
 
@@ -156,8 +159,12 @@ export default function Sidebar() {
           }`}
           onClick={() => setUserMenuOpen(!userMenuOpen)}
         >
-          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md shrink-0">
-            {userName.charAt(0).toUpperCase()}
+          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md shrink-0 overflow-hidden border border-outline-variant/30">
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt={userName} className="w-full h-full object-cover" />
+            ) : (
+              userName.charAt(0).toUpperCase()
+            )}
           </div>
           {!collapsed && (
             <>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,7 +20,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -44,13 +46,33 @@ export default function RegisterPage() {
 
     setIsLoading(true);
 
-    // Simulate API request
-    setTimeout(() => {
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userName", fullname);
-      localStorage.setItem("userEmail", email);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: fullname,
+      });
       router.push("/dashboard");
-    }, 1200);
+    } catch (err: any) {
+      if (err.code === 'auth/email-already-in-use') {
+        setError("Email này đã được sử dụng.");
+      } else if (err.code === 'auth/weak-password') {
+        setError("Mật khẩu quá yếu.");
+      } else {
+        setError("Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Lỗi đăng nhập bằng Google.");
+    }
   };
 
   return (
@@ -60,7 +82,7 @@ export default function RegisterPage() {
       transition={{ duration: 0.5 }}
       className="flex-1 flex items-center justify-center p-md w-full min-h-screen"
     >
-      <main className="w-full max-w-[460px] bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-lg flex flex-col gap-lg mx-auto">
+      <main className="w-full max-w-[460px] bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-md md:p-lg flex flex-col gap-lg mx-auto">
         {/* Header & Brand */}
         <header className="flex flex-col items-center text-center gap-sm">
           <Link href="/">
@@ -73,7 +95,7 @@ export default function RegisterPage() {
               }}
             />
           </Link>
-          <h1 className="font-headline-md text-headline-md text-on-surface">Tạo tài khoản</h1>
+          <h1 className="font-headline-md text-headline-lg-mobile md:text-headline-md text-on-surface">Tạo tài khoản</h1>
           <p className="font-body-md text-body-md text-on-surface-variant">Bắt đầu hành trình quản lý tài chính cá nhân cùng KAVICT.</p>
         </header>
 
@@ -217,7 +239,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Social Login */}
-        <button className="w-full h-12 bg-surface-bright border border-outline-variant hover:border-outline hover:bg-surface-container-low text-on-surface rounded-lg font-label-md text-label-md font-medium flex items-center justify-center gap-sm transition-all" type="button">
+        <button onClick={handleGoogleSignIn} className="w-full h-12 bg-surface-bright border border-outline-variant hover:border-outline hover:bg-surface-container-low text-on-surface rounded-lg font-label-md text-label-md font-medium flex items-center justify-center gap-sm transition-all" type="button">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>

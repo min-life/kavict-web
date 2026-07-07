@@ -33,7 +33,7 @@ export default function PricingSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-headline-lg text-headline-lg md:text-display text-on-surface">
+          <h2 className="font-headline-lg text-headline-lg-mobile md:text-display text-on-surface">
             Bảng giá
           </h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[672px] mx-auto">
