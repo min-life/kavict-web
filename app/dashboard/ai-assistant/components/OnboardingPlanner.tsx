@@ -39,7 +39,7 @@ export default function OnboardingPlanner({ onPlanCreated, initialPlan }: { onPl
     
     // Remove quick actions from previous messages
     const newMessages = messages.map(m => ({ ...m, showActions: false }));
-    newMessages.push({ sender: "user", text });
+    newMessages.push({ sender: "user", text, showActions: false });
     
     setMessages(newMessages);
     setInputText("");
@@ -123,7 +123,7 @@ QUY TẮC ĐIỀN JSON:
 
       setMessages(prev => [...prev, { sender: "ai", text: aiText, showActions }]);
     } catch (error) {
-      setMessages(prev => [...prev, { sender: "ai", text: "Xin lỗi, tôi đang gặp sự cố. Bạn vui lòng thử lại sau nhé." }]);
+      setMessages(prev => [...prev, { sender: "ai", text: "Xin lỗi, tôi đang gặp sự cố. Bạn vui lòng thử lại sau nhé.", showActions: false }]);
     } finally {
       setIsTyping(false);
     }

@@ -24,8 +24,8 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    if (user) {
-      getTransactions(user.uid).then(setTransactions);
+    if (user?.uid) {
+      getTransactions(user.uid!).then(setTransactions);
     }
   }, [user]);
 
@@ -87,7 +87,7 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
   };
 
   const savePendingTx = async () => {
-    if (user && pendingTx) {
+    if (user?.uid && pendingTx) {
       if (pendingTx.id) {
         // Edit mode
         const oldTx = transactions.find(t => t.id === pendingTx.id);
@@ -99,37 +99,38 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
           if (pendingTx.type === 'income') newBalance += (pendingTx.amount || 0);
           else newBalance -= (pendingTx.amount || 0);
 
-          await updateTransaction(user.uid, pendingTx.id, pendingTx as Transaction);
-          await saveFinancialPlan(user.uid, { currentBalance: newBalance });
+          await updateTransaction(user.uid!, pendingTx.id, pendingTx as Transaction);
+          await saveFinancialPlan(user.uid!, { currentBalance: newBalance });
           setPlan(prev => ({...prev, currentBalance: newBalance}));
         }
       } else {
         // Add mode
-        await addTransaction(user.uid, pendingTx as Transaction);
+        await addTransaction(user.uid!, pendingTx as Transaction);
         let newBalance = plan.currentBalance;
         if (pendingTx.type === 'income') newBalance += (pendingTx.amount || 0);
         else newBalance -= (pendingTx.amount || 0);
-        await saveFinancialPlan(user.uid, { currentBalance: newBalance });
+        await saveFinancialPlan(user.uid!, { currentBalance: newBalance });
         setPlan(prev => ({...prev, currentBalance: newBalance}));
       }
       
       setShowConfirmPopup(false);
       setPendingTx(null);
-      getTransactions(user.uid).then(setTransactions);
+      getTransactions(user.uid!).then(setTransactions);
       router.refresh();
     }
   };
 
   const handleDeleteTx = async (tx: Transaction) => {
-    if (user && confirm("Bạn có chắc muốn xóa giao dịch này?")) {
-      await deleteTransaction(user.uid, tx.id);
+    if (!tx.id) return;
+    if (user?.uid && confirm("Bạn có chắc muốn xóa giao dịch này?")) {
+      await deleteTransaction(user.uid!, tx.id);
       let newBalance = plan.currentBalance;
       if (tx.type === 'income') newBalance -= tx.amount;
       else newBalance += tx.amount;
-      await saveFinancialPlan(user.uid, { currentBalance: newBalance });
+      await saveFinancialPlan(user.uid!, { currentBalance: newBalance });
       setPlan(prev => ({...prev, currentBalance: newBalance}));
       
-      getTransactions(user.uid).then(setTransactions);
+      getTransactions(user.uid!).then(setTransactions);
       router.refresh();
     }
   };
@@ -375,7 +376,7 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
                         const color = b.color || 'text-on-surface';
                         const isSelected = pendingTx.category === b.category;
                         return (
-                          <button key={b.id} onClick={() => setPendingTx({...pendingTx, category: b.category})} className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-outline-variant/30 hover:bg-surface-container-lowest'}`}>
+                          <button key={b.category} onClick={() => setPendingTx({...pendingTx, category: b.category})} className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-outline-variant/30 hover:bg-surface-container-lowest'}`}>
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${color} ${color.replace('text-', 'bg-')}/10`}>
                               <span className="material-symbols-outlined text-[16px]">{icon}</span>
                             </div>
