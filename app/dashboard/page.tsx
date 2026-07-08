@@ -24,11 +24,22 @@ export default function DashboardHome() {
 
   const [plan, setPlan] = useState<FinancialPlan | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
-      getFinancialPlan(user.uid).then(setPlan);
-      getTransactions(user.uid).then(setTransactions);
+      setIsLoading(true);
+      Promise.all([
+        getFinancialPlan(user.uid),
+        getTransactions(user.uid)
+      ]).then(([fetchedPlan, fetchedTransactions]) => {
+        setPlan(fetchedPlan);
+        setTransactions(fetchedTransactions);
+        setIsLoading(false);
+      }).catch(err => {
+        console.error("Error fetching data:", err);
+        setIsLoading(false);
+      });
     }
   }, [user]);
 
@@ -65,7 +76,11 @@ export default function DashboardHome() {
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-lg">
 {/* Left Card: Tổng quan tài chính (70% -> 8 cols) */}
 <div className="lg:col-span-8 flex flex-col h-full relative group">
-  {plan ? (
+  {isLoading ? (
+    <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col h-full items-center justify-center min-h-[400px]">
+      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  ) : plan ? (
     <FinancialOverview 
       plan={plan} 
       transactions={transactions} 
@@ -76,8 +91,20 @@ export default function DashboardHome() {
       }
     />
   ) : (
-    <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col h-full items-center justify-center min-h-[400px]">
-      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col h-full items-center justify-center min-h-[400px] text-center animate-fade-in">
+      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6">
+        <span className="material-symbols-outlined text-[40px]">savings</span>
+      </div>
+      <h2 className="font-headline-md text-headline-md text-on-surface mb-2">Chưa có kế hoạch tài chính</h2>
+      <p className="text-on-surface-variant mb-8 max-w-[300px]">
+        Lập kế hoạch ngay hôm nay để KAVICT AI đồng hành cùng bạn trên con đường tự do tài chính.
+      </p>
+      <Link 
+        href="/dashboard/ai-assistant" 
+        className="px-8 py-3 bg-primary text-on-primary rounded-full font-bold hover:bg-primary-fixed-variant transition-colors shadow-sm flex items-center justify-center gap-2 group"
+      >
+        Lập kế hoạch tài chính <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      </Link>
     </div>
   )}
 </div>

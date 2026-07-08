@@ -14,6 +14,8 @@ export default function DashboardLayout({
   const mainRef = useRef<HTMLElement>(null);
 
   const isOnboarding = pathname.startsWith("/dashboard/onboarding");
+  const isSoloGame = pathname.startsWith("/dashboard/games/solo");
+  const isFullScreen = isOnboarding || isSoloGame;
 
   useEffect(() => {
     if (mainRef.current) {
@@ -23,11 +25,11 @@ export default function DashboardLayout({
 
   return (
     <ProtectedRoute>
-      <div className={`h-screen overflow-hidden bg-background ${isOnboarding ? "block w-screen" : "flex w-full"}`}>
-        {!isOnboarding && <Sidebar />}
+      <div className={`h-screen overflow-hidden bg-background ${isFullScreen ? "block w-screen" : "flex w-full"}`}>
+        {!isFullScreen && <Sidebar />}
         <main
           ref={mainRef}
-          className={`h-full overflow-y-auto transition-all duration-200 ${!isOnboarding ? "flex-1 p-8" : "w-full block"}`}
+          className={`h-full overflow-y-auto transition-all duration-200 ${!isFullScreen ? "flex-1 p-8" : "w-full block"}`}
           id="main-content"
         >
           {children}

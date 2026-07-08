@@ -36,6 +36,7 @@ export default function RootLayout({
     <html
       lang="vi"
       className={`${hankenGrotesk.variable} ${inter.variable} ${geistSans.variable} h-full w-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         {/* Google Material Symbols Outlined - Icon font used by Stitch designs */}
@@ -44,7 +45,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full w-full flex flex-col font-body-md text-body-md text-on-surface bg-background">
+      <body className="min-h-full w-full flex flex-col font-body-md text-body-md text-on-surface bg-background" suppressHydrationWarning>
         <AuthProvider>
           {children}
         </AuthProvider>
