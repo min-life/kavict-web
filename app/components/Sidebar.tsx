@@ -48,11 +48,16 @@ export default function Sidebar() {
       <div>
         <div className="flex items-center justify-between mb-8 px-2 center-on-collapse">
           <div className="flex items-center gap-3">
-            <Link href="/">
+            <Link href="/" className="flex items-center gap-2 hover:scale-105 transition-transform">
               <img
                 alt="KAVICT Logo"
-                className="h-8 w-auto object-contain hide-on-collapse hover:scale-105 transition-transform"
-                src="/kavict-logo.svg"
+                className="h-10 w-auto object-contain"
+                src="/logo-image.png"
+              />
+              <img
+                alt="KAVICT Text"
+                className="h-8 w-auto object-contain hide-on-collapse mt-1"
+                src="/logo-text.png"
               />
             </Link>
           </div>

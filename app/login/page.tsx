@@ -55,15 +55,18 @@ export default function LoginPage() {
       <main className="w-full max-w-[460px] bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-lg md:p-xl flex flex-col gap-lg mx-auto">
           {/* Header */}
           <header className="flex flex-col items-center text-center gap-md">
-            <img 
-              alt="KAVICT Logo" 
-              className="h-12 w-auto mb-xs" 
-              src="/kavict-logo.svg" 
-              onError={(e) => {
-                // Fallback to base64 if svg not found locally
-                e.currentTarget.src = "https://lh3.googleusercontent.com/aida/AP1WRLsw9C38IEcFBVvYTdnNr0NaSTgwG6OOiMy5-Sx5fpZjHqeaXWFJII0vlvdjcDyeOHRKUvoI77-v_p-Y6gyXZAPmclSCXPiE_xeDp8d0GOMinqmERdh3DDK_qtlI6BRZST0WCLyXlA9v1vu_WtLVrHHtAJuvxfR28K2RZvoOikxy1v3g4NH4AaffxwQUDRqkbokny37nQytdcQZqdUK6H0hCUnUIHNJREcK_l23-kNXHA2AY3pLuW20LO54";
-              }}
-            />
+            <div className="flex items-center justify-center gap-3 mb-xs">
+              <img 
+                alt="KAVICT Logo" 
+                className="h-16 w-auto" 
+                src="/logo-image.png" 
+              />
+              <img 
+                alt="KAVICT Text" 
+                className="h-12 w-auto mt-2" 
+                src="/logo-text.png" 
+              />
+            </div>
             <div>
               <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-xs">Đăng nhập</h1>
               <p className="font-body-md text-body-md text-on-surface-variant">

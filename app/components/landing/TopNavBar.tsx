@@ -33,11 +33,16 @@ export default function TopNavBar() {
     >
       <div className="max-w-[1200px] mx-auto px-gutter flex items-center justify-between h-20">
         <div className="flex items-center gap-sm">
-          <Link href="/">
+          <Link href="/" className="flex items-center gap-2">
             <img
               alt="KAVICT Logo"
-              className="h-10 object-contain rounded-md"
-              src="/kavict-logo.svg"
+              className="h-10 object-contain"
+              src="/logo-image.png"
+            />
+            <img
+              alt="KAVICT Text"
+              className="h-8 object-contain mt-1"
+              src="/logo-text.png"
             />
           </Link>
         </div>

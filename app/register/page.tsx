@@ -85,14 +85,16 @@ export default function RegisterPage() {
       <main className="w-full max-w-[460px] bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-md md:p-lg flex flex-col gap-lg mx-auto">
         {/* Header & Brand */}
         <header className="flex flex-col items-center text-center gap-sm">
-          <Link href="/">
+          <Link href="/" className="flex items-center justify-center gap-3 mb-sm hover:scale-105 transition-transform cursor-pointer">
             <img 
               alt="KAVICT Logo" 
-              className="h-8 mb-sm hover:scale-105 transition-transform cursor-pointer" 
-              src="/kavict-logo.svg" 
-              onError={(e) => {
-                e.currentTarget.src = "https://lh3.googleusercontent.com/aida/AP1WRLsw9C38IEcFBVvYTdnNr0NaSTgwG6OOiMy5-Sx5fpZjHqeaXWFJII0vlvdjcDyeOHRKUvoI77-v_p-Y6gyXZAPmclSCXPiE_xeDp8d0GOMinqmERdh3DDK_qtlI6BRZST0WCLyXlA9v1vu_WtLVrHHtAJuvxfR28K2RZvoOikxy1v3g4NH4AaffxwQUDRqkbokny37nQytdcQZqdUK6H0hCUnUIHNJREcK_l23-kNXHA2AY3pLuW20LO54";
-              }}
+              className="h-16 w-auto" 
+              src="/logo-image.png" 
+            />
+            <img 
+              alt="KAVICT Text" 
+              className="h-12 w-auto mt-2" 
+              src="/logo-text.png" 
             />
           </Link>
           <h1 className="font-headline-md text-headline-lg-mobile md:text-headline-md text-on-surface">Tạo tài khoản</h1>
