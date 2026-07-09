@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, User, getRedirectResult } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
@@ -32,6 +32,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Process redirect result if any (fixes login on browsers blocking 3rd party cookies)
+    getRedirectResult(auth).catch((error) => {
+      console.error("Redirect auth error:", error);
+    });
+
     let unsubscribeProfile: () => void;
 
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
