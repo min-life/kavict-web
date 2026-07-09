@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const { prompt, systemInstruction } = await request.json();
 
     const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         contents: prompt,
         config: {
             systemInstruction: systemInstruction || "Bạn là Kavi - Trợ lý Tài chính AI. Hãy trả lời ngắn gọn, súc tích và thân thiện.",
