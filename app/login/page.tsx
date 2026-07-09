@@ -17,9 +17,9 @@ export default function LoginPage() {
     }
   }, [user, router]);
   
-  // Mock data pre-filled
-  const [email, setEmail] = useState("test@kavict.com");
-  const [password, setPassword] = useState("password123");
+  // Data
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
