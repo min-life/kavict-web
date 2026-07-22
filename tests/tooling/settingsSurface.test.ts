@@ -33,6 +33,8 @@ describe("settings visual surface", () => {
     }
     expect(settings).toContain('type="checkbox"');
     expect(settings).toContain("useTheme");
+    expect(settings).toContain("max-w-[42rem]");
+    expect(settings).not.toContain("max-w-2xl");
     expect(profile).not.toContain("Cài đặt chung");
   });
 
@@ -42,7 +44,7 @@ describe("settings visual surface", () => {
       { label: "Cài đặt", icon: "settings", href: "/dashboard/settings" },
     ]);
     expect(HELP_MENU_ITEMS.map((item) => item.label)).toEqual([
-      "Help center", "Release notes", "Download apps", "Keyboard shortcuts",
+      "Help center", "Release notes", "Download apps",
       "Terms of Service", "Privacy Policy", "Report a bug",
     ]);
     expect(HELP_MENU_ITEMS.filter((item) => item.dividerBefore)).toEqual([
@@ -56,6 +58,10 @@ describe("settings visual surface", () => {
     expect(sidebar).toContain('aria-haspopup="menu"');
     expect(sidebar).toContain('helpMenuOpen ? "bg-primary-container/10 text-primary"');
     expect(sidebar).toContain('absolute bottom-0 left-full z-50 ml-2 w-72');
+    expect(sidebar).toContain("bg-surface-container-lowest");
+    expect(sidebar).toContain("dark:bg-surface-container-highest");
+    expect(sidebar).not.toContain("bg-[#333333]");
+    expect(sidebar).not.toContain("text-white");
 
     const accountMenuWrapperClasses = getAccountMenuWrapperClasses(sidebar);
     expect(accountMenuWrapperClasses).not.toEqual([]);

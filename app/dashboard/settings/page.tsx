@@ -19,7 +19,7 @@ export default function SettingsPage() {
   const isDark = theme === "dark";
 
   return (
-    <section className="mx-auto w-full max-w-2xl">
+    <section className="mx-auto w-full max-w-[42rem]">
       <div className="rounded-2xl bg-surface-container-lowest p-md shadow-soft">
         <h1 className="mb-6 font-headline-md text-headline-md text-on-surface">Cài đặt chung</h1>
         <div className="space-y-2">
