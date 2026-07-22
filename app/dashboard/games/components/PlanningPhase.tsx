@@ -107,7 +107,7 @@ export default function PlanningPhase({ config, planningEndTime, onTimeUp, isHos
         
         // Auto-fill logic when time is up
         const hasTouchedAny = Object.keys(touchedCategories).length > 0;
-        let finalAllocations = { ...allocations };
+        const finalAllocations = { ...allocations };
         
         if (!hasTouchedAny) {
           // If no categories were filled, allocate (income - savingsGoal) evenly

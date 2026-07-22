@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { getErrorCode } from "@/lib/errors";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -55,10 +56,11 @@ export default function RegisterPage() {
     try {
       await registerWithEmail(email, password, fullname);
       router.push("/dashboard");
-    } catch (err: any) {
-      if (err.code === 'auth/email-already-in-use') {
+    } catch (err: unknown) {
+      const errorCode = getErrorCode(err);
+      if (errorCode === 'auth/email-already-in-use') {
         setError("Email này đã được sử dụng.");
-      } else if (err.code === 'auth/weak-password') {
+      } else if (errorCode === 'auth/weak-password') {
         setError("Mật khẩu quá yếu.");
       } else {
         setError("Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
@@ -72,7 +74,7 @@ export default function RegisterPage() {
     try {
       await signInWithGoogle();
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch {
       setError("Lỗi đăng nhập bằng Google.");
     }
   };

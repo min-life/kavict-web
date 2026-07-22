@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { createRoom } from "../services/roomService";
+import { getErrorMessage } from "@/lib/errors";
 
 interface CreateRoomViewProps {
   onBack: () => void;
@@ -23,9 +24,9 @@ export default function CreateRoomView({ onBack, onCreated }: CreateRoomViewProp
         const name = userProfile?.preferredName || user.displayName || "Người dùng";
         const code = await createRoom(user.uid, name);
         onCreated(code);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error creating room:", err);
-        setError(err.message || "Đã xảy ra lỗi khi tạo phòng.");
+        setError(getErrorMessage(err, "Đã xảy ra lỗi khi tạo phòng."));
         setIsCreating(false);
       }
     };

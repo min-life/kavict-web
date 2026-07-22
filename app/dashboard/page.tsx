@@ -12,37 +12,42 @@ import { FinancialOverview } from "./components/FinancialOverview";
 
 export default function DashboardHome() {
   const chartRef = useRef<HTMLCanvasElement>(null);
-  const [currentDate, setCurrentDate] = useState("");
+  const [currentDate] = useState(() => {
+    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date().toLocaleDateString('vi-VN', dateOptions);
+  });
   const { user } = useAuth();
   const userName = user?.displayName || "Người dùng";
 
-  useEffect(() => {
-    // Set Current Date
-    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    setCurrentDate(new Date().toLocaleDateString('vi-VN', dateOptions));
-  }, []);
-
-  const [plan, setPlan] = useState<FinancialPlan | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadedFinance, setLoadedFinance] = useState<{
+    userId: string;
+    plan: FinancialPlan | null;
+    transactions: Transaction[];
+  } | null>(null);
 
   useEffect(() => {
     if (user) {
-      setIsLoading(true);
       const repository = getFinanceRepository();
       Promise.all([
         repository.getPlan(user.uid),
         repository.getTransactions(user.uid)
       ]).then(([fetchedPlan, fetchedTransactions]) => {
-        setPlan(fetchedPlan);
-        setTransactions(fetchedTransactions);
-        setIsLoading(false);
+        setLoadedFinance({
+          userId: user.uid,
+          plan: fetchedPlan,
+          transactions: fetchedTransactions,
+        });
       }).catch(err => {
         console.error("Error fetching data:", err);
-        setIsLoading(false);
+        setLoadedFinance({ userId: user.uid, plan: null, transactions: [] });
       });
     }
   }, [user]);
+
+  const financeMatchesUser = Boolean(user && loadedFinance?.userId === user.uid);
+  const plan = financeMatchesUser ? loadedFinance?.plan ?? null : null;
+  const transactions = financeMatchesUser ? loadedFinance?.transactions ?? [] : [];
+  const isLoading = !financeMatchesUser;
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {

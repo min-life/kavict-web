@@ -157,7 +157,7 @@ function PlayingArea({ config, userId, plannedAllocations, character, categories
         <AnimatePresence mode="wait">
           {(phase === "event_display" || phase === "applying_effect") && currentEvent && (
             <EventCard
-              key={currentEvent.id}
+              key={`${currentEvent.id}-${config.decisionTimeSeconds}`}
               event={currentEvent}
               decisionTimeSeconds={config.decisionTimeSeconds}
               onDecide={handleDecision}

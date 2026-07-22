@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { getErrorCode } from "@/lib/errors";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,8 +32,9 @@ export default function LoginPage() {
     try {
       await signInWithEmail(email, password);
       router.push("/dashboard");
-    } catch (err: any) {
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+    } catch (err: unknown) {
+      const errorCode = getErrorCode(err);
+      if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password' || errorCode === 'auth/invalid-credential') {
         setError("Email hoặc mật khẩu không chính xác.");
       } else {
         setError("Có lỗi xảy ra khi đăng nhập.");
@@ -45,7 +47,7 @@ export default function LoginPage() {
     try {
       await signInWithGoogle();
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch {
       setError("Lỗi đăng nhập bằng Google.");
     }
   };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMultiplayerGameEngine } from "../hooks/useMultiplayerGameEngine";
-import { GameRoom, GameConfig } from "../services/roomService";
+import type { GameRoom, GameConfig, Player } from "../services/roomService";
 import DayHeader from "./DayHeader";
 import EventCard from "./EventCard";
 import GameOverScreen from "./GameOverScreen";
@@ -126,7 +126,7 @@ export default function MultiplayerActiveGame({
     "bottom-4 right-4 flex-row-reverse", // bottom-right
   ];
 
-  const renderPlayer = (player: any, layout: 'flex-row' | 'flex-row-reverse') => {
+  const renderPlayer = (player: (Player & { id: string }) | undefined, layout: 'flex-row' | 'flex-row-reverse') => {
     if (!player) return null;
     const isMe = player.id === userId;
     const stream = isMe ? localStream : remoteStreams.get(player.id);
@@ -260,7 +260,7 @@ export default function MultiplayerActiveGame({
           <AnimatePresence mode="wait">
             {(pendingEvent || ((phase === "event_display" || phase === "waiting_friend_response" || phase === "applying_effect") && currentEvent)) && displayEvent && (
               <EventCard
-                key={displayEvent.id + (pendingEvent ? "-pending" : "")}
+                key={`${displayEvent.id}-${config.decisionTimeSeconds}${pendingEvent ? "-pending" : ""}`}
                 event={displayEvent}
                 decisionTimeSeconds={config.decisionTimeSeconds}
                 onDecide={handleDecision}

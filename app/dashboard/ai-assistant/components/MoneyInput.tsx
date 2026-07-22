@@ -14,14 +14,6 @@ export default function MoneyInput({ value, onChange, className, placeholder, su
   const [inputValue, setInputValue] = useState(value ? value.toString() : "");
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // ... (keep rest the same)
-
-  useEffect(() => {
-    if (!isFocused) {
-      setInputValue(value ? value.toString() : "");
-    }
-  }, [value, isFocused]);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -83,7 +75,10 @@ export default function MoneyInput({ value, onChange, className, placeholder, su
         inputMode="numeric"
         value={isFocused ? inputValue : (value ? new Intl.NumberFormat("vi-VN").format(value) : "")}
         onChange={handleInputChange}
-        onFocus={() => setIsFocused(true)}
+        onFocus={() => {
+          setInputValue(value ? value.toString() : "");
+          setIsFocused(true);
+        }}
         className={className}
         placeholder={placeholder}
       />

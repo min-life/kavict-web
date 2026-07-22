@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { runtimeMode } from "@/features/runtime/config";
 import type { AppUser, OnboardingInput, UserProfile } from "./domain";
 import type { AuthGateway } from "./gateway";
@@ -24,13 +24,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [gateway, setGateway] = useState<AuthGateway | null>(null);
+  const gatewayRef = useRef<AuthGateway | null>(null);
 
   useEffect(() => {
     const selectedGateway = runtimeMode === "local"
       ? createLocalAuthGateway(window.localStorage)
       : createFirebaseAuthGateway();
-    setGateway(selectedGateway);
+    gatewayRef.current = selectedGateway;
     return selectedGateway.subscribe((nextUser, nextProfile) => {
       setUser(nextUser);
       setUserProfile(nextProfile);
@@ -39,8 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const requireGateway = () => {
-    if (!gateway) throw new Error("Authentication is still initializing");
-    return gateway;
+    if (!gatewayRef.current) throw new Error("Authentication is still initializing");
+    return gatewayRef.current;
   };
   const value: AuthContextType = {
     user, userProfile, loading,

@@ -37,24 +37,19 @@ const EventCard = forwardRef<HTMLDivElement, EventCardProps>(({
   const [friendSelectMode, setFriendSelectMode] = useState(false);
   const [isAutoSelected, setIsAutoSelected] = useState(false);
 
-  // Reset state when event changes
-  useEffect(() => {
-    setTimeLeft(decisionTimeSeconds);
-    setDecided(false);
-    setSelectedIndex(null);
-    setFriendSelectMode(false);
-    setIsAutoSelected(false);
-  }, [event.id, decisionTimeSeconds]);
-
   // Countdown timer (only for choice events)
   useEffect(() => {
     if (event.type === "forced" || decided) return;
-    if (timeLeft <= 0) {
-      setIsAutoSelected(true);
-      onAutoSelect();
-      return;
-    }
-    const t = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
+    if (timeLeft <= 0) return;
+    const t = setTimeout(() => {
+      if (timeLeft === 1) {
+        setTimeLeft(0);
+        setIsAutoSelected(true);
+        onAutoSelect();
+      } else {
+        setTimeLeft(timeLeft - 1);
+      }
+    }, 1000);
     return () => clearTimeout(t);
   }, [timeLeft, decided, event.type, onAutoSelect]);
 
@@ -289,6 +284,8 @@ const EventCard = forwardRef<HTMLDivElement, EventCardProps>(({
     </motion.div>
   );
 });
+
+EventCard.displayName = "EventCard";
 
 // Small component to preview effect of an option
 function EffectPreview({ option, compact = false }: { option: EventOption; compact?: boolean }) {

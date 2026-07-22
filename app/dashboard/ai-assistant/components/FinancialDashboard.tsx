@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FinancialPlan, Transaction } from "@/features/finance/domain";
 import { getFinanceRepository } from "@/features/finance/provider";
 import { useAuth } from "@/features/auth/AuthProvider";
@@ -23,38 +23,10 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
   const [isListening, setIsListening] = useState(false);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [pendingTx, setPendingTx] = useState<Partial<Transaction> | null>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<KavictSpeechRecognition | null>(null);
   const { aiAvailable } = getRuntimeCapabilities(runtimeMode);
 
-  useEffect(() => {
-    if (user?.uid) {
-      getFinanceRepository().getTransactions(user.uid).then(setTransactions);
-    }
-  }, [user]);
-
-  // Setup Speech Recognition
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const rec = new SpeechRecognition();
-        rec.continuous = false;
-        rec.lang = "vi-VN";
-        
-        rec.onstart = () => setIsListening(true);
-        rec.onresult = async (event: any) => {
-          const text = event.results[0][0].transcript;
-          handleProcessVoiceInput(text);
-        };
-        rec.onerror = () => setIsListening(false);
-        rec.onend = () => setIsListening(false);
-        
-        recognitionRef.current = rec;
-      }
-    }
-  }, []);
-
-  const handleProcessVoiceInput = async (text: string) => {
+  const handleProcessVoiceInput = useCallback(async (text: string) => {
     if (!aiAvailable) {
       alert("Tính năng phân tích giọng nói AI chưa có trong chế độ demo local. Bạn vẫn có thể thêm giao dịch thủ công.");
       return;
@@ -68,12 +40,11 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, systemInstruction: "Bạn là hệ thống trích xuất dữ liệu tài chính." })
       });
-      const data = await res.json();
+      const data = await res.json() as { text: string };
       
-      let aiText = data.text;
+      const aiText = data.text;
       const jsonMatch = aiText.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || [null, aiText];
-      
-      const parsed = JSON.parse(jsonMatch[1].trim());
+      const parsed = JSON.parse(jsonMatch[1].trim()) as Partial<Transaction>;
       setPendingTx({
         amount: parsed.amount || 0,
         type: parsed.type || "expense",
@@ -86,7 +57,35 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
       console.error(e);
       alert("Không thể phân tích giao dịch. Vui lòng nói rõ số tiền và nội dung.");
     }
-  };
+  }, [aiAvailable]);
+
+  useEffect(() => {
+    if (user?.uid) {
+      getFinanceRepository().getTransactions(user.uid).then(setTransactions);
+    }
+  }, [user]);
+
+  // Setup Speech Recognition
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const rec = new SpeechRecognition();
+        rec.continuous = false;
+        rec.lang = "vi-VN";
+
+        rec.onstart = () => setIsListening(true);
+        rec.onresult = (event) => {
+          const text = event.results[0][0].transcript;
+          void handleProcessVoiceInput(text);
+        };
+        rec.onerror = () => setIsListening(false);
+        rec.onend = () => setIsListening(false);
+
+        recognitionRef.current = rec;
+      }
+    }
+  }, [handleProcessVoiceInput]);
 
   const getSpentAmount = (category: string) => {
     return transactions

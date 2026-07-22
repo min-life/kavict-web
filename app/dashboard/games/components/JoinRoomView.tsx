@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { joinRoom } from "../services/roomService";
+import { getErrorMessage } from "@/lib/errors";
 
 interface JoinRoomViewProps {
   onBack: () => void;
@@ -43,9 +44,9 @@ export default function JoinRoomView({ onBack, onJoined }: JoinRoomViewProps) {
       const name = userProfile?.preferredName || user.displayName || "Người dùng";
       await joinRoom(code, user.uid, name);
       onJoined(code);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error joining room:", err);
-      setError(err.message || "Không thể tham gia phòng.");
+      setError(getErrorMessage(err, "Không thể tham gia phòng."));
       setIsJoining(false);
     }
   };

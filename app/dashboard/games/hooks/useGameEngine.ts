@@ -40,16 +40,12 @@ export interface GameEngineState {
 const RECENT_EVENT_IDS_MAX = 20; // Don't repeat the same event within last N events
 
 export function useGameEngine({ config, userId, plannedAllocations }: UseGameEngineProps): GameEngineState {
-  const [gameState, setGameState] = useState<GameState | null>(null);
-  const recentEventIds = useRef<string[]>([]);
-
-  // Initialize game on mount
-  useEffect(() => {
+  const [gameState, setGameState] = useState<GameState | null>(() => {
     const categories = CATEGORIES[config.characterId] || [];
     const character = CHARACTERS.find((c) => c.id === config.characterId);
     const monthlyIncome = character?.income ?? 0;
 
-    const initialState = initGameState({
+    return initGameState({
       playerIds: [userId],
       characterId: config.characterId,
       categories,
@@ -58,9 +54,8 @@ export function useGameEngine({ config, userId, plannedAllocations }: UseGameEng
       durationMonths: config.durationMonths,
       isMultiplayer: false,
     });
-
-    setGameState(initialState);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  });
+  const recentEventIds = useRef<string[]>([]);
 
   const myPlayerState = gameState?.playerStates[userId] ?? null;
 

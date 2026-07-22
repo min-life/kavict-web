@@ -9,6 +9,7 @@ type ChartFilterState = { type: 'year' | 'month', year: number, month?: number }
 
 export function FinancialOverview({ plan, transactions, onEditPlan, titleAction }: { plan: FinancialPlan, transactions: Transaction[], onEditPlan?: () => void, titleAction?: React.ReactNode }) {
   const chartRef = useRef<HTMLCanvasElement>(null);
+  const [mountedAt] = useState(Date.now);
   
   const currentYear = new Date().getFullYear();
   const [chartFilter, setChartFilter] = useState<ChartFilterState>({ type: 'year', year: currentYear });
@@ -21,12 +22,12 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
         if (chartInstance) chartInstance.destroy();
 
         let labels: string[] = [];
-        let data: number[] = [];
+        let data: Array<number | null> = [];
         const now = new Date();
 
         if (chartFilter.type === 'year') {
           labels = Array.from({length: 12}, (_, i) => `T${i + 1}`);
-          let balances = new Array(12).fill(0);
+          const balances: Array<number | null> = new Array(12).fill(0);
           
           for (let m = 0; m < 12; m++) {
             const startOfMonth = new Date(chartFilter.year, m, 1).getTime();
@@ -41,14 +42,14 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
               balances[m] = plan.currentBalance - netAfter;
             }
           }
-          data = balances.map(b => b !== null ? b / 1000000 : null) as number[];
+          data = balances.map(b => b !== null ? b / 1000000 : null);
         } else {
           const year = chartFilter.year;
           const month = chartFilter.month !== undefined ? chartFilter.month : new Date().getMonth();
           const daysInMonth = new Date(year, month + 1, 0).getDate();
           
           labels = Array.from({length: daysInMonth}, (_, i) => (i + 1).toString());
-          let balances = new Array(daysInMonth).fill(0);
+          const balances: Array<number | null> = new Array(daysInMonth).fill(0);
           
           for (let d = 1; d <= daysInMonth; d++) {
             const startOfDay = new Date(year, month, d).getTime();
@@ -62,12 +63,14 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
               balances[d - 1] = plan.currentBalance - netAfter;
             }
           }
-          data = balances.map(b => b !== null ? b / 1000000 : null) as number[];
+          data = balances.map(b => b !== null ? b / 1000000 : null);
         }
 
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
         gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
         gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+        const xGrid = { display: false, drawBorder: false };
+        const yGrid = { color: '#e6e8ea', drawBorder: false, borderDash: [5, 5] };
 
         chartInstance = new Chart(ctx, {
             type: 'line',
@@ -109,11 +112,11 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
                 },
                 scales: {
                     x: {
-                        grid: { display: false, drawBorder: false } as any,
+                        grid: xGrid,
                         ticks: { font: { family: 'Geist', size: 12 }, color: '#737686' }
                     },
                     y: {
-                        grid: { color: '#e6e8ea', drawBorder: false, borderDash: [5, 5] } as any,
+                        grid: yGrid,
                         ticks: { font: { family: 'Geist', size: 12 }, color: '#737686', maxTicksLimit: 5 }
                     }
                 },
@@ -159,7 +162,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
     ? Math.min((plan.currentBalance / totalGoalsTarget) * 100, 100) 
     : 0;
 
-  const startLimit = new Date(plan.createdAt || Date.now());
+  const startLimit = new Date(plan.createdAt || mountedAt);
   const minYear = startLimit.getFullYear();
   const minMonthStr = `${minYear}-${(startLimit.getMonth() + 1).toString().padStart(2, '0')}`;
   

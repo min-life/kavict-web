@@ -52,6 +52,27 @@ interface QuizQuestion {
   explanation: string;
 }
 
+type ExerciseTab = "scenario" | "theory";
+
+interface MatchingExerciseProps {
+  q: QuizQuestion;
+  answer: string;
+  handleSetAnswer: (tab: ExerciseTab, questionId: string, answer: string) => void;
+  isSubmitted: boolean;
+  showFeedback: boolean;
+  activeExerciseTab: ExerciseTab;
+}
+
+interface MatchingLine {
+  id: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  dashed: boolean;
+}
+
 interface ScenarioExercise {
   title: string;
   story: string;
@@ -219,7 +240,7 @@ const formatChatText = (text: string) => {
   });
 };
 
-const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedback, activeExerciseTab }: any) => {
+const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedback, activeExerciseTab }: MatchingExerciseProps) => {
   let matches: Record<string, string> = {};
   try { matches = JSON.parse(answer || "{}"); } catch {}
   
@@ -230,12 +251,12 @@ const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedbac
   const leftRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const rightRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   
-  const [lines, setLines] = useState<any[]>([]);
+  const [lines, setLines] = useState<MatchingLine[]>([]);
 
   const updateLines = useCallback(() => {
     if (!containerRef.current) return;
     const containerRect = containerRef.current.getBoundingClientRect();
-    const newLines = [];
+    const newLines: MatchingLine[] = [];
     
     let currentMatches: Record<string, string> = {};
     try { currentMatches = JSON.parse(answer || "{}"); } catch {}
@@ -312,7 +333,7 @@ const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedbac
       </svg>
       <div className="grid grid-cols-2 gap-8 md:gap-16 relative z-20">
         <div className="flex flex-col gap-3">
-          {q.matchingLeft.map((item: string) => {
+          {(q.matchingLeft ?? []).map((item) => {
             const isMatched = Object.keys(matches).includes(item);
             const isSelected = selectedMatchLeft === item;
             let btnClass = isMatched 
@@ -338,7 +359,7 @@ const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedbac
           })}
         </div>
         <div className="flex flex-col gap-3">
-          {q.matchingRight.map((item: string) => {
+          {(q.matchingRight ?? []).map((item) => {
             const isMatched = Object.values(matches).includes(item);
             const isSelected = selectedMatchRight === item;
             let btnClass = isMatched 
@@ -371,9 +392,13 @@ const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedbac
 
 export default function LessonDetailPage() {
   const params = useParams();
+  const lessonId = typeof params.id === "string" ? params.id : "4";
+  return <LessonDetailPageContent key={lessonId} lessonId={lessonId} />;
+}
+
+function LessonDetailPageContent({ lessonId }: { lessonId: string }) {
   const router = useRouter();
   const { user } = useAuth();
-  const lessonId = typeof params.id === "string" ? params.id : "4";
   const lessonNumericId = Number(lessonId) || 4;
   
   const lesson = LESSONS_DATABASE[lessonId] || LESSONS_DATABASE["4"];
@@ -405,7 +430,7 @@ export default function LessonDetailPage() {
   const [toastMessage, setToastMessage] = useState("");
 
   // YouTube Player Ref
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<KavictYouTubePlayer | null>(null);
   const iframeId = "yt-lesson-player";
   
   const triggerToast = (msg: string) => {
@@ -428,12 +453,8 @@ export default function LessonDetailPage() {
   const [showScenarioFeedback, setShowScenarioFeedback] = useState(false);
   const [showTheoryFeedback, setShowTheoryFeedback] = useState(false);
 
-  // For matching type interactive UI (temporary states while matching)
-  const [selectedMatchLeft, setSelectedMatchLeft] = useState<string | null>(null);
-  const [selectedMatchRight, setSelectedMatchRight] = useState<string | null>(null);
-
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<KavictSpeechRecognition | null>(null);
   const ytApiReadyRef = useRef(false);
 
   // Text Selection State
@@ -443,7 +464,7 @@ export default function LessonDetailPage() {
   // Setup Web Speech API Voice Recognition for dictation
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         const rec = new SpeechRecognition();
         rec.continuous = false;
@@ -455,7 +476,7 @@ export default function LessonDetailPage() {
           triggerToast("Đang thu âm... Hãy nói câu hỏi của bạn");
         };
         
-        rec.onresult = (event: any) => {
+        rec.onresult = (event) => {
           const resultText = event.results[0][0].transcript;
           if (resultText && resultText.trim()) {
             setInputText(prev => prev + (prev ? " " : "") + resultText);
@@ -463,7 +484,7 @@ export default function LessonDetailPage() {
           }
         };
         
-        rec.onerror = (event: any) => {
+        rec.onerror = (event) => {
           console.error("Speech Recognition Error:", event.error);
           setIsListening(false);
           triggerToast("Lỗi thu âm. Vui lòng nói lại!");
@@ -541,7 +562,9 @@ export default function LessonDetailPage() {
     const initPlayer = () => {
       setTimeout(() => {
         try {
-          playerRef.current = new (window as any).YT.Player(iframeId, {
+          const youtube = window.YT;
+          if (!youtube) return;
+          playerRef.current = new youtube.Player(iframeId, {
             events: { onReady: () => {} }
           });
         } catch (e) {
@@ -550,7 +573,7 @@ export default function LessonDetailPage() {
       }, 500); // Wait for iframe to render
     };
 
-    if ((window as any).YT && (window as any).YT.Player) {
+    if (window.YT?.Player) {
       initPlayer();
     } else {
       if (!ytApiReadyRef.current) {
@@ -559,35 +582,14 @@ export default function LessonDetailPage() {
         tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
 
-        const prevCallback = (window as any).onYouTubeIframeAPIReady;
-        (window as any).onYouTubeIframeAPIReady = () => {
+        const prevCallback = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = () => {
           if (prevCallback) prevCallback();
           initPlayer();
         };
       }
     }
   }, [lessonId]);
-
-  // Load lesson
-  useEffect(() => {
-    setIsSubmitted(false);
-    setShowFullLesson(false);
-    
-    // Reset exercise states
-    setActiveExerciseTab("scenario");
-    setScenarioAnswers({});
-    setTheoryAnswers({});
-    setScenarioStatus("not_started");
-    setTheoryStatus("not_started");
-    setShowScenarioFeedback(false);
-    setShowTheoryFeedback(false);
-    setSelectedMatchLeft(null);
-    setSelectedMatchRight(null);
-
-    setIsFlipped(false);
-    setEditingNoteId(null);
-    setNewNoteText("");
-  }, [lessonId, lesson]);
 
   // Fetch chat history and notes from the selected repository.
   useEffect(() => {
@@ -609,7 +611,7 @@ export default function LessonDetailPage() {
       setNotes(await repository.getNotes(uid, lessonNumericId) as Note[]);
     };
     if (lesson) fetchData();
-  }, [lessonId, user?.uid, lesson]);
+  }, [lessonId, lessonNumericId, user?.uid, lesson]);
 
   // Scroll chat list
   useEffect(() => {
@@ -770,7 +772,7 @@ export default function LessonDetailPage() {
   };
 
   // Updated Exercise functions
-  const handleSetAnswer = (tab: "scenario" | "theory", questionId: string, answer: string) => {
+  const handleSetAnswer = (tab: ExerciseTab, questionId: string, answer: string) => {
     if (tab === "scenario") {
       setScenarioAnswers(prev => ({ ...prev, [questionId]: answer }));
     } else {

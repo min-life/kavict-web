@@ -9,22 +9,22 @@ import FinancialDashboard from "./components/FinancialDashboard";
 
 export default function AIAssistantPage() {
   const { user, loading: authLoading } = useAuth();
-  const [plan, setPlan] = useState<FinancialPlan | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadedPlan, setLoadedPlan] = useState<{
+    userId: string;
+    plan: FinancialPlan | null;
+  } | null>(null);
   const [isEditingPlan, setIsEditingPlan] = useState(false);
 
   useEffect(() => {
-    if (!authLoading) {
-      if (user) {
-        getFinanceRepository().getPlan(user.uid).then((p) => {
-          setPlan(p);
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
+    if (!authLoading && user) {
+      getFinanceRepository().getPlan(user.uid).then((plan) => {
+        setLoadedPlan({ userId: user.uid, plan });
+      });
     }
   }, [user, authLoading]);
+
+  const plan = user && loadedPlan?.userId === user.uid ? loadedPlan.plan : null;
+  const loading = Boolean(user && loadedPlan?.userId !== user.uid);
 
   if (authLoading || loading) {
     return (
@@ -51,7 +51,13 @@ export default function AIAssistantPage() {
   return (
     <div className="flex flex-col gap-md h-full min-h-[calc(100vh-80px)]">
       {!plan || isEditingPlan ? (
-        <OnboardingPlanner onPlanCreated={(p) => { setPlan(p); setIsEditingPlan(false); }} initialPlan={plan || undefined} />
+        <OnboardingPlanner
+          onPlanCreated={(createdPlan) => {
+            setLoadedPlan({ userId: user.uid, plan: createdPlan });
+            setIsEditingPlan(false);
+          }}
+          initialPlan={plan || undefined}
+        />
       ) : (
         <FinancialDashboard plan={plan} onEditPlan={() => setIsEditingPlan(true)} />
       )}

@@ -4,20 +4,17 @@ import { updatePlayerMediaState } from '../services/roomService';
 
 export const useMediaStream = (roomCode: string | null, userId: string | undefined) => {
   const webrtcService = getFirebaseWebRtcService();
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [localStream] = useState<MediaStream>(() => new MediaStream());
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
 
   useEffect(() => {
     // We start with an empty stream so WebRTC can still connect.
     // The user has to click the buttons to actually turn on hardware.
-    const stream = new MediaStream();
-    setLocalStream(stream);
-
     return () => {
-      stream.getTracks().forEach(track => track.stop());
+      localStream.getTracks().forEach(track => track.stop());
     };
-  }, []);
+  }, [localStream]);
 
   const toggleCamera = useCallback(async () => {
     if (isCameraOn) {

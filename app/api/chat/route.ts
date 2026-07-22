@@ -1,16 +1,22 @@
 import { NextResponse } from 'next/server';
 import { getGeminiResponse } from '@/lib/server/gemini';
 
+interface ChatRequestBody {
+  history?: Array<{ sender?: string; text?: string }>;
+  message?: string;
+  lessonContext?: string;
+}
+
 export async function POST(req: Request) {
   try {
-    const { history, message, lessonContext } = await req.json();
+    const { history, message, lessonContext } = await req.json() as ChatRequestBody;
 
     if (!message) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
     // Map history to Gemini contents format
-    const contents = (history || []).map((h: any) => ({
+    const contents = (history || []).map((h) => ({
       role: h.sender === 'user' ? 'user' : 'model',
       parts: [{ text: h.text }]
     }));
@@ -36,7 +42,7 @@ QUAN TRỌNG: Bạn CÓ bộ nhớ về toàn bộ lịch sử cuộc trò chuy�
       text: response.text 
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chat API Error:", error);
     return NextResponse.json(
       { error: "Đã có lỗi xảy ra khi gọi AI. Vui lòng thử lại sau." }, 

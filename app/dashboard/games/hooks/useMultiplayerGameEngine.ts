@@ -75,25 +75,29 @@ export function useMultiplayerGameEngine({
   useEffect(() => {
     const unsubscribe = roomGateway.subscribeToGameState<GameState>(roomCode, (state) => {
       if (state) {
-        
-        // Firebase might drop empty arrays (like eventsForToday if it's empty), ensure default structure
-        if (!state.playerStates) state.playerStates = {};
-        if (!state.categories) state.categories = CATEGORIES[config.characterId] || [];
-        
-        // Handle maps where keys might be missing (e.g. actualSpending)
-        Object.keys(state.playerStates).forEach(pid => {
-          const ps = state.playerStates[pid];
-          if (!ps.actualSpending) ps.actualSpending = {};
-          if (!ps.eventsForToday || ps.eventsForToday.length === 0) {
-            ps.eventsForToday = buildDayEvents(state.characterId || config.characterId, new Set(), true);
-          }
-          if (ps.currentEventIndex === undefined) ps.currentEventIndex = 0;
-          if (!ps.phase) ps.phase = "event_display";
-        });
+        const normalizedPlayerStates = Object.fromEntries(
+          Object.entries(state.playerStates ?? {}).map(([playerId, playerState]) => [
+            playerId,
+            {
+              ...playerState,
+              actualSpending: playerState.actualSpending ?? {},
+              eventsForToday: playerState.eventsForToday?.length
+                ? playerState.eventsForToday
+                : buildDayEvents(state.characterId || config.characterId, new Set(), true),
+              currentEventIndex: playerState.currentEventIndex ?? 0,
+              phase: playerState.phase || "event_display",
+            },
+          ]),
+        );
+        const normalizedState: GameState = {
+          ...state,
+          categories: state.categories ?? CATEGORIES[config.characterId] ?? [],
+          playerStates: normalizedPlayerStates,
+        };
 
-        setGameState(state);
-        if (state.playerStates[userId]) {
-          setMyPlayerState(state.playerStates[userId]);
+        setGameState(normalizedState);
+        if (normalizedPlayerStates[userId]) {
+          setMyPlayerState(normalizedPlayerStates[userId]);
         }
       } else {
         setGameState(null);
@@ -178,7 +182,10 @@ export function useMultiplayerGameEngine({
               }
             };
           }
-          updatedPlayerState.isRespondingToFriend = true; // Flag for auto-advance logic
+          updatedPlayerState = {
+            ...updatedPlayerState,
+            isRespondingToFriend: true,
+          }; // Flag for auto-advance logic
           // Do NOT clear pendingFriendRequest here, it must stay in Firebase so the UI keeps showing the event card
           // during the 1.2s applying_effect animation. We will clear it in the timer.
         } else if (optionIndex === -1) {
@@ -210,12 +217,15 @@ export function useMultiplayerGameEngine({
         };
       }
       
-      updatedPlayerState.phase = "applying_effect";
+      updatedPlayerState = {
+        ...updatedPlayerState,
+        phase: "applying_effect",
+      };
 
       // Track recent event globally for randomizer
       recentEventIds.current = [event.id, ...recentEventIds.current].slice(0, 20);
 
-      const updates: Record<string, any> = {
+      const updates: Record<string, unknown> = {
         [`gameRooms/${roomCode}/gameState/playerStates/${userId}`]: updatedPlayerState,
         [`gameRooms/${roomCode}/gameState/decisions/${userId}/${event.id}`]: optionIndex
       };
@@ -262,7 +272,7 @@ export function useMultiplayerGameEngine({
       const timer = setTimeout(() => {
         if (!gameState) return;
         
-        let updatedState = { ...myPlayerState };
+        const updatedState = { ...myPlayerState };
         
         if (updatedState.isRespondingToFriend) {
           updatedState.isRespondingToFriend = false; // clear flag

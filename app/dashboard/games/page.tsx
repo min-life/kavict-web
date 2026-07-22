@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { getLocalMultiplayerMessage } from "@/features/games/localGameCapabilities";
 import { runtimeMode } from "@/features/runtime/config";
 
@@ -10,23 +10,26 @@ const MultiplayerModal = dynamic(() => import("./components/MultiplayerModal"), 
   ssr: false,
 });
 
+function subscribeToRoomStorage(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
+
+function hasSavedRoom() {
+  return Boolean(sessionStorage.getItem("kavict_game_room"));
+}
+
 export default function GamesPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalPreference, setModalPreference] = useState<"default" | "open" | "closed">("default");
   const [multiplayerNotice, setMultiplayerNotice] = useState<string | null>(null);
   const isFirebaseMode = runtimeMode === "firebase";
-
-  useEffect(() => {
-    if (!isFirebaseMode) return;
-    // If a room code was saved in sessionStorage, automatically open the modal to resume the game.
-    const savedRoomCode = sessionStorage.getItem("kavict_game_room");
-    if (savedRoomCode) {
-      setIsModalOpen(true);
-    }
-  }, [isFirebaseMode]);
+  const savedRoomExists = useSyncExternalStore(subscribeToRoomStorage, hasSavedRoom, () => false);
+  const isModalOpen = modalPreference === "open"
+    || (modalPreference === "default" && savedRoomExists);
 
   const handleMultiplayerClick = () => {
     if (isFirebaseMode) {
-      setIsModalOpen(true);
+      setModalPreference("open");
       return;
     }
     setMultiplayerNotice(getLocalMultiplayerMessage());
@@ -102,7 +105,7 @@ export default function GamesPage() {
       </div>
 
       {isFirebaseMode && isModalOpen && (
-        <MultiplayerModal onClose={() => setIsModalOpen(false)} />
+        <MultiplayerModal onClose={() => setModalPreference("closed")} />
       )}
     </>
   );

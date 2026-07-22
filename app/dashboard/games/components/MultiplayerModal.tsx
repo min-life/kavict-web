@@ -8,6 +8,7 @@ import WaitingRoom from "./WaitingRoom";
 import GamePlayView from "./GamePlayView";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { requireGameRoomGateway } from "@/features/games/roomGateway";
+import type { AppUser } from "@/features/auth/domain";
 
 type ViewState = "selection" | "create" | "join" | "waiting" | "playing";
 
@@ -16,26 +17,32 @@ interface MultiplayerModalProps {
 }
 
 export default function MultiplayerModal({ onClose }: MultiplayerModalProps) {
-  const roomGateway = requireGameRoomGateway();
-  const [currentView, setCurrentView] = useState<ViewState>("selection");
-  const [roomCode, setRoomCode] = useState<string | null>(null);
   const { user } = useAuth();
+  return <MultiplayerModalContent key={user?.uid ?? "anonymous"} onClose={onClose} user={user} />;
+}
+
+function MultiplayerModalContent({ onClose, user }: MultiplayerModalProps & { user: AppUser | null }) {
+  const roomGateway = requireGameRoomGateway();
+  const [restoredRoomCode] = useState(() => sessionStorage.getItem("kavict_game_room"));
+  const [currentView, setCurrentView] = useState<ViewState>(() =>
+    restoredRoomCode && user ? "waiting" : "selection"
+  );
+  const [roomCode, setRoomCode] = useState<string | null>(() =>
+    restoredRoomCode && user ? restoredRoomCode : null
+  );
 
   useEffect(() => {
-    const savedRoomCode = sessionStorage.getItem("kavict_game_room");
-    if (savedRoomCode && user) {
-      setRoomCode(savedRoomCode);
-      setCurrentView("waiting");
+    if (restoredRoomCode && user) {
       // Re-join the room in Firebase to ensure the player object exists
       // after a disconnect/refresh.
-      roomGateway.joinRoom(savedRoomCode, user.uid, user.displayName || "Người dùng").catch(err => {
+      roomGateway.joinRoom(restoredRoomCode, user.uid, user.displayName || "Người dùng").catch(err => {
         console.error("Failed to rejoin room:", err);
         sessionStorage.removeItem("kavict_game_room");
         setRoomCode(null);
         setCurrentView("selection");
       });
     }
-  }, [user, roomGateway]);
+  }, [user, restoredRoomCode, roomGateway]);
 
   const handleRoomCreated = (code: string) => {
     sessionStorage.setItem("kavict_game_room", code);

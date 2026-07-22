@@ -6,7 +6,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 export const useGameRoom = (roomCode: string | null) => {
   const roomGateway = requireGameRoomGateway();
   const [room, setRoom] = useState<GameRoom | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [roomError, setRoomError] = useState<string | null>(null);
   const { user } = useAuth();
   
   const isHost = user && room ? room.hostId === user.uid : false;
@@ -24,14 +24,7 @@ export const useGameRoom = (roomCode: string | null) => {
     };
   }, [roomCode, user, roomGateway]);
 
-  useEffect(() => {
-    if (!roomCode || !user || !room) return;
-    
-    // Check if kicked
-    if (isKicked) {
-      setError("Bạn đã bị kick khỏi phòng.");
-    }
-  }, [room, isKicked, roomCode, user]);
+  const error = isKicked ? "Bạn đã bị kick khỏi phòng." : roomError;
 
   // We no longer use beforeunload to leave the room.
   // This allows the room and session to persist across page refreshes.
@@ -46,5 +39,5 @@ export const useGameRoom = (roomCode: string | null) => {
     };
   }, [roomCode, user, isHost, room, roomGateway]); // We depend on isHost so it re-runs when room is loaded and host status is known
 
-  return { room, isHost, error, isKicked, setRoomError: setError };
+  return { room, isHost, error, isKicked, setRoomError };
 };
