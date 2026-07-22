@@ -7,7 +7,7 @@ import {
   set,
   update,
 } from "firebase/database";
-import { rtdb } from "@/lib/firebase";
+import { rtdb } from "@/features/runtime/firebaseClient";
 import type { GameRoom } from "./domain";
 import type { GameRoomGateway } from "./roomGateway";
 

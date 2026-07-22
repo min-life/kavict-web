@@ -1,5 +1,5 @@
 import { child, onChildAdded, push, ref, set } from "firebase/database";
-import { rtdb } from "@/lib/firebase";
+import { rtdb } from "@/features/runtime/firebaseClient";
 import { runtimeMode } from "@/features/runtime/config";
 
 export const ICE_SERVERS = {

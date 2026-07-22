@@ -19,8 +19,9 @@ Firebase SDK APIs directly:
   unavailable capability rather than simulating network connectivity.
 
 The provider/factory layer selects localStorage adapters in local mode and
-Firebase adapters in Firebase mode. Firebase SDK imports remain within the
-Firebase adapter boundary (`features/**/firebase*.ts` and `lib/firebase.ts`).
+Firebase adapters in Firebase mode. Firebase SDK imports and shared browser
+client initialization remain within the Firebase adapter boundary
+(`features/**/firebase*.ts`).
 
 ## Server boundary
 
