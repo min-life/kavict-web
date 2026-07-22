@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { getFinancialPlan } from "@/lib/financeStore";
 import { FinancialPlan } from "@/lib/financeTypes";
 import OnboardingPlanner from "./components/OnboardingPlanner";

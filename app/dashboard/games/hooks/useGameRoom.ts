@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { GameRoom, subscribeToRoom, setupOnDisconnect, cancelOnDisconnect, leaveRoom } from '../services/roomService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/AuthProvider';
 
 export const useGameRoom = (roomCode: string | null) => {
   const [room, setRoom] = useState<GameRoom | null>(null);

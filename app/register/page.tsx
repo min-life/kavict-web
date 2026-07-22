@@ -4,13 +4,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, registerWithEmail, signInWithGoogle } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -55,10 +53,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, {
-        displayName: fullname,
-      });
+      await registerWithEmail(email, password, fullname);
       router.push("/dashboard");
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
@@ -75,16 +70,10 @@ export default function RegisterPage() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithGoogle();
       router.push("/dashboard");
     } catch (err: any) {
-      if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
-        const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
-      } else {
-        setError("Lỗi đăng nhập bằng Google.");
-      }
+      setError("Lỗi đăng nhập bằng Google.");
     }
   };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useGameRoom } from "../hooks/useGameRoom";
 import { kickPlayer, startGame, leaveRoom, configureGame } from "../services/roomService";
 import { motion, AnimatePresence } from "framer-motion";

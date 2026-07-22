@@ -3,9 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "home", label: "Trang chủ", fill: true },
@@ -20,14 +18,14 @@ export default function Sidebar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const userName = user?.displayName || "Người dùng";
   const userEmail = user?.email || "user@kavict.com";
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOut();
       router.push("/login");
     } catch (error) {
       console.error("Logout error", error);

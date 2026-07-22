@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FinancialPlan, Transaction } from "@/lib/financeTypes";
 import { getTransactions, addTransaction, deleteTransaction, updateTransaction, saveFinancialPlan } from "@/lib/financeStore";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import { FinancialOverview } from "../../components/FinancialOverview";
 

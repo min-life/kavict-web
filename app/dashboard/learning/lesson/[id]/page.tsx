@@ -6,7 +6,7 @@ import confetti from "canvas-confetti";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 interface Message {
   id: string;

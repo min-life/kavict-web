@@ -12,7 +12,7 @@ import EventCard from "../components/EventCard";
 import DayHeader from "../components/DayHeader";
 import GameOverScreen from "../components/GameOverScreen";
 import { useGameEngine } from "../hooks/useGameEngine";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 
 type SoloGamePhase = "configuring" | "planning" | "playing";

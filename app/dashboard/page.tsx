@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 import { FinancialPlan, Transaction } from "@/lib/financeTypes";
 import { getFinancialPlan, getTransactions } from "@/lib/financeStore";

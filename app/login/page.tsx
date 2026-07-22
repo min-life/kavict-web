@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, signInWithEmail, signInWithGoogle } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -31,7 +29,7 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmail(email, password);
       router.push("/dashboard");
     } catch (err: any) {
       if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
@@ -45,16 +43,10 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithGoogle();
       router.push("/dashboard");
     } catch (err: any) {
-      if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
-        const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
-      } else {
-        setError("Lỗi đăng nhập bằng Google.");
-      }
+      setError("Lỗi đăng nhập bằng Google.");
     }
   };
 

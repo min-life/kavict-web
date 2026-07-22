@@ -6,7 +6,7 @@ import CreateRoomView from "./CreateRoomView";
 import JoinRoomView from "./JoinRoomView";
 import WaitingRoom from "./WaitingRoom";
 import GamePlayView from "./GamePlayView";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { joinRoom } from "../services/roomService";
 
 type ViewState = "selection" | "create" | "join" | "waiting" | "playing";

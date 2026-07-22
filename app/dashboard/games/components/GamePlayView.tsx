@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useGameRoom } from "../hooks/useGameRoom";
 import { useMediaStream } from "../hooks/useMediaStream";
 import { useWebRTC } from "../hooks/useWebRTC";

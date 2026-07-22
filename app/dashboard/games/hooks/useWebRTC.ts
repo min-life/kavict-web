@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { webrtcService } from '../services/webrtcService';
 import { GameRoom } from '../services/roomService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/AuthProvider';
 
 export const useWebRTC = (room: GameRoom | null, localStream: MediaStream | null) => {
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());

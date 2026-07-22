@@ -1,11 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useRouter } from "next/navigation";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { updateProfile } from "firebase/auth";
 
 const STEPS_DATA = [
   {
@@ -74,7 +71,7 @@ const GOAL_OPTIONS = [
 ];
 
 export default function OnboardingPage() {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, completeOnboarding } = useAuth();
   const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(0); // Step 0 = Welcome Card
@@ -156,20 +153,17 @@ export default function OnboardingPage() {
     setIsLoading(true);
 
     try {
-      await updateProfile(user, { displayName: preferredName });
       const finalGoal = financialGoal === "Mua một món đồ cụ thể" && financialGoalOther
         ? `Mua một món đồ cụ thể: ${financialGoalOther}`
         : financialGoal;
 
-      await setDoc(doc(db, "users", user.uid), {
+      await completeOnboarding({
         preferredName,
         occupationGroup,
         monthlyIncome,
         highestExpenses,
         financialGoal: finalGoal,
-        onboarded: true,
-        createdAt: serverTimestamp()
-      }, { merge: true });
+      });
 
       router.push("/dashboard");
     } catch (err) {

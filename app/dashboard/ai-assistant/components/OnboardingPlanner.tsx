@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { saveFinancialPlan } from "@/lib/financeStore";
 import { FinancialPlan } from "@/lib/financeTypes";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/AuthProvider";
 import MoneyInput from "./MoneyInput";
 import IconPicker from "./IconPicker";
 import TextareaAutosize from "react-textarea-autosize";
