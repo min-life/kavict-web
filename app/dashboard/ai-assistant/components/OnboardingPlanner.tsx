@@ -8,6 +8,9 @@ import MoneyInput from "./MoneyInput";
 import IconPicker from "./IconPicker";
 import TextareaAutosize from "react-textarea-autosize";
 import ReactMarkdown from 'react-markdown';
+import { getLocalAiFallback } from "@/features/ai/fallback";
+import { getRuntimeCapabilities } from "@/features/runtime/capabilities";
+import { runtimeMode } from "@/features/runtime/config";
 
 export default function OnboardingPlanner({ onPlanCreated, initialPlan }: { onPlanCreated: (plan: FinancialPlan) => void, initialPlan?: FinancialPlan }) {
   const { user } = useAuth();
@@ -18,6 +21,7 @@ export default function OnboardingPlanner({ onPlanCreated, initialPlan }: { onPl
   const [isTyping, setIsTyping] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const { aiAvailable } = getRuntimeCapabilities(runtimeMode);
 
   // Animation trigger for highlight
   const [lastUpdated, setLastUpdated] = useState<number>(0);
@@ -46,6 +50,11 @@ export default function OnboardingPlanner({ onPlanCreated, initialPlan }: { onPl
     setIsTyping(true);
 
     try {
+      if (!aiAvailable) {
+        setMessages(prev => [...prev, { sender: "ai", text: getLocalAiFallback(text).text, showActions: false }]);
+        return;
+      }
+
       const chatHistory = newMessages.map(m => `${m.sender === "ai" ? "Kavi" : "User"}: ${m.text}`).join("\n");
       const currentPlanStr = JSON.stringify(formPlan, null, 2);
       
@@ -154,6 +163,7 @@ QUY TẮC ĐIỀN JSON:
             <p className="text-xs text-on-surface-variant flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span> Đang trực tuyến
             </p>
+            {!aiAvailable && <p className="text-xs text-on-surface-variant mt-1">Chế độ demo local: phản hồi mẫu, không gọi AI trực tuyến.</p>}
           </div>
         </div>
 

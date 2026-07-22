@@ -6,6 +6,8 @@ import { getFinanceRepository } from "@/features/finance/provider";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import { FinancialOverview } from "../../components/FinancialOverview";
+import { getRuntimeCapabilities } from "@/features/runtime/capabilities";
+import { runtimeMode } from "@/features/runtime/config";
 
 export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { plan: FinancialPlan, onEditPlan?: () => void }) {
   const { user } = useAuth();
@@ -22,6 +24,7 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [pendingTx, setPendingTx] = useState<Partial<Transaction> | null>(null);
   const recognitionRef = useRef<any>(null);
+  const { aiAvailable } = getRuntimeCapabilities(runtimeMode);
 
   useEffect(() => {
     if (user?.uid) {
@@ -52,6 +55,11 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
   }, []);
 
   const handleProcessVoiceInput = async (text: string) => {
+    if (!aiAvailable) {
+      alert("Tính năng phân tích giọng nói AI chưa có trong chế độ demo local. Bạn vẫn có thể thêm giao dịch thủ công.");
+      return;
+    }
+
     try {
       const prompt = `Phân tích câu sau thành một giao dịch tài chính:\n"${text}"\n\nTrả về JSON chuẩn xác (không bọc trong markdown tick nếu có thể, hoặc chỉ bọc JSON): { "amount": số_tiền_chính_xác_vnd, "type": "expense" | "income", "category": "phân loại ngắn gọn", "note": "ghi chú ngắn gọn" }. Nếu không rõ số tiền, để 0.`;
       
@@ -192,6 +200,7 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
           <div className="bg-primary/5 p-4 rounded-xl border border-primary/20">
             <h3 className="font-bold text-primary mb-2 flex items-center gap-1"><span className="material-symbols-outlined text-[18px]">lightbulb</span> Lời khuyên AI</h3>
             <p className="text-sm">Dựa trên kế hoạch của bạn, hãy cố gắng giữ mức chi tiêu cho ăn uống dưới {(plan.budgets?.find(b => b.category === "Ăn uống")?.amount || 0) / 1000}k trong tuần này để đạt mục tiêu nhé!</p>
+            {!aiAvailable && <p className="mt-2 text-xs text-on-surface-variant">Chế độ demo local dùng dữ liệu trên thiết bị; phân tích giọng nói AI chưa khả dụng.</p>}
           </div>
 
           {/* Mục tiêu tài chính (Sidebar) */}

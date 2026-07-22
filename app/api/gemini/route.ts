@@ -1,14 +1,12 @@
-import { GoogleGenAI } from '@google/genai';
 import { NextResponse } from 'next/server';
-
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_AI_API_KEY });
+import { getGeminiResponse } from '@/lib/server/gemini';
 
 export async function POST(request: Request) {
   try {
     const { prompt, systemInstruction } = await request.json();
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+    const response = await getGeminiResponse({
+        context: prompt,
         contents: prompt,
         config: {
             systemInstruction: systemInstruction || "Bạn là Kavi - Trợ lý Tài chính AI. Hãy trả lời ngắn gọn, súc tích và thân thiện.",
