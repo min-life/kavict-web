@@ -24,7 +24,7 @@ export default function LocalDemoNotice() {
       <div className="flex items-start gap-3">
         <span className="material-symbols-outlined text-primary" aria-hidden="true">database</span>
         <p>
-          Bạn đang dùng dữ liệu demo cục bộ. Các thay đổi được lưu và có thể chỉnh sửa trên trình duyệt này.
+          Bạn đang dùng dữ liệu tài chính demo cục bộ trên trình duyệt này. Các thay đổi dữ liệu tài chính được lưu và có thể chỉnh sửa tại đây.
         </p>
       </div>
       <button
@@ -33,7 +33,7 @@ export default function LocalDemoNotice() {
         disabled={isResetting}
         className="shrink-0 rounded-full border border-primary/30 px-4 py-2 font-bold text-primary transition-colors hover:bg-primary/10 disabled:cursor-wait disabled:opacity-60"
       >
-        {isResetting ? "Đang đặt lại..." : "Đặt lại dữ liệu demo"}
+        {isResetting ? "Đang đặt lại dữ liệu tài chính..." : "Đặt lại dữ liệu tài chính demo"}
       </button>
     </aside>
   );
