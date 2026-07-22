@@ -4,20 +4,13 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import Link from "next/link";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { getLearningRepository } from "@/features/learning/provider";
+import type { LearningMessage, LessonNote } from "@/features/learning/domain";
 
-interface Message {
-  id: string;
-  sender: "ai" | "user";
-  text: string;
-  timestamp: string;
-}
+type Message = LearningMessage;
 
-interface Note {
-  id: string;
-  text: string;
+interface Note extends LessonNote {
   type: "text" | "video-timestamp";
   videoTime?: number;
   createdAt: string;
@@ -381,6 +374,7 @@ export default function LessonDetailPage() {
   const router = useRouter();
   const { user } = useAuth();
   const lessonId = typeof params.id === "string" ? params.id : "4";
+  const lessonNumericId = Number(lessonId) || 4;
   
   const lesson = LESSONS_DATABASE[lessonId] || LESSONS_DATABASE["4"];
 
@@ -595,16 +589,15 @@ export default function LessonDetailPage() {
     setNewNoteText("");
   }, [lessonId, lesson]);
 
-  // Fetch chat history and notes from Firebase
+  // Fetch chat history and notes from the selected repository.
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Fetch Chat History
-        const chatSessionId = `session_${user?.uid || 'anonymous'}_lesson_${lessonId}`;
-        const chatSnap = await getDoc(doc(db, "learning_chat_sessions", chatSessionId));
-        if (chatSnap.exists()) {
-          setMessages(chatSnap.data().messages || []);
-        } else {
+      const repository = getLearningRepository();
+      const uid = user?.uid || "anonymous";
+      const savedChat = await repository.getChat(uid, lessonNumericId);
+      if (savedChat.length > 0) {
+        setMessages(savedChat);
+      } else {
           const msgs: Message[] = lesson.initialChat.map((m, index) => ({
             id: `init-${index}`,
             sender: m.sender,
@@ -612,33 +605,8 @@ export default function LessonDetailPage() {
             timestamp: new Date(Date.now() - (2 - index) * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }));
           setMessages(msgs);
-        }
-
-        // Fetch Notes
-        const notesDocId = `notes_${user?.uid || 'anonymous'}_lesson_${lessonId}`;
-        const notesSnap = await getDoc(doc(db, "learning_notes", notesDocId));
-        if (notesSnap.exists()) {
-          setNotes(notesSnap.data().notes || []);
-        } else {
-          // Fallback to localStorage if Firebase is empty
-          const userScopedKey = `kavict-notes-v2-user-${user?.uid || 'anonymous'}-lesson-${lessonId}`;
-          const legacyKey = `kavict-notes-v2-lesson-${lessonId}`;
-          let savedNotes = localStorage.getItem(userScopedKey);
-          
-          if (!savedNotes && !user?.uid) {
-            // Only fallback to legacy generic key if the user is anonymous
-            savedNotes = localStorage.getItem(legacyKey);
-          }
-
-          if (savedNotes) {
-            try { setNotes(JSON.parse(savedNotes)); } catch { setNotes([]); }
-          } else {
-            setNotes([]);
-          }
-        }
-      } catch (err) {
-        console.error("Error loading data from Firebase:", err);
       }
+      setNotes(await repository.getNotes(uid, lessonNumericId) as Note[]);
     };
     if (lesson) fetchData();
   }, [lessonId, user?.uid, lesson]);
@@ -706,14 +674,7 @@ export default function LessonDetailPage() {
       const finalMessages = [...updatedMessages, aiMsg];
       setMessages(finalMessages);
       
-      // Save to Firebase
-      const sessionId = `session_${user?.uid || 'anonymous'}_lesson_${lessonId}`;
-      await setDoc(doc(db, "learning_chat_sessions", sessionId), {
-        lessonId,
-        userId: user?.uid || 'anonymous',
-        messages: finalMessages,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      await getLearningRepository().saveChat(user?.uid || "anonymous", lessonNumericId, finalMessages);
 
     } catch (error) {
       console.error("Chat Error:", error);
@@ -729,17 +690,8 @@ export default function LessonDetailPage() {
   };
 
   const saveNotesToStorage = (updatedNotes: Note[]) => {
-    const userScopedKey = `kavict-notes-v2-user-${user?.uid || 'anonymous'}-lesson-${lessonId}`;
-    localStorage.setItem(userScopedKey, JSON.stringify(updatedNotes));
-    
-    // Sync to Firebase
-    const docId = `notes_${user?.uid || 'anonymous'}_lesson_${lessonId}`;
-    setDoc(doc(db, "learning_notes", docId), {
-      lessonId,
-      userId: user?.uid || 'anonymous',
-      notes: updatedNotes,
-      updatedAt: new Date().toISOString()
-    }, { merge: true }).catch(err => console.error("Error syncing notes:", err));
+    getLearningRepository().saveNotes(user?.uid || "anonymous", lessonNumericId, updatedNotes)
+      .catch(err => console.error("Error syncing notes:", err));
   };
 
   const addNote = (text: string) => {
@@ -752,7 +704,8 @@ export default function LessonDetailPage() {
         text: text.trim(),
         type: "video-timestamp",
         videoTime: pendingTimestamp,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
       setPendingTimestamp(null);
     } else {
@@ -760,7 +713,8 @@ export default function LessonDetailPage() {
         id: `note-${Date.now()}`,
         text: text.trim(),
         type: "text",
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
     }
 
