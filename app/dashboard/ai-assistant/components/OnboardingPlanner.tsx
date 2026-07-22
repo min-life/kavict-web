@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { saveFinancialPlan } from "@/lib/financeStore";
-import { FinancialPlan } from "@/lib/financeTypes";
+import type { FinancialPlan } from "@/features/finance/domain";
+import { getFinanceRepository } from "@/features/finance/provider";
 import { useAuth } from "@/features/auth/AuthProvider";
 import MoneyInput from "./MoneyInput";
 import IconPicker from "./IconPicker";
@@ -137,7 +137,7 @@ QUY TẮC ĐIỀN JSON:
       updatedAt: Date.now()
     } as FinancialPlan;
     
-    await saveFinancialPlan(user.uid, finalPlan);
+    await getFinanceRepository().savePlan(user.uid, finalPlan);
     onPlanCreated(finalPlan);
   };
 

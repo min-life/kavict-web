@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
-import { FinancialPlan, Transaction } from "@/lib/financeTypes";
+import type { FinancialPlan, Transaction } from "@/features/finance/domain";
 import { AnimatedCounter, AnimatedProgressBar } from "./SharedUI";
 
 type ChartFilterState = { type: 'year' | 'month', year: number, month?: number };

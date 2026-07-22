@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FinancialPlan, Transaction } from "@/lib/financeTypes";
-import { getTransactions, addTransaction, deleteTransaction, updateTransaction, saveFinancialPlan } from "@/lib/financeStore";
+import type { FinancialPlan, Transaction } from "@/features/finance/domain";
+import { getFinanceRepository } from "@/features/finance/provider";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import { FinancialOverview } from "../../components/FinancialOverview";
@@ -25,7 +25,7 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
 
   useEffect(() => {
     if (user?.uid) {
-      getTransactions(user.uid!).then(setTransactions);
+      getFinanceRepository().getTransactions(user.uid).then(setTransactions);
     }
   }, [user]);
 
@@ -99,23 +99,23 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
           if (pendingTx.type === 'income') newBalance += (pendingTx.amount || 0);
           else newBalance -= (pendingTx.amount || 0);
 
-          await updateTransaction(user.uid!, pendingTx.id, pendingTx as Transaction);
-          await saveFinancialPlan(user.uid!, { currentBalance: newBalance });
+          await getFinanceRepository().updateTransaction(user.uid, pendingTx.id, pendingTx as Transaction);
+          await getFinanceRepository().savePlan(user.uid, { currentBalance: newBalance });
           setPlan(prev => ({...prev, currentBalance: newBalance}));
         }
       } else {
         // Add mode
-        await addTransaction(user.uid!, pendingTx as Transaction);
+        await getFinanceRepository().addTransaction(user.uid, pendingTx as Transaction);
         let newBalance = plan.currentBalance;
         if (pendingTx.type === 'income') newBalance += (pendingTx.amount || 0);
         else newBalance -= (pendingTx.amount || 0);
-        await saveFinancialPlan(user.uid!, { currentBalance: newBalance });
+        await getFinanceRepository().savePlan(user.uid, { currentBalance: newBalance });
         setPlan(prev => ({...prev, currentBalance: newBalance}));
       }
       
       setShowConfirmPopup(false);
       setPendingTx(null);
-      getTransactions(user.uid!).then(setTransactions);
+      getFinanceRepository().getTransactions(user.uid).then(setTransactions);
       router.refresh();
     }
   };
@@ -123,14 +123,14 @@ export default function FinancialDashboard({ plan: initialPlan, onEditPlan }: { 
   const handleDeleteTx = async (tx: Transaction) => {
     if (!tx.id) return;
     if (user?.uid && confirm("Bạn có chắc muốn xóa giao dịch này?")) {
-      await deleteTransaction(user.uid!, tx.id);
+      await getFinanceRepository().deleteTransaction(user.uid, tx.id);
       let newBalance = plan.currentBalance;
       if (tx.type === 'income') newBalance -= tx.amount;
       else newBalance += tx.amount;
-      await saveFinancialPlan(user.uid!, { currentBalance: newBalance });
+      await getFinanceRepository().savePlan(user.uid, { currentBalance: newBalance });
       setPlan(prev => ({...prev, currentBalance: newBalance}));
       
-      getTransactions(user.uid!).then(setTransactions);
+      getFinanceRepository().getTransactions(user.uid).then(setTransactions);
       router.refresh();
     }
   };

@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import { useAuth } from "@/features/auth/AuthProvider";
 
-import { FinancialPlan, Transaction } from "@/lib/financeTypes";
-import { getFinancialPlan, getTransactions } from "@/lib/financeStore";
+import type { FinancialPlan, Transaction } from "@/features/finance/domain";
+import { getFinanceRepository } from "@/features/finance/provider";
 import { AnimatedCounter, AnimatedProgressBar, AnimatedProgressRing } from "./components/SharedUI";
 import { FinancialOverview } from "./components/FinancialOverview";
 
@@ -29,9 +29,10 @@ export default function DashboardHome() {
   useEffect(() => {
     if (user) {
       setIsLoading(true);
+      const repository = getFinanceRepository();
       Promise.all([
-        getFinancialPlan(user.uid),
-        getTransactions(user.uid)
+        repository.getPlan(user.uid),
+        repository.getTransactions(user.uid)
       ]).then(([fetchedPlan, fetchedTransactions]) => {
         setPlan(fetchedPlan);
         setTransactions(fetchedTransactions);

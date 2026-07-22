@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/AuthProvider";
-import { getFinancialPlan } from "@/lib/financeStore";
-import { FinancialPlan } from "@/lib/financeTypes";
+import type { FinancialPlan } from "@/features/finance/domain";
+import { getFinanceRepository } from "@/features/finance/provider";
 import OnboardingPlanner from "./components/OnboardingPlanner";
 import FinancialDashboard from "./components/FinancialDashboard";
 
@@ -16,7 +16,7 @@ export default function AIAssistantPage() {
   useEffect(() => {
     if (!authLoading) {
       if (user) {
-        getFinancialPlan(user.uid).then((p) => {
+        getFinanceRepository().getPlan(user.uid).then((p) => {
           setPlan(p);
           setLoading(false);
         });
