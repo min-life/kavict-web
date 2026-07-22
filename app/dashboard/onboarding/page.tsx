@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { shouldRedirectCompletedOnboarding } from "@/features/auth/onboardingRedirect";
 import { useRouter } from "next/navigation";
 
 const STEPS_DATA = [
@@ -84,6 +85,12 @@ export default function OnboardingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    if (shouldRedirectCompletedOnboarding(userProfile)) {
+      router.replace("/dashboard");
+    }
+  }, [router, userProfile]);
 
   const triggerStepChange = (nextStep: number) => {
     setAnimating(true);
@@ -173,8 +180,7 @@ export default function OnboardingPage() {
     }
   };
 
-  if (userProfile?.onboarded) {
-    router.push("/dashboard");
+  if (shouldRedirectCompletedOnboarding(userProfile)) {
     return null;
   }
 
