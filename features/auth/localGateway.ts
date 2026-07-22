@@ -52,7 +52,6 @@ export function createLocalAuthGateway(storage: Storage): AuthGateway {
     async signInWithGoogle() { setUser(demoUser); },
     async signOut() {
       storage.removeItem(USER_KEY);
-      storage.removeItem(PROFILE_KEY);
       notify();
     },
     async completeOnboarding(input: OnboardingInput) {
