@@ -10,7 +10,7 @@ export default function UserProfile() {
 
 
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
-{/* Left Column: Profile, Membership, Quick Settings */}
+{/* Left Column: Profile, Membership */}
 <div className="lg:col-span-4 flex flex-col gap-md">
 {/* 1. Hồ sơ cá nhân */}
 <div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
@@ -57,51 +57,6 @@ export default function UserProfile() {
 <button className="w-full h-12 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-lg hover:bg-primary transition-colors shadow-sm">
                         Gia hạn / Nâng cấp
                     </button>
-</div>
-{/* 7. Cài đặt nhanh */}
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
-<h3 className="font-headline-md text-body-lg font-semibold text-on-surface mb-4">Cài đặt chung</h3>
-<ul className="flex flex-col gap-2">
-<li>
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container transition-colors group" href="#">
-<div className="flex items-center gap-3 text-on-surface-variant group-hover:text-primary-container transition-colors">
-<span className="material-symbols-outlined text-[20px]">notifications</span>
-<span className="font-body-md text-body-md text-sm">Thông báo</span>
-</div>
-<span className="material-symbols-outlined text-[20px] text-outline-variant">chevron_right</span>
-</a>
-</li>
-<li>
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container transition-colors group" href="#">
-<div className="flex items-center gap-3 text-on-surface-variant group-hover:text-primary-container transition-colors">
-<span className="material-symbols-outlined text-[20px]">language</span>
-<span className="font-body-md text-body-md text-sm">Ngôn ngữ</span>
-</div>
-<span className="font-label-sm text-label-sm text-on-surface-variant">Tiếng Việt</span>
-</a>
-</li>
-<li>
-<div className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container transition-colors">
-<div className="flex items-center gap-3 text-on-surface-variant">
-<span className="material-symbols-outlined text-[20px]">dark_mode</span>
-<span className="font-body-md text-body-md text-sm">Chế độ tối</span>
-</div>
-<label className="relative inline-flex items-center cursor-pointer">
-<input className="sr-only peer" type="checkbox" value=""/>
-<div className="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-defaultChecked:bg-primary-container"></div>
-</label>
-</div>
-</li>
-<li>
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container transition-colors group" href="#">
-<div className="flex items-center gap-3 text-on-surface-variant group-hover:text-primary-container transition-colors">
-<span className="material-symbols-outlined text-[20px]">security</span>
-<span className="font-body-md text-body-md text-sm">Bảo mật</span>
-</div>
-<span className="material-symbols-outlined text-[20px] text-outline-variant">chevron_right</span>
-</a>
-</li>
-</ul>
 </div>
 </div>
 {/* Right Column: Stats, Progress, Activity */}
