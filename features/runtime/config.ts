@@ -11,9 +11,22 @@ const firebaseKeys = [
   "NEXT_PUBLIC_FIREBASE_APP_ID",
 ] as const;
 
+const runtimeEnvironment: RuntimeEnvironment = {
+  NODE_ENV: process.env.NODE_ENV,
+  NEXT_PUBLIC_KAVICT_MODE: process.env.NEXT_PUBLIC_KAVICT_MODE,
+  NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  NEXT_PUBLIC_FIREBASE_DATABASE_URL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
+
 export function resolveRuntimeMode(env: RuntimeEnvironment = process.env): RuntimeMode {
   if (env.NEXT_PUBLIC_KAVICT_MODE === "local") return "local";
+  if (env.NODE_ENV === "production") return "firebase";
   return firebaseKeys.every((key) => Boolean(env[key])) ? "firebase" : "local";
 }
 
-export const runtimeMode = resolveRuntimeMode();
+export const runtimeMode = resolveRuntimeMode(runtimeEnvironment);

@@ -7,6 +7,10 @@ describe("resolveRuntimeMode", () => {
     expect(resolveRuntimeMode({})).toBe("local");
   });
 
+  it("uses Firebase mode for production even when Firebase configuration is absent", () => {
+    expect(resolveRuntimeMode({ NODE_ENV: "production" })).toBe("firebase");
+  });
+
   it("uses Firebase mode only when all client Firebase values exist", () => {
     expect(resolveRuntimeMode({
       NEXT_PUBLIC_FIREBASE_API_KEY: "key",
