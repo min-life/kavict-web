@@ -31,6 +31,12 @@ export function createLocalAuthGateway(storage: Storage): AuthGateway {
   const listeners = new Set<(user: AppUser | null, profile: UserProfile | null) => void>();
   const getCurrentUser = async () => read<AppUser>(storage, USER_KEY);
   const getProfile = async () => read<UserProfile>(storage, PROFILE_KEY);
+  const getDemoSessionUser = () => {
+    const profile = read<UserProfile>(storage, PROFILE_KEY);
+    return profile?.preferredName
+      ? { ...demoUser, displayName: profile.preferredName }
+      : demoUser;
+  };
   const notify = () => {
     const user = read<AppUser>(storage, USER_KEY);
     const profile = read<UserProfile>(storage, PROFILE_KEY);
@@ -45,11 +51,11 @@ export function createLocalAuthGateway(storage: Storage): AuthGateway {
   return {
     getCurrentUser,
     getProfile,
-    async signInWithEmail() { setUser(demoUser); },
+    async signInWithEmail() { setUser(getDemoSessionUser()); },
     async registerWithEmail(_email, _password, displayName) {
       setUser({ ...demoUser, displayName: displayName || demoUser.displayName });
     },
-    async signInWithGoogle() { setUser(demoUser); },
+    async signInWithGoogle() { setUser(getDemoSessionUser()); },
     async signOut() {
       storage.removeItem(USER_KEY);
       notify();

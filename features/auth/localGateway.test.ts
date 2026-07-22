@@ -19,13 +19,13 @@ describe("local auth gateway", () => {
     expect(await gateway.getProfile()).toMatchObject({ preferredName: "Kavi Demo", onboarded: true });
   });
 
-  it("retains the onboarding profile after signing out and back in", async () => {
+  it("restores the onboarding preferred name after signing out and signing back in", async () => {
     const storage = createMemoryStorage();
     const gateway = createLocalAuthGateway(storage);
 
     await gateway.signInWithEmail("demo@kavict.local", "ignored");
     await gateway.completeOnboarding({
-      preferredName: "Kavi Demo",
+      preferredName: "Linh Nguyen",
       occupationGroup: "Sinh viên",
       monthlyIncome: "3 - 5 triệu",
       highestExpenses: ["Ăn uống"],
@@ -34,6 +34,6 @@ describe("local auth gateway", () => {
     await gateway.signOut();
     await gateway.signInWithEmail("demo@kavict.local", "ignored");
 
-    expect(await gateway.getProfile()).toMatchObject({ preferredName: "Kavi Demo", onboarded: true });
+    expect(await gateway.getCurrentUser()).toMatchObject({ displayName: "Linh Nguyen" });
   });
 });
