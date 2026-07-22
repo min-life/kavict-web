@@ -9,7 +9,7 @@ import { ACCOUNT_MENU_ITEMS, HELP_MENU_ITEMS } from "@/app/components/accountMen
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "home", label: "Trang chủ", fill: true },
   { href: "/dashboard/learning", icon: "school", label: "Học tập" },
-  { href: "/dashboard/ai-assistant", icon: "smart_toy", label: "Trợ lý tài chính AI" },
+  { href: "/dashboard/finance-management", icon: "account_balance_wallet", label: "Quản lý tài chính" },
   { href: "/dashboard/games", icon: "stadia_controller", label: "Trò chơi" },
   { href: "/dashboard/leaderboard", icon: "leaderboard", label: "Bảng xếp hạng" },
 ];

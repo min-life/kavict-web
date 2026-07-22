@@ -91,7 +91,7 @@ export default function DashboardHome() {
       plan={plan} 
       transactions={transactions} 
       titleAction={
-        <Link href="/dashboard/ai-assistant" className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+        <Link href="/dashboard/finance-management" className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
           <span className="material-symbols-outlined text-[20px]">open_in_new</span>
         </Link>
       }
@@ -106,7 +106,7 @@ export default function DashboardHome() {
         Lập kế hoạch ngay hôm nay để KAVICT AI đồng hành cùng bạn trên con đường tự do tài chính.
       </p>
       <Link 
-        href="/dashboard/ai-assistant" 
+        href="/dashboard/finance-management"
         className="px-8 py-3 bg-primary text-on-primary rounded-full font-bold hover:bg-primary-fixed-variant transition-colors shadow-sm flex items-center justify-center gap-2 group"
       >
         Lập kế hoạch tài chính <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -209,7 +209,7 @@ export default function DashboardHome() {
         <div className="text-sm font-bold text-primary">+50 XP</div>
       </Link>
 
-      <Link href="/dashboard/ai-assistant" className="flex items-center justify-between p-3 bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+      <Link href="/dashboard/finance-management" className="flex items-center justify-between p-3 bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center">
             <span className="material-symbols-outlined text-[20px]">savings</span>
