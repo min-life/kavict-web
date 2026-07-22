@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { ACCOUNT_MENU_ITEMS, HELP_MENU_ITEMS } from "@/app/components/accountMenuItems";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "home", label: "Trang chủ", fill: true },
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [helpMenuOpen, setHelpMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuth();
@@ -36,6 +38,13 @@ export default function Sidebar() {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(href);
   };
+
+  useEffect(() => {
+    // The account menu is transient UI state and must reset on navigation/collapse.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUserMenuOpen(false);
+    setHelpMenuOpen(false);
+  }, [pathname, collapsed]);
 
   return (
     <nav
@@ -126,18 +135,45 @@ export default function Sidebar() {
 
         {/* User Menu (toggleable) */}
         {userMenuOpen && (
-          <div className="mb-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg overflow-hidden flex flex-col">
-            <Link
-              href="/dashboard/profile"
-              className={`flex items-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors ${
+          <div className="relative mb-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg overflow-hidden flex flex-col">
+            {ACCOUNT_MENU_ITEMS.map((item) => (
+              <Link
+                href={item.href}
+                key={item.label}
+                className={`flex items-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors ${
+                  collapsed ? "justify-center w-full py-3 px-0" : "gap-3 px-3 py-2"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                  {item.icon}
+                </span>
+                {!collapsed && <span className="text-label-md font-label-md whitespace-nowrap">{item.label}</span>}
+              </Link>
+            ))}
+            <button
+              aria-controls="sidebar-help-menu"
+              aria-expanded={helpMenuOpen}
+              className={`flex w-full items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary ${
                 collapsed ? "justify-center w-full py-3 px-0" : "gap-3 px-3 py-2"
               }`}
+              onClick={() => setHelpMenuOpen((open) => !open)}
+              type="button"
             >
-              <span className="material-symbols-outlined text-[20px]">
-                person
-              </span>
-              {!collapsed && <span className="text-label-md font-label-md whitespace-nowrap">Hồ sơ</span>}
-            </Link>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">help</span>
+              {!collapsed && <span className="flex-1 text-left text-label-md font-label-md">Help</span>}
+              {!collapsed && <span className="material-symbols-outlined text-[20px]" aria-hidden="true">chevron_right</span>}
+            </button>
+            {helpMenuOpen && (
+              <div id="sidebar-help-menu" role="menu" className="absolute bottom-0 left-full z-50 ml-2 w-72 rounded-2xl bg-[#333333] p-2 text-white shadow-xl">
+                {HELP_MENU_ITEMS.map((item) => (
+                  <div className={("dividerBefore" in item && item.dividerBefore) ? "mt-2 border-t border-white/15 pt-2" : ""} key={item.label} role="none">
+                    <button aria-disabled="true" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-white/90" role="menuitem" type="button">
+                      <span className="material-symbols-outlined text-[22px]" aria-hidden="true">{item.icon}</span><span className="text-body-md">{item.label}</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <button
               onClick={handleLogout}
               className={`flex items-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors ${
@@ -160,7 +196,12 @@ export default function Sidebar() {
           className={`flex items-center rounded-lg hover:bg-surface-container-high transition-colors group relative ${
             collapsed ? "justify-center w-full py-1 px-0" : "w-full gap-3 px-2 py-2"
           }`}
-          onClick={() => setUserMenuOpen(!userMenuOpen)}
+          aria-expanded={userMenuOpen}
+          onClick={() => setUserMenuOpen((open) => {
+            if (open) setHelpMenuOpen(false);
+            return !open;
+          })}
+          type="button"
         >
           <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md shrink-0 overflow-hidden border border-outline-variant/30">
             {user?.photoURL ? (

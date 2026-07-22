@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { ACCOUNT_MENU_ITEMS, HELP_MENU_ITEMS } from "@/app/components/accountMenuItems";
 
 const css = readFileSync(path.resolve(process.cwd(), "app/globals.css"), "utf8");
 const settingsPath = path.resolve(process.cwd(), "app/dashboard/settings/page.tsx");
@@ -24,5 +25,19 @@ describe("settings visual surface", () => {
     expect(settings).toContain('type="checkbox"');
     expect(settings).toContain("useTheme");
     expect(profile).not.toContain("Cài đặt chung");
+  });
+
+  it("exposes only the requested account and Help menu items", () => {
+    expect(ACCOUNT_MENU_ITEMS).toEqual([
+      { label: "Hồ sơ", icon: "person", href: "/dashboard/profile" },
+      { label: "Cài đặt", icon: "settings", href: "/dashboard/settings" },
+    ]);
+    expect(HELP_MENU_ITEMS.map((item) => item.label)).toEqual([
+      "Help center", "Release notes", "Download apps", "Keyboard shortcuts",
+      "Terms of Service", "Privacy Policy", "Report a bug",
+    ]);
+    expect(HELP_MENU_ITEMS.filter((item) => item.dividerBefore)).toEqual([
+      { label: "Terms of Service", icon: "article", dividerBefore: true },
+    ]);
   });
 });
