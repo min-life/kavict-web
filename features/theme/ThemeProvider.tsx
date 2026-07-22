@@ -19,13 +19,14 @@ function browserStorage(): Storage | null {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "light";
+    return readTheme(browserStorage());
+  });
 
   useEffect(() => {
-    const nextTheme = readTheme(browserStorage());
-    setThemeState(nextTheme);
-    applyTheme(nextTheme, document.documentElement.classList);
-  }, []);
+    applyTheme(theme, document.documentElement.classList);
+  }, [theme]);
 
   const setTheme = useCallback((nextTheme: Theme) => {
     setThemeState(nextTheme);

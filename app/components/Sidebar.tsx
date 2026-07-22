@@ -135,7 +135,7 @@ export default function Sidebar() {
 
         {/* User Menu (toggleable) */}
         {userMenuOpen && (
-          <div className="relative mb-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg overflow-hidden flex flex-col">
+          <div className="relative mb-2 flex flex-col rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg">
             {ACCOUNT_MENU_ITEMS.map((item) => (
               <Link
                 href={item.href}
@@ -153,7 +153,10 @@ export default function Sidebar() {
             <button
               aria-controls="sidebar-help-menu"
               aria-expanded={helpMenuOpen}
-              className={`flex w-full items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary ${
+              aria-haspopup="menu"
+              className={`flex w-full items-center rounded-lg transition-colors hover:bg-surface-container-high hover:text-primary ${
+                helpMenuOpen ? "bg-primary-container/10 text-primary" : "text-on-surface-variant"
+              } ${
                 collapsed ? "justify-center w-full py-3 px-0" : "gap-3 px-3 py-2"
               }`}
               onClick={() => setHelpMenuOpen((open) => !open)}
