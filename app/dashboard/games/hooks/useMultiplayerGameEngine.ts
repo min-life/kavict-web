@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { ref, onValue, update, set } from "firebase/database";
-import { rtdb } from "@/lib/firebase";
+import { requireGameRoomGateway } from "@/features/games/roomGateway";
 import {
   GameState,
   PlayerGameState,
@@ -12,10 +11,9 @@ import {
   advanceDay,
   getAutoSelectOptionIndex,
   getGameResults,
-  GameResult,
 } from "../services/gameState";
-import { GameEvent, buildDayEvents, EVENT_POOL } from "../data/gameEvents";
-import { GameConfig, GameRoom } from "../services/roomService";
+import { buildDayEvents, EVENT_POOL } from "../data/gameEvents";
+import type { GameConfig, GameRoom } from "@/features/games/domain";
 import { CATEGORIES } from "../components/PlanningPhase";
 import { CHARACTERS } from "../components/GameConfigForm";
 
@@ -34,6 +32,7 @@ export function useMultiplayerGameEngine({
   config,
   room,
 }: UseMultiplayerGameEngineProps) {
+  const roomGateway = requireGameRoomGateway();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [myPlayerState, setMyPlayerState] = useState<PlayerGameState | null>(null);
   const recentEventIds = useRef<string[]>([]);
@@ -42,11 +41,9 @@ export function useMultiplayerGameEngine({
   useEffect(() => {
     if (!isHost) return;
 
-    const gameStateRef = ref(rtdb, `gameRooms/${roomCode}/gameState`);
-    
     // Check if game state exists first
-    const unsubscribe = onValue(gameStateRef, (snapshot) => {
-      if (!snapshot.exists()) {
+    const unsubscribe = roomGateway.subscribeToGameState<GameState>(roomCode, (existingState) => {
+      if (!existingState) {
         const categories = CATEGORIES[config.characterId] || [];
         const character = CHARACTERS.find((c) => c.id === config.characterId);
         const monthlyIncome = character?.income ?? 0;
@@ -65,20 +62,19 @@ export function useMultiplayerGameEngine({
         // Clean any undefined values before sending to Firebase
         const cleanState = JSON.parse(JSON.stringify(initialState));
 
-        set(gameStateRef, cleanState).catch((err) => {
+        roomGateway.setGameState(roomCode, cleanState).catch((err) => {
           console.error("Firebase set error:", err);
         });
       }
-    }, { onlyOnce: true });
-    
-  }, [isHost, roomCode, config, room.players]);
+    }, true);
+
+    return unsubscribe;
+  }, [isHost, roomCode, config, room.players, roomGateway]);
 
   // 2. Listen to game state from Firebase
   useEffect(() => {
-    const gameStateRef = ref(rtdb, `gameRooms/${roomCode}/gameState`);
-    const unsubscribe = onValue(gameStateRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const state = snapshot.val() as GameState;
+    const unsubscribe = roomGateway.subscribeToGameState<GameState>(roomCode, (state) => {
+      if (state) {
         
         // Firebase might drop empty arrays (like eventsForToday if it's empty), ensure default structure
         if (!state.playerStates) state.playerStates = {};
@@ -106,7 +102,7 @@ export function useMultiplayerGameEngine({
     });
 
     return () => unsubscribe();
-  }, [roomCode, userId, config.characterId]);
+  }, [roomCode, userId, config.characterId, roomGateway]);
   const [lastDecidedKey, setLastDecidedKey] = useState<string | null>(null);
 
   // Derive the active event
@@ -230,9 +226,9 @@ export function useMultiplayerGameEngine({
       }
 
       // Sync player state and decision to Firebase
-      await update(ref(rtdb), updates);
+      await roomGateway.updateGameStatePaths(updates);
     },
-    [gameState, myPlayerState, decided, displayEvent, currentKey, roomCode, userId, room.playerAllocations]
+    [gameState, myPlayerState, decided, displayEvent, currentKey, roomCode, userId, room.playerAllocations, roomGateway]
   );
 
   const handleDecision = useCallback((optionIndex: number) => {
@@ -280,7 +276,7 @@ export function useMultiplayerGameEngine({
           }
 
           // Clear the pending friend request now that animation is done
-          update(ref(rtdb), {
+          void roomGateway.updateGameStatePaths({
             [`gameRooms/${roomCode}/gameState/playerStates/${userId}`]: updatedState,
             [`gameRooms/${roomCode}/gameState/pendingFriendRequest`]: null
           });
@@ -297,7 +293,7 @@ export function useMultiplayerGameEngine({
              updatedState.phase = "day_summary";
           }
 
-          update(ref(rtdb), {
+          void roomGateway.updateGameStatePaths({
             [`gameRooms/${roomCode}/gameState/playerStates/${userId}`]: updatedState
           });
         }
@@ -305,7 +301,7 @@ export function useMultiplayerGameEngine({
       
       return () => clearTimeout(timer);
     }
-  }, [myPlayerState?.phase, userId, roomCode, gameState]);
+  }, [myPlayerState?.phase, userId, roomCode, gameState, roomGateway]);
 
   // 5. Host logic: check if all active players are ready for next day or game over
   useEffect(() => {
@@ -325,7 +321,7 @@ export function useMultiplayerGameEngine({
           Object.keys(nextState.playerStates).forEach(id => {
              nextState.playerStates[id].phase = "game_over";
           });
-          set(ref(rtdb, `gameRooms/${roomCode}/gameState`), nextState);
+          void roomGateway.setGameState(roomCode, nextState);
        }
        return;
     }
@@ -337,12 +333,12 @@ export function useMultiplayerGameEngine({
        const timer = setTimeout(() => {
           const nextState = advanceDay(gameState, new Set(recentEventIds.current));
           nextState.decisions = {}; // reset decisions
-          set(ref(rtdb, `gameRooms/${roomCode}/gameState`), nextState);
+          void roomGateway.setGameState(roomCode, nextState);
        }, 2500); // Wait 2.5s to read the summary before advancing
        
        return () => clearTimeout(timer);
     }
-  }, [isHost, gameState, roomCode, room.players, isGameOver]);
+  }, [isHost, gameState, roomCode, room.players, isGameOver, roomGateway]);
 
   const proceedFromSummary = useCallback(() => {
     // Deprecated, auto-advanced by host timeout

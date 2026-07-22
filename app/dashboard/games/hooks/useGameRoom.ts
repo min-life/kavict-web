@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { GameRoom, subscribeToRoom, setupOnDisconnect, cancelOnDisconnect, leaveRoom } from '../services/roomService';
+import type { GameRoom } from '@/features/games/domain';
+import { requireGameRoomGateway } from '@/features/games/roomGateway';
 import { useAuth } from '@/features/auth/AuthProvider';
 
 export const useGameRoom = (roomCode: string | null) => {
+  const roomGateway = requireGameRoomGateway();
   const [room, setRoom] = useState<GameRoom | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -13,14 +15,14 @@ export const useGameRoom = (roomCode: string | null) => {
   useEffect(() => {
     if (!roomCode || !user) return;
 
-    const unsubscribe = subscribeToRoom(roomCode, (roomData) => {
+    const unsubscribe = roomGateway.subscribeToRoom(roomCode, (roomData) => {
       setRoom(roomData);
     });
 
     return () => {
       unsubscribe();
     };
-  }, [roomCode, user]);
+  }, [roomCode, user, roomGateway]);
 
   useEffect(() => {
     if (!roomCode || !user || !room) return;
@@ -37,12 +39,12 @@ export const useGameRoom = (roomCode: string | null) => {
 
   useEffect(() => {
     if (!roomCode || !user || !room) return;
-    setupOnDisconnect(roomCode, user.uid, isHost);
+    roomGateway.setupOnDisconnect(roomCode, user.uid, isHost);
 
     return () => {
-      cancelOnDisconnect(roomCode, user.uid, isHost);
+      roomGateway.cancelOnDisconnect(roomCode, user.uid, isHost);
     };
-  }, [roomCode, user, isHost, room]); // We depend on isHost so it re-runs when room is loaded and host status is known
+  }, [roomCode, user, isHost, room, roomGateway]); // We depend on isHost so it re-runs when room is loaded and host status is known
 
   return { room, isHost, error, isKicked, setRoomError: setError };
 };

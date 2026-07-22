@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { webrtcService } from '../services/webrtcService';
+import { getFirebaseWebRtcService } from '../services/webrtcService';
 import { updatePlayerMediaState } from '../services/roomService';
 
 export const useMediaStream = (roomCode: string | null, userId: string | undefined) => {
+  const webrtcService = getFirebaseWebRtcService();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
@@ -36,7 +37,7 @@ export const useMediaStream = (roomCode: string | null, userId: string | undefin
         console.error("Error accessing camera", error);
       }
     }
-  }, [isCameraOn, isMicOn, roomCode, userId]);
+  }, [isCameraOn, isMicOn, roomCode, userId, webrtcService]);
 
   const toggleMic = useCallback(async () => {
     if (isMicOn) {
@@ -56,7 +57,7 @@ export const useMediaStream = (roomCode: string | null, userId: string | undefin
         console.error("Error accessing microphone", error);
       }
     }
-  }, [isMicOn, isCameraOn, roomCode, userId]);
+  }, [isMicOn, isCameraOn, roomCode, userId, webrtcService]);
 
   return { localStream, isCameraOn, isMicOn, toggleCamera, toggleMic };
 };

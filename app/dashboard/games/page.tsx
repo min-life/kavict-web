@@ -1,19 +1,36 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
-import MultiplayerModal from "./components/MultiplayerModal";
+import { getLocalMultiplayerMessage } from "@/features/games/localGameCapabilities";
+import { runtimeMode } from "@/features/runtime/config";
+
+const MultiplayerModal = dynamic(() => import("./components/MultiplayerModal"), {
+  ssr: false,
+});
 
 export default function GamesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [multiplayerNotice, setMultiplayerNotice] = useState<string | null>(null);
+  const isFirebaseMode = runtimeMode === "firebase";
 
   useEffect(() => {
+    if (!isFirebaseMode) return;
     // If a room code was saved in sessionStorage, automatically open the modal to resume the game.
     const savedRoomCode = sessionStorage.getItem("kavict_game_room");
     if (savedRoomCode) {
       setIsModalOpen(true);
     }
-  }, []);
+  }, [isFirebaseMode]);
+
+  const handleMultiplayerClick = () => {
+    if (isFirebaseMode) {
+      setIsModalOpen(true);
+      return;
+    }
+    setMultiplayerNotice(getLocalMultiplayerMessage());
+  };
 
   return (
     <>
@@ -50,7 +67,12 @@ export default function GamesPage() {
 
         {/* Multiplayer Card */}
         <div 
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleMultiplayerClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") handleMultiplayerClick();
+          }}
           className="group relative overflow-hidden bg-surface-container-lowest rounded-3xl border border-surface-variant shadow-ambient hover:shadow-hover transition-all duration-300 p-8 flex flex-col items-center text-center cursor-pointer hover:-translate-y-1"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-tertiary/10 transition-colors"></div>
@@ -69,9 +91,19 @@ export default function GamesPage() {
           </div>
         </div>
       </div>
+      {multiplayerNotice && (
+        <p
+          className="mt-6 max-w-2xl rounded-2xl border border-tertiary/30 bg-tertiary/10 px-5 py-4 text-center text-on-surface"
+          role="status"
+        >
+          {multiplayerNotice}
+        </p>
+      )}
       </div>
 
-      {isModalOpen && <MultiplayerModal onClose={() => setIsModalOpen(false)} />}
+      {isFirebaseMode && isModalOpen && (
+        <MultiplayerModal onClose={() => setIsModalOpen(false)} />
+      )}
     </>
   );
 }

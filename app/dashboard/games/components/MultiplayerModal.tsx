@@ -7,7 +7,7 @@ import JoinRoomView from "./JoinRoomView";
 import WaitingRoom from "./WaitingRoom";
 import GamePlayView from "./GamePlayView";
 import { useAuth } from "@/features/auth/AuthProvider";
-import { joinRoom } from "../services/roomService";
+import { requireGameRoomGateway } from "@/features/games/roomGateway";
 
 type ViewState = "selection" | "create" | "join" | "waiting" | "playing";
 
@@ -16,6 +16,7 @@ interface MultiplayerModalProps {
 }
 
 export default function MultiplayerModal({ onClose }: MultiplayerModalProps) {
+  const roomGateway = requireGameRoomGateway();
   const [currentView, setCurrentView] = useState<ViewState>("selection");
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const { user } = useAuth();
@@ -27,14 +28,14 @@ export default function MultiplayerModal({ onClose }: MultiplayerModalProps) {
       setCurrentView("waiting");
       // Re-join the room in Firebase to ensure the player object exists
       // after a disconnect/refresh.
-      joinRoom(savedRoomCode, user.uid, user.displayName || "Người dùng").catch(err => {
+      roomGateway.joinRoom(savedRoomCode, user.uid, user.displayName || "Người dùng").catch(err => {
         console.error("Failed to rejoin room:", err);
         sessionStorage.removeItem("kavict_game_room");
         setRoomCode(null);
         setCurrentView("selection");
       });
     }
-  }, [user]);
+  }, [user, roomGateway]);
 
   const handleRoomCreated = (code: string) => {
     sessionStorage.setItem("kavict_game_room", code);

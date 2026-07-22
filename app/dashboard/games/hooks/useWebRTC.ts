@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { webrtcService } from '../services/webrtcService';
-import { GameRoom } from '../services/roomService';
+import { getFirebaseWebRtcService } from '../services/webrtcService';
+import type { GameRoom } from '@/features/games/domain';
 import { useAuth } from '@/features/auth/AuthProvider';
 
 export const useWebRTC = (room: GameRoom | null, localStream: MediaStream | null) => {
+  const webrtcService = getFirebaseWebRtcService();
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
   const { user } = useAuth();
   const isInitialized = useRef(false);
@@ -61,7 +62,7 @@ export const useWebRTC = (room: GameRoom | null, localStream: MediaStream | null
       // Don't close all on every render, only handle on unmount of the game play view.
       // This cleanup runs when the component using this hook unmounts.
     };
-  }, [room, user, localStream]);
+  }, [room, user, localStream, webrtcService]);
   
   // Expose a way to explicitly close connections when leaving the game
   const cleanupWebRTC = useCallback(() => {
@@ -69,7 +70,7 @@ export const useWebRTC = (room: GameRoom | null, localStream: MediaStream | null
     isInitialized.current = false;
     connectedPeers.current.clear();
     setRemoteStreams(new Map());
-  }, []);
+  }, [webrtcService]);
 
   return { remoteStreams, cleanupWebRTC };
 };

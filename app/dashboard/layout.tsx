@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/app/components/Sidebar";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
+import LocalDemoNotice from "@/features/runtime/components/LocalDemoNotice";
 
 export default function DashboardLayout({
   children,
@@ -32,6 +33,7 @@ export default function DashboardLayout({
           className={`h-full overflow-y-auto transition-all duration-200 ${!isFullScreen ? "flex-1 p-8" : "w-full block"}`}
           id="main-content"
         >
+          <LocalDemoNotice />
           {children}
         </main>
       </div>
