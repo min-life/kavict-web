@@ -29,3 +29,16 @@ browser and are not secrets; keep `GOOGLE_GENAI_API_KEY` server-only.
 
 See [the architecture map](docs/architecture.md) for provider boundaries and
 route-handler responsibilities.
+
+## Validate local mode
+
+Run the automated local-mode smoke check with:
+
+```bash
+npm run test -- tests/smoke/localMode.test.ts
+```
+
+For an end-to-end local check, start the development server without Firebase
+environment variables. The landing page and API fallback routes remain
+available; browser interactions use local storage, while multiplayer clearly
+reports that Firebase is required.
