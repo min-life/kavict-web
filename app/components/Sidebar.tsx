@@ -5,14 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { ACCOUNT_MENU_ITEMS, HELP_MENU_ITEMS } from "@/app/components/accountMenuItems";
-
-const NAV_ITEMS = [
-  { href: "/dashboard", icon: "home", label: "Trang chủ", fill: true },
-  { href: "/dashboard/learning", icon: "school", label: "Học tập" },
-  { href: "/dashboard/finance-management", icon: "account_balance_wallet", label: "Quản lý tài chính" },
-  { href: "/dashboard/games", icon: "stadia_controller", label: "Trò chơi" },
-  { href: "/dashboard/leaderboard", icon: "leaderboard", label: "Bảng xếp hạng" },
-];
+import {
+  LEADERBOARD_NAV_ITEM,
+  PRIMARY_NAV_ITEMS,
+  STATIC_TASKS,
+} from "@/app/components/sidebarContent";
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -80,7 +77,7 @@ export default function Sidebar() {
 
         {/* Navigation List */}
         <ul className="space-y-2 flex-col flex">
-          {NAV_ITEMS.map((item) => (
+          {PRIMARY_NAV_ITEMS.map((item) => (
             <li key={item.href} className="relative has-tooltip">
               <Link
                 className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-all duration-200 center-on-collapse ${
@@ -93,7 +90,7 @@ export default function Sidebar() {
                 <span
                   className="material-symbols-outlined"
                   style={
-                    isActive(item.href) && item.fill
+                    isActive(item.href) && "fill" in item && item.fill
                       ? { fontVariationSettings: '"FILL" 1' }
                       : undefined
                   }
@@ -110,6 +107,58 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
+
+        <section className="mt-5 border-t border-outline-variant pt-5 hide-on-collapse" aria-labelledby="sidebar-tasks-heading">
+          <h2 id="sidebar-tasks-heading" className="px-3 text-label-sm font-label-sm font-bold uppercase tracking-wider text-on-surface-variant">
+            Nhiệm vụ
+          </h2>
+          <div className="mt-3 space-y-3 px-3">
+            {STATIC_TASKS.map((task) => {
+              const progress = (task.completed / task.total) * 100;
+
+              return (
+                <div key={task.label}>
+                  <div className="flex items-center justify-between gap-2 text-label-sm font-label-sm text-on-surface-variant">
+                    <span>{task.label}</span>
+                    <span className="shrink-0 text-primary">{task.completed}/{task.total}</span>
+                  </div>
+                  <p className="mt-1 text-label-md font-label-md text-on-surface">{task.title}</p>
+                  <div
+                    aria-label={`${task.label}: ${task.completed} trên ${task.total}`}
+                    className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-container-high"
+                    role="progressbar"
+                    aria-valuemax={task.total}
+                    aria-valuemin={0}
+                    aria-valuenow={task.completed}
+                  >
+                    <div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="mt-5 border-t border-outline-variant pt-3">
+          <div className="relative has-tooltip">
+            <Link
+              className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-all duration-200 center-on-collapse ${
+                isActive(LEADERBOARD_NAV_ITEM.href)
+                  ? "text-primary font-bold border-r-4 border-primary bg-primary-container/10"
+                  : "text-on-surface-variant hover:text-primary hover:bg-surface-container-high"
+              }`}
+              href={LEADERBOARD_NAV_ITEM.href}
+            >
+              <span className="material-symbols-outlined">{LEADERBOARD_NAV_ITEM.icon}</span>
+              <span className="text-label-md font-label-md hide-on-collapse whitespace-nowrap">
+                {LEADERBOARD_NAV_ITEM.label}
+              </span>
+            </Link>
+            <div className="tooltip absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm px-2 py-1 rounded whitespace-nowrap z-50">
+              {LEADERBOARD_NAV_ITEM.label}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

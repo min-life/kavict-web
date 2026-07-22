@@ -15,7 +15,7 @@ export default function DashboardLayout({
   const mainRef = useRef<HTMLElement>(null);
 
   const isOnboarding = pathname.startsWith("/dashboard/onboarding");
-  const isSoloGame = pathname.startsWith("/dashboard/games/solo");
+  const isSoloGame = pathname.startsWith("/dashboard/practice-space/solo");
   const isFullScreen = isOnboarding || isSoloGame;
 
   useEffect(() => {

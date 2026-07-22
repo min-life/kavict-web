@@ -157,21 +157,21 @@ export default function DashboardHome() {
 {/* Bottom Section: 3 Columns */}
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
   
-  {/* Game Card */}
+  {/* Practice Space Card */}
   <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col fade-in delay-300">
     <div className="flex justify-between items-center mb-md">
-      <h2 className="font-headline-md text-headline-md text-on-surface">Trò chơi</h2>
+      <h2 className="font-headline-md text-headline-md text-on-surface">Practice Space</h2>
     </div>
     <div className="flex flex-col items-center justify-center flex-grow text-center gap-4 py-4">
       <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-        <span className="material-symbols-outlined text-[40px]">stadia_controller</span>
+        <span className="material-symbols-outlined text-[40px]">target</span>
       </div>
       <div>
         <h3 className="font-bold text-on-surface">Thử thách Tài chính</h3>
-        <p className="text-sm text-on-surface-variant mt-1">Chơi game để ôn tập kiến thức và nhận thêm XP.</p>
+        <p className="text-sm text-on-surface-variant mt-1">Luyện tập kiến thức tài chính và nhận thêm XP.</p>
       </div>
-      <Link href="/dashboard/games" className="mt-2 px-6 py-2.5 bg-primary text-on-primary rounded-full font-bold hover:bg-primary-fixed-variant transition-colors shadow-sm inline-block">
-        Chơi ngay
+      <Link href="/dashboard/practice-space" className="mt-2 px-6 py-2.5 bg-primary text-on-primary rounded-full font-bold hover:bg-primary-fixed-variant transition-colors shadow-sm inline-block">
+        Luyện tập ngay
       </Link>
     </div>
   </div>

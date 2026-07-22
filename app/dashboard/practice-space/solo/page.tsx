@@ -52,7 +52,7 @@ export default function SoloGamePage() {
           Chơi Đơn
         </h1>
         <Link
-          href="/dashboard/games"
+          href="/dashboard/practice-space"
           className="flex items-center gap-1 text-sm font-medium text-error hover:bg-error-container px-3 py-1.5 rounded-full transition-colors"
         >
           <span className="material-symbols-outlined text-[18px]">exit_to_app</span>
@@ -89,7 +89,7 @@ export default function SoloGamePage() {
               setPlannedAllocations({});
               setPhase("configuring");
             }}
-            onExit={() => router.push("/dashboard/games")}
+            onExit={() => router.push("/dashboard/practice-space")}
           />
         )}
       </main>

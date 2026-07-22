@@ -39,17 +39,17 @@ export default function GamesPage() {
     <>
     <div className="flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">
       <div className="text-center mb-12 w-full">
-        <span className="material-symbols-outlined text-[64px] text-primary mb-4 block">stadia_controller</span>
-        <h1 className="font-headline-lg text-[32px] font-bold text-on-surface mb-2">Chọn Chế Độ Chơi</h1>
+        <span className="material-symbols-outlined text-[64px] text-primary mb-4 block">target</span>
+        <h1 className="font-headline-lg text-[32px] font-bold text-on-surface mb-2">Practice Space</h1>
         <p className="text-on-surface-variant text-lg max-w-[600px] mx-auto">
-          Cùng ôn luyện kiến thức tài chính và nhận thêm XP qua các trò chơi thú vị.
+          Luyện tập kiến thức tài chính, thử thách bản thân và nhận thêm XP.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl px-4">
         {/* Solo Card */}
         <Link 
-          href="/dashboard/games/solo"
+          href="/dashboard/practice-space/solo"
           className="group relative overflow-hidden bg-surface-container-lowest rounded-3xl border border-surface-variant shadow-ambient hover:shadow-hover transition-all duration-300 p-8 flex flex-col items-center text-center cursor-pointer hover:-translate-y-1"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-primary/10 transition-colors"></div>
