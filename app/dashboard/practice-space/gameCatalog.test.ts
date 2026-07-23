@@ -47,4 +47,12 @@ describe("Practice Space catalogue surface", () => {
     expect(page).toContain("max-w-[48rem]");
     expect(page).not.toContain("max-w-2xl");
   });
+
+  it("uses an explicit wide dialog and no longer renders the landing target icon", () => {
+    const page = readFileSync(path.resolve(process.cwd(), "app/dashboard/practice-space/page.tsx"), "utf8");
+
+    expect(page).toContain("max-w-[52rem]");
+    expect(page).not.toContain("max-w-xl");
+    expect(page).not.toContain('text-[52px] text-primary">target</span>');
+  });
 });

@@ -20,7 +20,7 @@ function GameInfoDialog({ game, onClose }: { game: PracticeGame; onClose: () => 
         role="dialog"
         aria-modal="true"
         aria-labelledby="game-info-title"
-        className="w-full max-w-xl rounded-3xl border border-primary/25 bg-surface-container-lowest p-6 shadow-2xl animate-fade-in dark:border-primary/35"
+        className="w-full max-w-[52rem] rounded-3xl border border-primary/25 bg-surface-container-lowest p-6 shadow-2xl animate-fade-in dark:border-primary/35"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="mb-5 flex items-start justify-between gap-4">
@@ -67,7 +67,6 @@ export default function GamesPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12 animate-fade-in">
       <header className="mb-8 text-center lg:mb-10">
-        <span className="material-symbols-outlined mb-3 block text-[52px] text-primary">target</span>
         <p className="mx-auto max-w-[48rem] text-lg leading-8 text-on-surface-variant">
           Chọn thử thách tài chính phù hợp, tích lũy kinh nghiệm và nhận phần thưởng khi chiến thắng.
         </p>
