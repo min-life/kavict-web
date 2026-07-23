@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+import { getLocalMultiplayerMessage } from "@/features/games/localGameCapabilities";
+import { runtimeMode } from "@/features/runtime/config";
 import { PRACTICE_GAMES, type PracticeGame } from "./gameCatalog";
+
+const MultiplayerModal = dynamic(() => import("./components/MultiplayerModal"), {
+  ssr: false,
+});
 
 function Reward({ icon, children }: { icon: string; children: React.ReactNode }) {
   return (
@@ -61,8 +68,80 @@ function InfoItem({ icon, label, value }: { icon: string; label: string; value: 
   );
 }
 
+function GameModeDialog({
+  game,
+  onClose,
+  onChooseMultiplayer,
+}: {
+  game: PracticeGame;
+  onClose: () => void;
+  onChooseMultiplayer: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/45 p-4" onMouseDown={onClose}>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="game-mode-title"
+        className="w-full max-w-[46rem] rounded-3xl border border-primary/25 bg-surface-container-lowest p-6 shadow-2xl animate-fade-in"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold text-primary">{game.name}</p>
+            <h2 id="game-mode-title" className="mt-1 font-headline-md text-2xl font-bold text-on-surface">Chọn chế độ chơi</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Đóng lựa chọn chế độ chơi"
+            className="grid h-10 w-10 place-items-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            href={game.href ?? "/dashboard/practice-space/solo"}
+            className="group rounded-2xl border-2 border-primary/55 bg-primary/5 p-5 text-left transition-all hover:-translate-y-1 hover:border-primary hover:shadow-hover"
+          >
+            <span className="material-symbols-outlined mb-4 block text-[34px] text-primary">person</span>
+            <h3 className="font-headline-md text-xl font-bold text-on-surface">Chơi đơn</h3>
+            <p className="mt-2 leading-6 text-on-surface-variant">Tự lập kế hoạch và vượt qua các thử thách tài chính theo nhịp của bạn.</p>
+            <span className="mt-5 inline-flex items-center gap-2 font-bold text-primary">Bắt đầu <span className="material-symbols-outlined text-[18px]">arrow_forward</span></span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={onChooseMultiplayer}
+            className="group rounded-2xl border-2 border-tertiary/55 bg-tertiary/5 p-5 text-left transition-all hover:-translate-y-1 hover:border-tertiary hover:shadow-hover"
+          >
+            <span className="material-symbols-outlined mb-4 block text-[34px] text-tertiary">group</span>
+            <h3 className="font-headline-md text-xl font-bold text-on-surface">Chơi cùng bạn</h3>
+            <p className="mt-2 leading-6 text-on-surface-variant">Tạo phòng hoặc dùng mã mời để cùng bạn đưa ra quyết định tài chính.</p>
+            <span className="mt-5 inline-flex items-center gap-2 font-bold text-tertiary">Vào phòng <span className="material-symbols-outlined text-[18px]">arrow_forward</span></span>
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function GamesPage() {
   const [selectedGame, setSelectedGame] = useState<PracticeGame | null>(null);
+  const [modeSelectionOpen, setModeSelectionOpen] = useState(false);
+  const [multiplayerOpen, setMultiplayerOpen] = useState(false);
+  const [multiplayerNotice, setMultiplayerNotice] = useState<string | null>(null);
+
+  const handleMultiplayerClick = () => {
+    setModeSelectionOpen(false);
+    if (runtimeMode === "firebase") {
+      setMultiplayerOpen(true);
+      return;
+    }
+    setMultiplayerNotice(getLocalMultiplayerMessage());
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12 animate-fade-in">
@@ -119,13 +198,14 @@ export default function GamesPage() {
               </button>
 
               {game.available && game.href ? (
-                <Link
-                  href={game.href}
+                <button
+                  type="button"
+                  onClick={() => setModeSelectionOpen(true)}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 font-bold text-on-primary shadow-sm transition-all hover:bg-primary-fixed-variant hover:text-on-primary-fixed active:scale-[0.98]"
                 >
                   Chơi ngay
                   <span className="material-symbols-outlined text-[19px]">arrow_forward</span>
-                </Link>
+                </button>
               ) : (
                 <button
                   type="button"
@@ -142,6 +222,19 @@ export default function GamesPage() {
       </div>
 
       {selectedGame && <GameInfoDialog game={selectedGame} onClose={() => setSelectedGame(null)} />}
+      {modeSelectionOpen && (
+        <GameModeDialog
+          game={PRACTICE_GAMES[0]}
+          onClose={() => setModeSelectionOpen(false)}
+          onChooseMultiplayer={handleMultiplayerClick}
+        />
+      )}
+      {multiplayerNotice && (
+        <p className="mx-auto mt-6 max-w-[48rem] rounded-2xl border border-tertiary/30 bg-tertiary/10 px-5 py-4 text-center text-on-surface" role="status">
+          {multiplayerNotice}
+        </p>
+      )}
+      {multiplayerOpen && <MultiplayerModal onClose={() => setMultiplayerOpen(false)} />}
     </div>
   );
 }

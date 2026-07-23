@@ -55,4 +55,15 @@ describe("Practice Space catalogue surface", () => {
     expect(page).not.toContain("max-w-xl");
     expect(page).not.toContain('text-[52px] text-primary">target</span>');
   });
+
+  it("opens a solo-or-multiplayer mode choice before Daily Finance Simulator starts", () => {
+    const page = readFileSync(path.resolve(process.cwd(), "app/dashboard/practice-space/page.tsx"), "utf8");
+
+    expect(page).toContain("Chọn chế độ chơi");
+    expect(page).toContain("Chơi đơn");
+    expect(page).toContain("Chơi cùng bạn");
+    expect(page).toContain("MultiplayerModal");
+    expect(page).toContain("getLocalMultiplayerMessage");
+    expect(page).toContain("setModeSelectionOpen(true)");
+  });
 });
