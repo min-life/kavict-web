@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const pagePath = resolve(__dirname, "page.tsx");
 const componentPath = resolve(__dirname, "components/FinanceWorkspace.tsx");
 const componentDirectory = resolve(__dirname, "components");
+const globalStylesPath = resolve(__dirname, "../../globals.css");
 
 describe("finance workspace composition", () => {
   it("replaces forced onboarding with the four requested tabs", () => {
@@ -32,6 +33,12 @@ describe("finance workspace composition", () => {
     expect(advisorSource).toContain("isLocalSampleConfirmation");
     expect(advisorSource).toContain('fetch("/api/finance-advisor"');
     expect(entrySource).toContain('plan?.budgets[0]?.category ?? "Ăn uống"');
+  });
+
+  it("defines the green success token used by the selected income button", () => {
+    const globalStyles = readFileSync(globalStylesPath, "utf8");
+
+    expect(globalStyles).toContain("--color-success:");
   });
 
   it("removes the superseded forced onboarding components", () => {
