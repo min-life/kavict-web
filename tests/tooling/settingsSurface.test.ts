@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { ACCOUNT_MENU_ITEMS, HELP_MENU_ITEMS } from "@/app/components/accountMenuItems";
@@ -7,6 +7,7 @@ const css = readFileSync(path.resolve(process.cwd(), "app/globals.css"), "utf8")
 const settingsPath = path.resolve(process.cwd(), "app/dashboard/settings/page.tsx");
 const profilePath = path.resolve(process.cwd(), "app/dashboard/profile/page.tsx");
 const sidebarPath = path.resolve(process.cwd(), "app/components/Sidebar.tsx");
+const helpPagePath = path.resolve(process.cwd(), "app/help/page.tsx");
 
 function getAccountMenuWrapperClasses(sidebar: string) {
   const accountMenuWrapper = sidebar.match(
@@ -58,6 +59,18 @@ describe("settings visual surface", () => {
     const sidebar = readFileSync(sidebarPath, "utf8");
     expect(sidebar).toContain("href={item.href}");
     expect(sidebar).not.toContain('aria-disabled="true"');
+  });
+
+  it("provides a Help Center with every anchor and mobile-app availability copy", () => {
+    expect(existsSync(helpPagePath)).toBe(true);
+
+    const helpPage = readFileSync(helpPagePath, "utf8");
+    for (const id of ["documentation", "faq", "terms", "privacy", "download-app", "contact-us"]) {
+      expect(helpPage).toContain("id={section.id}");
+      expect(helpPage).toContain(`id: "${id}"`);
+    }
+    expect(helpPage).toContain("Android và iOS");
+    expect(helpPage).toContain("IntersectionObserver");
   });
 
   it("keeps the expanded Help popover adjacent, visible, and announced as a menu", () => {
