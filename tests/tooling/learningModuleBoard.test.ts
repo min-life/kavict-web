@@ -22,3 +22,16 @@ describe("learning module board", () => {
     expect(board).toContain("star");
   });
 });
+
+describe("learning module detail", () => {
+  const modulePagePath = path.resolve(process.cwd(), "app/dashboard/learning/module/[id]/page.tsx");
+
+  it("sends Premium module items to Upgrade and keeps their badge", () => {
+    const modulePage = readFileSync(modulePagePath, "utf8");
+
+    expect(modulePage).toContain('href="/dashboard/upgrade"');
+    expect(modulePage).toContain("Premium");
+    expect(modulePage).toContain('data-icon="star"');
+    expect(modulePage).toContain("getLearningModule");
+  });
+});
