@@ -13,11 +13,12 @@ type TransactionEntryTabProps = {
   plan: FinancialPlan | null;
   transactions: Transaction[];
   onSaved: () => Promise<void>;
+  showRecentTransactions?: boolean;
 };
 
 const formatVnd = (amount: number) => new Intl.NumberFormat("vi-VN").format(amount);
 
-export default function TransactionEntryTab({ userId, plan, transactions, onSaved }: TransactionEntryTabProps) {
+export default function TransactionEntryTab({ userId, plan, transactions, onSaved, showRecentTransactions = true }: TransactionEntryTabProps) {
   const [type, setType] = useState<TransactionType>("expense");
   const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState("Ăn uống");
@@ -68,7 +69,7 @@ export default function TransactionEntryTab({ userId, plan, transactions, onSave
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,.9fr)] gap-6">
+    <div className={showRecentTransactions ? "grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,.9fr)]" : undefined}>
       <form onSubmit={submit} className="rounded-2xl border border-outline-variant/30 bg-surface p-5 shadow-sm sm:p-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
@@ -115,7 +116,7 @@ export default function TransactionEntryTab({ userId, plan, transactions, onSave
         </button>
       </form>
 
-      <section className="rounded-2xl border border-outline-variant/30 bg-surface p-5 shadow-sm sm:p-6">
+      {showRecentTransactions && <section className="rounded-2xl border border-outline-variant/30 bg-surface p-5 shadow-sm sm:p-6">
         <div className="mb-5 flex items-center justify-between">
           <div><h2 className="text-xl font-bold text-on-surface">Giao dịch gần đây</h2><p className="mt-1 text-sm text-on-surface-variant">{transactions.length} giao dịch đã ghi nhận</p></div>
           <span className="material-symbols-outlined text-on-surface-variant">receipt_long</span>
@@ -128,7 +129,7 @@ export default function TransactionEntryTab({ userId, plan, transactions, onSave
           </article>)}
           {transactions.length === 0 && <p className="rounded-xl border border-dashed border-outline-variant/50 px-4 py-10 text-center text-sm text-on-surface-variant">Chưa có giao dịch nào. Hãy bắt đầu với khoản đầu tiên của bạn.</p>}
         </div>
-      </section>
+      </section>}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { AnimatedCounter, AnimatedProgressBar } from "./SharedUI";
 
 type ChartFilterState = { type: 'year' | 'month', year: number, month?: number };
 
-export function FinancialOverview({ plan, transactions, onEditPlan, titleAction }: { plan: FinancialPlan, transactions: Transaction[], onEditPlan?: () => void, titleAction?: React.ReactNode }) {
+export function FinancialOverview({ plan, transactions, onEditPlan, title = "Quản lý tài chính", titleAction }: { plan: FinancialPlan, transactions: Transaction[], onEditPlan?: () => void, title?: string, titleAction?: React.ReactNode }) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const [mountedAt] = useState(Date.now);
   
@@ -149,7 +149,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
     <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient flex flex-col h-full">
       <div className="flex justify-between items-center p-6 pb-2">
         <div className="flex items-center gap-3">
-          <h2 className="font-headline-md text-headline-md text-on-surface">Quản lý tài chính</h2>
+          <h2 className="font-headline-md text-headline-md text-on-surface">{title}</h2>
           {titleAction}
         </div>
         <div className="bg-surface-container rounded-lg p-1 flex gap-2 items-center">
