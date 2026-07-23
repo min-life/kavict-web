@@ -1,18 +1,20 @@
 import Link from "next/link";
 import { LEARNING_MODULES } from "@/features/learning/catalog";
 
+const difficultyStarClasses: Record<number, string> = {
+  1: "text-emerald-500",
+  2: "text-yellow-400",
+  3: "text-orange-500",
+  4: "text-red-500",
+  5: "bg-[linear-gradient(90deg,#ef4444_0%,#facc15_20%,#22c55e_40%,#3b82f6_60%,#6366f1_80%,#ec4899_100%)] bg-clip-text text-transparent",
+};
+
 export default function LearningPath() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8 md:py-12">
-      <section className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <section className="mb-8">
         <div>
           <p className="font-label-md text-sm font-semibold uppercase tracking-[0.16em] text-primary">Lộ trình học tập</p>
-          <h1 className="mt-2 font-headline-md text-3xl font-bold text-on-surface md:text-4xl">Học tài chính theo từng module</h1>
-          <p className="mt-3 max-w-2xl font-body-md text-on-surface-variant">Bắt đầu từ nền tảng dòng tiền, rồi từng bước xây lá chắn tài chính và tư duy đầu tư có trách nhiệm.</p>
-        </div>
-        <div className="flex items-center gap-2 rounded-2xl border border-primary-container/30 bg-primary-container/10 px-4 py-3 text-primary">
-          <span className="material-symbols-outlined" data-icon="school">school</span>
-          <span className="font-label-md text-sm font-semibold">Module 1 là điểm bắt đầu</span>
         </div>
       </section>
 
@@ -30,9 +32,11 @@ export default function LearningPath() {
                   </div>
                 </div>
                 <div className="flex gap-0.5" aria-label={`Độ khó ${module.difficulty} trên 5 sao`}>
-                  {Array.from({ length: 5 }, (_, index) => (
-                    <span key={index} className={`material-symbols-outlined text-[18px] ${index < module.difficulty ? "text-primary" : "text-outline-variant"}`} data-icon="star">star</span>
-                  ))}
+                  {Array.from({ length: 5 }, (_, index) => {
+                    const isActive = index < module.difficulty;
+
+                    return <span key={index} className={`material-symbols-outlined text-[18px] ${isActive ? difficultyStarClasses[module.difficulty] : "text-outline-variant"}`} style={{ fontVariationSettings: `'FILL' ${isActive ? 1 : 0}` }} data-icon="star">star</span>;
+                  })}
                 </div>
               </div>
 

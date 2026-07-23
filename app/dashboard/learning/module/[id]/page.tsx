@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { getLearningModule } from "@/features/learning/catalog";
 
+const difficultyStarClasses: Record<number, string> = {
+  1: "text-emerald-500",
+  2: "text-yellow-400",
+  3: "text-orange-500",
+  4: "text-red-500",
+  5: "bg-[linear-gradient(90deg,#ef4444_0%,#facc15_20%,#22c55e_40%,#3b82f6_60%,#6366f1_80%,#ec4899_100%)] bg-clip-text text-transparent",
+};
+
 type ModuleDetailPageProps = {
   params: Promise<{ id: string }>;
 };
@@ -37,13 +45,29 @@ export default async function ModuleDetailPage({ params }: ModuleDetailPageProps
             <p className="mt-3 max-w-2xl font-body-md text-on-surface-variant">{learningModule.outcome}</p>
           </div>
           <div className="flex gap-0.5" aria-label={`Độ khó ${learningModule.difficulty} trên 5 sao`}>
-            {Array.from({ length: 5 }, (_, index) => (
-              <span key={index} className={`material-symbols-outlined ${index < learningModule.difficulty ? "text-primary" : "text-outline-variant"}`} data-icon="star">star</span>
-            ))}
+            {Array.from({ length: 5 }, (_, index) => {
+              const isActive = index < learningModule.difficulty;
+
+              return <span key={index} className={`material-symbols-outlined ${isActive ? difficultyStarClasses[learningModule.difficulty] : "text-outline-variant"}`} style={{ fontVariationSettings: `'FILL' ${isActive ? 1 : 0}` }} data-icon="star">star</span>;
+            })}
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {learningModule.tags.map((tag) => <span key={tag} className="rounded-full bg-surface-container-lowest px-3 py-1 font-label-sm text-xs font-semibold text-primary">{tag}</span>)}
+        </div>
+        <div className="mt-6 grid gap-3 border-t border-primary-container/30 pt-5 md:grid-cols-3">
+          <div className="rounded-2xl bg-surface-container-lowest/75 p-4">
+            <p className="font-label-md text-xs font-bold uppercase tracking-[0.12em] text-primary">Bạn sẽ học được gì</p>
+            <p className="mt-2 font-body-md text-sm leading-6 text-on-surface-variant">{learningModule.overview}</p>
+          </div>
+          <div className="rounded-2xl bg-surface-container-lowest/75 p-4">
+            <p className="font-label-md text-xs font-bold uppercase tracking-[0.12em] text-primary">Thời lượng học</p>
+            <p className="mt-2 font-body-md text-sm leading-6 text-on-surface-variant">{learningModule.estimatedDuration}</p>
+          </div>
+          <div className="rounded-2xl bg-surface-container-lowest/75 p-4">
+            <p className="font-label-md text-xs font-bold uppercase tracking-[0.12em] text-primary">Kiến thức cần biết</p>
+            <p className="mt-2 font-body-md text-sm leading-6 text-on-surface-variant">{learningModule.prerequisites}</p>
+          </div>
         </div>
       </section>
 
