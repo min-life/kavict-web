@@ -1,4 +1,4 @@
-import type { AppUser, OnboardingInput, UserProfile } from "./domain";
+import type { AppUser, OnboardingInput, ProfilePreferencesInput, UserProfile } from "./domain";
 
 export interface AuthGateway {
   getCurrentUser(): Promise<AppUser | null>;
@@ -8,5 +8,6 @@ export interface AuthGateway {
   signInWithGoogle(): Promise<void>;
   signOut(): Promise<void>;
   completeOnboarding(input: OnboardingInput): Promise<void>;
+  updateProfilePreferences(input: ProfilePreferencesInput): Promise<void>;
   subscribe(listener: (user: AppUser | null, profile: UserProfile | null) => void): () => void;
 }

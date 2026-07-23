@@ -36,4 +36,27 @@ describe("local auth gateway", () => {
 
     expect(await gateway.getCurrentUser()).toMatchObject({ displayName: "Linh Nguyen" });
   });
+
+  it("persists avatar and personalization preferences and notifies subscribers", async () => {
+    const storage = createMemoryStorage();
+    const gateway = createLocalAuthGateway(storage);
+    const received: string[] = [];
+    const unsubscribe = gateway.subscribe((_user, profile) => received.push(profile?.avatarKey ?? "empty"));
+
+    await gateway.updateProfilePreferences({
+      avatarKey: "bloom",
+      informationForKavi: "Mình đang học cách lập ngân sách.",
+      kaviTone: "ấm áp",
+      responseStyle: "detailed",
+    });
+
+    expect(await gateway.getProfile()).toMatchObject({
+      avatarKey: "bloom",
+      informationForKavi: "Mình đang học cách lập ngân sách.",
+      kaviTone: "ấm áp",
+      responseStyle: "detailed",
+    });
+    expect(received.at(-1)).toBe("bloom");
+    unsubscribe();
+  });
 });

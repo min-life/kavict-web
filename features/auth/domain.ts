@@ -12,6 +12,20 @@ export interface UserProfile {
   highestExpenses?: string[];
   financialGoal?: string;
   onboarded?: boolean;
+  avatarKey?: string | null;
+  informationForKavi?: string;
+  kaviTone?: KaviTone;
+  responseStyle?: ResponseStyle;
+}
+
+export type KaviTone = "vui vẻ" | "nghiêm túc" | "ấm áp" | "giận dữ";
+export type ResponseStyle = "concise" | "detailed";
+
+export interface ProfilePreferencesInput {
+  avatarKey: string | null;
+  informationForKavi: string;
+  kaviTone: KaviTone;
+  responseStyle: ResponseStyle;
 }
 
 export interface OnboardingInput {

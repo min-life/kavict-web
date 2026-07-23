@@ -1,4 +1,4 @@
-import type { AppUser, OnboardingInput, UserProfile } from "./domain";
+import type { AppUser, OnboardingInput, ProfilePreferencesInput, UserProfile } from "./domain";
 import type { AuthGateway } from "./gateway";
 
 const USER_KEY = "kavict:local:user";
@@ -64,6 +64,13 @@ export function createLocalAuthGateway(storage: Storage): AuthGateway {
       storage.setItem(PROFILE_KEY, JSON.stringify({ ...input, onboarded: true }));
       const user = read<AppUser>(storage, USER_KEY);
       if (user) storage.setItem(USER_KEY, JSON.stringify({ ...user, displayName: input.preferredName }));
+      notify();
+    },
+    async updateProfilePreferences(input: ProfilePreferencesInput) {
+      storage.setItem(PROFILE_KEY, JSON.stringify({
+        ...(read<UserProfile>(storage, PROFILE_KEY) ?? {}),
+        ...input,
+      }));
       notify();
     },
     subscribe(listener) {

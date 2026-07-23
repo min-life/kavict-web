@@ -13,7 +13,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
-import type { AppUser, OnboardingInput, UserProfile } from "./domain";
+import type { AppUser, OnboardingInput, ProfilePreferencesInput, UserProfile } from "./domain";
 import type { AuthGateway } from "./gateway";
 
 function toAppUser(user: User | null): AppUser | null {
@@ -61,6 +61,10 @@ export function createFirebaseAuthGateway(): AuthGateway {
       if (!auth.currentUser) throw new Error("No authenticated user");
       await updateProfile(auth.currentUser, { displayName: input.preferredName });
       await setDoc(doc(db, "users", auth.currentUser.uid), { ...input, onboarded: true, createdAt: serverTimestamp() }, { merge: true });
+    },
+    async updateProfilePreferences(input: ProfilePreferencesInput) {
+      if (!auth.currentUser) throw new Error("No authenticated user");
+      await setDoc(doc(db, "users", auth.currentUser.uid), input, { merge: true });
     },
     subscribe(listener) {
       let unsubscribeProfile: (() => void) | undefined;
