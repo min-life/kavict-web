@@ -24,18 +24,14 @@ export default function Leaderboard() {
 <img className="w-full h-full object-cover" data-alt="A modern, high-quality avatar portrait of a professional individual in a minimalist studio setting. Bright, soft lighting, clean white background, confident expression, high-resolution SaaS UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg5mRM4dGQOoaBiVjK56sB-Zvq4xwyCa0W3i8BHWVNoM-Z0NSm9vAGQLer5pWRauZ1_-R7fiG0VullBtr2KsLUod-FLssQlE6qUaoy1G0mxtnbweezllZryujaHFSk3uJxl3Wr7PQLg__dUv3l-kqicoVVmchalCvR0gkLElQDX-aFZKTbX0CaRhhFMMWBxUoY2dKO00XH_WRIDTkBVoWzPaXQk2qomEL2gU9Nvu3wmjYe9xliQ4CSZQOMQDW3yb7tH3nVALc5I18" />
 </div>
 <h3 className="font-headline-md text-headline-md text-on-surface">Minh Tuấn</h3>
-<div className="flex items-center gap-xs text-secondary mt-base">
-<span className="material-symbols-outlined text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>
-<span className="font-label-md text-label-md">98 ngày</span>
+<div data-achievement-summary className="mt-md grid w-full grid-cols-3 gap-2 border-y border-outline-variant/30 py-md">
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng XP</span><span className="whitespace-nowrap font-bold text-primary">12,450</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng coin</span><span className="whitespace-nowrap font-bold text-amber-500">980</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Streak</span><span className="whitespace-nowrap font-bold text-[#FF6B6B]">98 ngày</span></div>
 </div>
-<div className="w-full h-[1px] bg-outline-variant/30 my-md"></div>
-<div className="flex w-full justify-between font-label-md text-label-md">
-<span className="text-on-surface-variant">XP</span>
-<span className="font-bold text-primary">12,450</span>
-</div>
-<div className="flex w-full justify-between font-label-md text-label-md mt-xs">
-<span className="text-on-surface-variant">Bài học</span>
-<span className="font-bold text-on-surface">142</span>
+<div data-earned-badges className="mt-md flex w-full items-center justify-center gap-2" aria-label="Huy hiệu đã đạt">
+<span className="material-symbols-outlined rounded-full bg-amber-100 p-2 text-amber-600" title="Top 10 Leaderboard">trophy</span>
+<span className="material-symbols-outlined rounded-full bg-blue-100 p-2 text-blue-600" title="Chuyên gia chi tiêu">account_balance_wallet</span>
 </div>
 </div>
 {/* Rank 1 */}
@@ -48,18 +44,15 @@ export default function Leaderboard() {
 <img className="w-full h-full object-cover" data-alt="A modern, high-quality avatar portrait of a professional female individual in a minimalist studio setting. Bright, soft lighting, clean white background, confident expression, wearing a smart casual blazer, high-resolution SaaS UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk7MbOxq80nixSnitVnqMlWyWqCKD0r6DdsLZiUTVzUJmrUwulLynQWwdy8pmbwQFUt563s9rqg1qeK9H6u-ErNTmOf51l82NAXiAGCjOO-yl_oNjNbS83vpLNQCgPTaiN5Alyd1M93utTOTBs09WalM5YM0LbWSnmYcMJ9Yfxg0bVDgkCfA34UFocI77yCdE5emqB7HRIR58Hl2DBIu-Y62nJMQUt8ceymPeWjXdiVgu0DM_4Q13IXdNz4KDG14NizyRg1u-iacQ" />
 </div>
 <h3 className="font-headline-lg text-headline-lg text-primary">Lan Anh</h3>
-<div className="flex items-center gap-xs text-secondary mt-base">
-<span className="material-symbols-outlined text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>
-<span className="font-label-md text-label-md">156 ngày</span>
+<div data-achievement-summary className="mt-md grid w-full grid-cols-3 gap-2 border-y border-outline-variant/30 py-md">
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng XP</span><span className="whitespace-nowrap font-bold text-primary">15,820</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng coin</span><span className="whitespace-nowrap font-bold text-amber-500">1,240</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Streak</span><span className="whitespace-nowrap font-bold text-[#FF6B6B]">156 ngày</span></div>
 </div>
-<div className="w-full h-[1px] bg-outline-variant/30 my-md"></div>
-<div className="flex w-full justify-between font-label-md text-label-md">
-<span className="text-on-surface-variant">XP</span>
-<span className="font-bold text-primary text-lg">15,820</span>
-</div>
-<div className="flex w-full justify-between font-label-md text-label-md mt-xs">
-<span className="text-on-surface-variant">Bài học</span>
-<span className="font-bold text-on-surface">185</span>
+<div data-earned-badges className="mt-md flex w-full items-center justify-center gap-2" aria-label="Huy hiệu đã đạt">
+<span className="material-symbols-outlined rounded-full bg-amber-100 p-2 text-amber-600" title="Top 10 Leaderboard">trophy</span>
+<span className="material-symbols-outlined rounded-full bg-orange-100 p-2 text-orange-600" title="Streak 30 ngày">local_fire_department</span>
+<span className="material-symbols-outlined rounded-full bg-blue-100 p-2 text-blue-600" title="Chuyên gia chi tiêu">account_balance_wallet</span>
 </div>
 </div>
 {/* Rank 3 */}
@@ -69,23 +62,19 @@ export default function Leaderboard() {
 <img className="w-full h-full object-cover" data-alt="A modern, high-quality avatar portrait of a young professional individual in a minimalist studio setting. Bright, soft lighting, clean white background, thoughtful expression, high-resolution SaaS UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzvGsVGxhwOzSfJ888vtM7ElZS_aB5YP9QjW4wpyVTQgswq_lCKM8yuriHx_jJDRP73c24YtNVY4VQ1GPsoG78_bVLbJ6FYxMQqnyJ6jFFbgkUvNCEHqYFN2JeKWCEjPF9rV4zKeYYTQ4m2QOKXpvAJ2QtdE7tkVJJrZP2lG02fX9B6Wi0bFo_8UyC-OqtAgXKhhIvS-3N7y2h4gDOYQooeyqG89Mv6M8OOaF3oO7TFhRcZVfVbJwQSuvkNI4NePyWMCGqJYtgFp8" />
 </div>
 <h3 className="font-headline-md text-headline-md text-on-surface">Hoàng Nam</h3>
-<div className="flex items-center gap-xs text-secondary mt-base">
-<span className="material-symbols-outlined text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>
-<span className="font-label-md text-label-md">84 ngày</span>
+<div data-achievement-summary className="mt-md grid w-full grid-cols-3 gap-2 border-y border-outline-variant/30 py-md">
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng XP</span><span className="whitespace-nowrap font-bold text-primary">11,200</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng coin</span><span className="whitespace-nowrap font-bold text-amber-500">860</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Streak</span><span className="whitespace-nowrap font-bold text-[#FF6B6B]">84 ngày</span></div>
 </div>
-<div className="w-full h-[1px] bg-outline-variant/30 my-md"></div>
-<div className="flex w-full justify-between font-label-md text-label-md">
-<span className="text-on-surface-variant">XP</span>
-<span className="font-bold text-primary">11,200</span>
-</div>
-<div className="flex w-full justify-between font-label-md text-label-md mt-xs">
-<span className="text-on-surface-variant">Bài học</span>
-<span className="font-bold text-on-surface">128</span>
+<div data-earned-badges className="mt-md flex w-full items-center justify-center gap-2" aria-label="Huy hiệu đã đạt">
+<span className="material-symbols-outlined rounded-full bg-indigo-100 p-2 text-indigo-600" title="Học viên chăm chỉ">menu_book</span>
+<span className="material-symbols-outlined rounded-full bg-amber-100 p-2 text-amber-600" title="Thành tích nổi bật">military_tech</span>
 </div>
 </div>
 </section>
 {/* Personal Rank Card */}
-<section className="shadow-sm rounded-[24px] p-lg flex flex-col md:flex-row items-center justify-between gap-lg bg-surface-container-lowest border-l-4 border-l-primary relative overflow-hidden">
+<section className="shadow-sm rounded-[24px] p-lg grid grid-cols-1 gap-md bg-surface-container-lowest border-l-4 border-l-primary relative overflow-hidden md:grid-cols-[auto_1fr_auto] md:items-center">
 <div className="absolute right-0 top-0 w-64 h-full bg-primary-fixed/20 blur-3xl -z-10 rounded-full"></div>
 <div className="flex items-center gap-md">
 <div className="w-16 h-16 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline-lg text-headline-lg shadow-lg">
@@ -93,33 +82,31 @@ export default function Leaderboard() {
                 </div>
 <div>
 <h3 className="font-headline-md text-headline-md text-on-surface">Hạng của bạn</h3>
-<p className="font-body-md text-body-md text-on-surface-variant mt-base">Top 20% tuần này</p>
 </div>
 </div>
-<div className="flex-1 w-full max-w-[448px]">
-<div className="flex justify-between font-label-md text-label-md mb-xs">
-<span className="text-on-surface-variant">Tiến độ Top 10</span>
-<span className="text-primary font-bold">Còn 420 XP</span>
+<div data-personal-achievement-summary className="grid grid-cols-3 gap-3 border-y border-outline-variant/30 py-md md:border-y-0 md:border-x md:px-md md:py-0">
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng XP</span><span className="whitespace-nowrap font-bold text-primary">8,080</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Tổng coin</span><span className="whitespace-nowrap font-bold text-amber-500">640</span></div>
+<div className="flex flex-col gap-1"><span className="font-label-sm text-label-sm text-on-surface-variant">Streak</span><span className="whitespace-nowrap font-bold text-[#FF6B6B]">30 ngày</span></div>
 </div>
-<div className="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
-<div className="progress-bar-fill h-full w-[65%] rounded-full"></div>
-</div>
-<p className="font-label-sm text-label-sm text-on-surface-variant mt-xs text-right">Mục tiêu: 8,500 XP</p>
+<div data-earned-badges className="flex items-center gap-2" aria-label="Huy hiệu đã đạt">
+<span className="material-symbols-outlined rounded-full bg-amber-100 p-2 text-amber-600" title="Top 10 Leaderboard">trophy</span>
+<span className="material-symbols-outlined rounded-full bg-orange-100 p-2 text-orange-600" title="Streak 30 ngày">local_fire_department</span>
+<span className="material-symbols-outlined rounded-full bg-blue-100 p-2 text-blue-600" title="Chuyên gia chi tiêu">account_balance_wallet</span>
 </div>
 </section>
 {/* Leaderboard Table */}
 <section className="bg-surface-container-lowest shadow-sm border border-surface-variant rounded-[24px] overflow-hidden">
 <div className="overflow-x-auto">
-<table className="w-full text-left border-collapse">
+<table data-ranking-achievements className="w-full text-left border-collapse">
 <thead>
 <tr className="bg-surface-container-lowest border-b border-outline-variant/30 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
 <th className="p-md font-medium text-center w-20">Hạng</th>
 <th className="p-md font-medium">Học viên</th>
-<th className="p-md font-medium text-center">Chuỗi ngày</th>
-<th className="p-md font-medium text-right">XP</th>
-<th className="p-md font-medium text-center">Bài học</th>
+<th className="p-md font-medium text-right">Tổng XP</th>
+<th className="p-md font-medium text-center">Tổng coin</th>
+<th className="p-md font-medium text-center">Streak</th>
 <th className="p-md font-medium text-center">Huy hiệu</th>
-<th className="p-md font-medium text-center w-20">Xu hướng</th>
 </tr>
 </thead>
 <tbody className="divide-y divide-outline-variant/20 font-body-md text-body-md">
@@ -132,19 +119,11 @@ export default function Leaderboard() {
 <span className="font-medium text-on-surface">Thanh Trúc</span>
 </div>
 </td>
-<td className="p-md text-center">
-<div className="inline-flex items-center gap-xs px-sm py-xs bg-surface-container rounded-full">
-<span className="material-symbols-outlined text-sm text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>
-<span className="font-label-md text-label-md text-on-surface">72</span>
-</div>
-</td>
 <td className="p-md text-right font-label-md text-label-md font-bold text-primary">10,850</td>
-<td className="p-md text-center text-on-surface-variant">115</td>
+<td className="p-md text-center font-label-md text-label-md font-bold text-amber-500">760</td>
+<td className="p-md text-center"><span className="inline-flex items-center gap-xs rounded-full bg-surface-container px-sm py-xs font-label-md text-label-md text-on-surface"><span className="material-symbols-outlined text-sm text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>72 ngày</span></td>
 <td className="p-md text-center">
-<span className="material-symbols-outlined text-tertiary" style={{fontVariationSettings: '\'FILL\' 1'}}>military_tech</span>
-</td>
-<td className="p-md text-center">
-<span className="material-symbols-outlined text-[#10B981]">arrow_upward</span>
+<span className="material-symbols-outlined text-tertiary" title="Thành tích nổi bật" style={{fontVariationSettings: '\'FILL\' 1'}}>military_tech</span><span className="material-symbols-outlined ml-xs text-blue-500" title="Chuyên gia chi tiêu">account_balance_wallet</span>
 </td>
 </tr>
 {/* Row 5 */}
@@ -156,19 +135,11 @@ export default function Leaderboard() {
 <span className="font-medium text-on-surface">Đức Duy</span>
 </div>
 </td>
-<td className="p-md text-center">
-<div className="inline-flex items-center gap-xs px-sm py-xs bg-surface-container rounded-full">
-<span className="material-symbols-outlined text-sm text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>
-<span className="font-label-md text-label-md text-on-surface">65</span>
-</div>
-</td>
 <td className="p-md text-right font-label-md text-label-md font-bold text-primary">9,420</td>
-<td className="p-md text-center text-on-surface-variant">98</td>
+<td className="p-md text-center font-label-md text-label-md font-bold text-amber-500">690</td>
+<td className="p-md text-center"><span className="inline-flex items-center gap-xs rounded-full bg-surface-container px-sm py-xs font-label-md text-label-md text-on-surface"><span className="material-symbols-outlined text-sm text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>65 ngày</span></td>
 <td className="p-md text-center">
-<span className="material-symbols-outlined text-tertiary" style={{fontVariationSettings: '\'FILL\' 1'}}>psychology</span>
-</td>
-<td className="p-md text-center">
-<span className="material-symbols-outlined text-outline">horizontal_rule</span>
+<span className="material-symbols-outlined text-tertiary" title="Chuyên gia kiến thức" style={{fontVariationSettings: '\'FILL\' 1'}}>psychology</span><span className="material-symbols-outlined ml-xs text-orange-500" title="Streak 30 ngày">local_fire_department</span>
 </td>
 </tr>
 {/* Row 6 */}
@@ -180,19 +151,11 @@ export default function Leaderboard() {
 <span className="font-medium text-on-surface">Hải Yến</span>
 </div>
 </td>
-<td className="p-md text-center">
-<div className="inline-flex items-center gap-xs px-sm py-xs bg-surface-container rounded-full">
-<span className="material-symbols-outlined text-sm text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>
-<span className="font-label-md text-label-md text-on-surface">54</span>
-</div>
-</td>
 <td className="p-md text-right font-label-md text-label-md font-bold text-primary">8,900</td>
-<td className="p-md text-center text-on-surface-variant">92</td>
+<td className="p-md text-center font-label-md text-label-md font-bold text-amber-500">620</td>
+<td className="p-md text-center"><span className="inline-flex items-center gap-xs rounded-full bg-surface-container px-sm py-xs font-label-md text-label-md text-on-surface"><span className="material-symbols-outlined text-sm text-[#FF6B6B]" style={{fontVariationSettings: '\'FILL\' 1'}}>local_fire_department</span>54 ngày</span></td>
 <td className="p-md text-center">
-<span className="material-symbols-outlined text-tertiary" style={{fontVariationSettings: '\'FILL\' 1'}}>school</span>
-</td>
-<td className="p-md text-center">
-<span className="material-symbols-outlined text-[#EF4444]">arrow_downward</span>
+<span className="material-symbols-outlined text-tertiary" title="Học viên chăm chỉ" style={{fontVariationSettings: '\'FILL\' 1'}}>school</span><span className="material-symbols-outlined ml-xs text-blue-500" title="Chuyên gia chi tiêu">account_balance_wallet</span>
 </td>
 </tr>
 </tbody>
