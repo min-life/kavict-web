@@ -80,7 +80,7 @@ export default function DashboardHome() {
 </header>
 {/* Mid Section: Two Columns */}
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-lg">
-{/* Left Card: Tổng quan tài chính (70% -> 8 cols) */}
+{/* Left Card: Quản lý tài chính (70% -> 8 cols) */}
 <div className="lg:col-span-8 flex flex-col h-full relative group">
   {isLoading ? (
     <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col h-full items-center justify-center min-h-[400px]">
@@ -91,8 +91,9 @@ export default function DashboardHome() {
       plan={plan} 
       transactions={transactions} 
       titleAction={
-        <Link href="/dashboard/finance-management" className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-          <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+        <Link href="/dashboard/finance-management" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-label-sm text-label-sm text-on-primary transition-colors hover:bg-primary-fixed-variant">
+          Quản lý tài chính
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
         </Link>
       }
     />
@@ -114,9 +115,9 @@ export default function DashboardHome() {
     </div>
   )}
 </div>
-{/* Right Card: Chuỗi học tập (30% -> 4 cols) */}
+{/* Right Card: Học tập (30% -> 4 cols) */}
 <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient hover:shadow-hover transition-shadow duration-300 p-md fade-in delay-200 flex flex-col items-center text-center h-full">
-<h2 className="font-headline-md text-headline-md text-on-surface self-start w-full text-left mb-md">Chuỗi học tập</h2>
+<h2 className="font-headline-md text-headline-md text-on-surface self-start w-full text-left mb-md">Học tập</h2>
 <div className="font-display text-display text-on-surface mb-sm flex items-center gap-2">
 <span>🔥</span>
 <span className="font-display text-display"><AnimatedCounter target={15} /></span>
@@ -223,40 +224,6 @@ export default function DashboardHome() {
         </div>
         <div className="text-sm font-bold text-primary">+100 XP</div>
       </Link>
-    </div>
-  </div>
-
-  {/* Leaderboard Card */}
-  <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient p-md flex flex-col fade-in delay-500">
-    <div className="flex justify-between items-center mb-md">
-      <h2 className="font-headline-md text-headline-md text-on-surface">Bảng xếp hạng</h2>
-      <Link href="/dashboard/leaderboard" className="text-primary font-label-sm text-label-sm hover:text-on-primary-fixed-variant transition-colors">
-        Tất cả
-      </Link>
-    </div>
-    <div className="flex flex-col gap-2 flex-grow justify-center">
-      {[
-        { rank: 1, name: 'Trần Thị B', xp: '12,450', isMe: false, badge: '🏆', color: 'bg-tertiary-container text-on-tertiary-container' },
-        { rank: 2, name: 'Lê Văn C', xp: '11,200', isMe: false, badge: '🥈', color: 'bg-secondary-container text-on-secondary-container' },
-        { rank: 3, name: userName + ' (Bạn)', xp: '8,950', isMe: true, badge: '🥉', color: 'bg-primary text-on-primary' },
-        { rank: 4, name: 'Phạm Thị D', xp: '7,300', isMe: false, badge: '🏅', color: 'bg-surface-variant text-on-surface-variant' }
-      ].map(user => (
-        <div key={user.rank} className={`flex items-center justify-between p-2 rounded-xl transition-colors ${user.isMe ? 'bg-primary-fixed/30 border border-primary/30' : 'hover:bg-surface'}`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-4 text-center font-bold text-sm ${user.isMe ? 'text-primary' : 'text-on-surface-variant'}`}>{user.rank}</div>
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${user.color}`}>
-                {user.name.charAt(0)}
-              </div>
-              <div className={`text-sm font-medium ${user.isMe ? 'text-primary' : 'text-on-surface'}`}>{user.name}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className={`text-sm font-bold ${user.isMe ? 'text-primary' : 'text-on-surface-variant'}`}>{user.xp}</div>
-            <div className="text-lg leading-none">{user.badge}</div>
-          </div>
-        </div>
-      ))}
     </div>
   </div>
 

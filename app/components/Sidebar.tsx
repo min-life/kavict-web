@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { ACCOUNT_MENU_ITEMS, HELP_MENU_ITEMS } from "@/app/components/accountMenuItems";
 import {
-  LEADERBOARD_NAV_ITEM,
   PRIMARY_NAV_ITEMS,
   STATIC_TASKS,
 } from "@/app/components/sidebarContent";
@@ -139,26 +138,6 @@ export default function Sidebar() {
           </div>
         </section>
 
-        <div className="mt-5 border-t border-outline-variant pt-3">
-          <div className="relative has-tooltip">
-            <Link
-              className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-all duration-200 center-on-collapse ${
-                isActive(LEADERBOARD_NAV_ITEM.href)
-                  ? "text-primary font-bold border-r-4 border-primary bg-primary-container/10"
-                  : "text-on-surface-variant hover:text-primary hover:bg-surface-container-high"
-              }`}
-              href={LEADERBOARD_NAV_ITEM.href}
-            >
-              <span className="material-symbols-outlined">{LEADERBOARD_NAV_ITEM.icon}</span>
-              <span className="text-label-md font-label-md hide-on-collapse whitespace-nowrap">
-                {LEADERBOARD_NAV_ITEM.label}
-              </span>
-            </Link>
-            <div className="tooltip absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm px-2 py-1 rounded whitespace-nowrap z-50">
-              {LEADERBOARD_NAV_ITEM.label}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Footer */}

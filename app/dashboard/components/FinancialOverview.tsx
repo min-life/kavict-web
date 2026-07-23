@@ -174,7 +174,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
     <div className="bg-surface-container-lowest rounded-2xl border border-surface-variant shadow-ambient flex flex-col h-full">
       <div className="flex justify-between items-center p-6 pb-2">
         <div className="flex items-center gap-3">
-          <h2 className="font-headline-md text-headline-md text-on-surface">Tổng quan tài chính</h2>
+          <h2 className="font-headline-md text-headline-md text-on-surface">Quản lý tài chính</h2>
           {titleAction}
         </div>
         <div className="bg-surface-container rounded-lg p-1 flex gap-2 items-center">
