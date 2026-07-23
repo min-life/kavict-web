@@ -71,6 +71,9 @@ describe("settings visual surface", () => {
     }
     expect(helpPage).toContain("Android và iOS");
     expect(helpPage).toContain("IntersectionObserver");
+    expect(helpPage).toContain("items-center text-center");
+    expect(helpPage).toContain("text-headline-lg");
+    expect(helpPage).not.toContain("Mọi thông tin bạn cần để bắt đầu và sử dụng KAVICT hiệu quả.");
   });
 
   it("keeps the expanded Help popover adjacent, visible, and announced as a menu", () => {

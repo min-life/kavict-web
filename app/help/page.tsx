@@ -91,12 +91,13 @@ export default function HelpPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8 md:py-12">
-      <div className="mb-10">
-        <p className="text-label-md font-label-md text-primary">KAVICT SUPPORT</p>
-        <h1 className="mt-2 text-display-sm font-display-sm text-on-surface">Help Center</h1>
-        <p className="mt-3 max-w-2xl text-body-lg text-on-surface-variant">
-          Mọi thông tin bạn cần để bắt đầu và sử dụng KAVICT hiệu quả.
+      <div className="mb-12 flex flex-col items-center text-center">
+        <p className="font-headline-lg text-headline-lg-mobile font-bold tracking-[0.12em] text-primary md:text-headline-lg">
+          KAVICT SUPPORT
         </p>
+        <h1 className="mt-3 font-display text-headline-lg-mobile text-on-surface md:text-display">
+          Help Center
+        </h1>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[15rem_minmax(0,1fr)]">
