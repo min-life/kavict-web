@@ -33,5 +33,16 @@ describe("learning module detail", () => {
     expect(modulePage).toContain("Premium");
     expect(modulePage).toContain('data-icon="star"');
     expect(modulePage).toContain("getLearningModule");
+    expect(modulePage).not.toContain("const module =");
+  });
+});
+
+describe("learning lesson fallback", () => {
+  const lessonPage = readFileSync(path.resolve(process.cwd(), "app/dashboard/learning/lesson/[id]/page.tsx"), "utf8");
+
+  it("falls back to lesson 1 instead of lesson 4", () => {
+    expect(lessonPage).toContain('params.id === "string" ? params.id : "1"');
+    expect(lessonPage).toContain("Number(lessonId) || 1");
+    expect(lessonPage).toContain('LESSONS_DATABASE[lessonId] || LESSONS_DATABASE["1"]');
   });
 });

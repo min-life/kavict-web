@@ -392,16 +392,16 @@ const MatchingExercise = ({ q, answer, handleSetAnswer, isSubmitted, showFeedbac
 
 export default function LessonDetailPage() {
   const params = useParams();
-  const lessonId = typeof params.id === "string" ? params.id : "4";
+  const lessonId = typeof params.id === "string" ? params.id : "1";
   return <LessonDetailPageContent key={lessonId} lessonId={lessonId} />;
 }
 
 function LessonDetailPageContent({ lessonId }: { lessonId: string }) {
   const router = useRouter();
   const { user } = useAuth();
-  const lessonNumericId = Number(lessonId) || 4;
+  const lessonNumericId = Number(lessonId) || 1;
   
-  const lesson = LESSONS_DATABASE[lessonId] || LESSONS_DATABASE["4"];
+  const lesson = LESSONS_DATABASE[lessonId] || LESSONS_DATABASE["1"];
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showFullLesson, setShowFullLesson] = useState(false);
