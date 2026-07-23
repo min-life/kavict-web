@@ -22,4 +22,17 @@ describe("leaderboard podium achievements", () => {
     expect(leaderboardPage).not.toContain(">Bài học</th>");
     expect(leaderboardPage).not.toContain(">Xu hướng</th>");
   });
+
+  it("uses the profile character avatars instead of remote portrait photos", () => {
+    expect(leaderboardPage).toContain('import { findAvatar } from "../profile/profileModel";');
+    expect(leaderboardPage).toContain("function LeaderboardAvatar");
+    expect(leaderboardPage).not.toContain("lh3.googleusercontent.com/aida-public");
+  });
+
+  it("places the personal rank after the leaderboard table without a see-more control", () => {
+    expect(leaderboardPage).not.toContain("Xem thêm");
+    expect(leaderboardPage.indexOf("data-personal-achievement-summary")).toBeGreaterThan(
+      leaderboardPage.indexOf("data-ranking-achievements"),
+    );
+  });
 });
