@@ -38,18 +38,26 @@ describe("settings visual surface", () => {
     expect(profile).not.toContain("Cài đặt chung");
   });
 
-  it("exposes only the requested account and Help menu items", () => {
+  it("exposes only the requested account menu items", () => {
     expect(ACCOUNT_MENU_ITEMS).toEqual([
       { label: "Hồ sơ", icon: "person", href: "/dashboard/profile" },
       { label: "Cài đặt", icon: "settings", href: "/dashboard/settings" },
     ]);
-    expect(HELP_MENU_ITEMS.map((item) => item.label)).toEqual([
-      "Help center", "Release notes", "Download apps",
-      "Terms of Service", "Privacy Policy", "Report a bug",
+  });
+
+  it("links the Help popover to the canonical Help Center sections", () => {
+    expect(HELP_MENU_ITEMS).toEqual([
+      { label: "Documentation", icon: "menu_book", href: "/help#documentation" },
+      { label: "FAQ", icon: "help", href: "/help#faq" },
+      { label: "Terms of Service", icon: "article", href: "/help#terms" },
+      { label: "Privacy Policy", icon: "privacy_tip", href: "/help#privacy" },
+      { label: "Download app", icon: "download", href: "/help#download-app", dividerBefore: true },
+      { label: "Contact us", icon: "mail", href: "/help#contact-us", dividerBefore: true },
     ]);
-    expect(HELP_MENU_ITEMS.filter((item) => item.dividerBefore)).toEqual([
-      { label: "Terms of Service", icon: "article", dividerBefore: true },
-    ]);
+
+    const sidebar = readFileSync(sidebarPath, "utf8");
+    expect(sidebar).toContain("href={item.href}");
+    expect(sidebar).not.toContain('aria-disabled="true"');
   });
 
   it("keeps the expanded Help popover adjacent, visible, and announced as a menu", () => {

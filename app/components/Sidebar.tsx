@@ -219,9 +219,9 @@ export default function Sidebar() {
               <div id="sidebar-help-menu" role="menu" className="absolute bottom-0 left-full z-50 ml-2 w-72 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-2 text-on-surface shadow-xl dark:bg-surface-container-highest">
                 {HELP_MENU_ITEMS.map((item) => (
                   <div className={("dividerBefore" in item && item.dividerBefore) ? "mt-2 border-t border-outline-variant pt-2" : ""} key={item.label} role="none">
-                    <button aria-disabled="true" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-on-surface-variant hover:bg-surface-container-high hover:text-primary dark:text-on-surface" role="menuitem" type="button">
+                    <Link className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary dark:text-on-surface" href={item.href} role="menuitem">
                       <span className="material-symbols-outlined text-[22px]" aria-hidden="true">{item.icon}</span><span className="text-body-md">{item.label}</span>
-                    </button>
+                    </Link>
                   </div>
                 ))}
               </div>

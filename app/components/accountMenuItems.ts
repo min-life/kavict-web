@@ -6,14 +6,15 @@ export const ACCOUNT_MENU_ITEMS = [
 type HelpMenuItem = {
   label: string;
   icon: string;
+  href: string;
   dividerBefore?: boolean;
 };
 
 export const HELP_MENU_ITEMS: readonly HelpMenuItem[] = [
-  { label: "Help center", icon: "help" },
-  { label: "Release notes", icon: "edit" },
-  { label: "Download apps", icon: "download" },
-  { label: "Terms of Service", icon: "article", dividerBefore: true },
-  { label: "Privacy Policy", icon: "info" },
-  { label: "Report a bug", icon: "bug_report" },
+  { label: "Documentation", icon: "menu_book", href: "/help#documentation" },
+  { label: "FAQ", icon: "help", href: "/help#faq" },
+  { label: "Terms of Service", icon: "article", href: "/help#terms" },
+  { label: "Privacy Policy", icon: "privacy_tip", href: "/help#privacy" },
+  { label: "Download app", icon: "download", href: "/help#download-app", dividerBefore: true },
+  { label: "Contact us", icon: "mail", href: "/help#contact-us", dividerBefore: true },
 ] as const;
