@@ -13,8 +13,8 @@ describe("sidebar content", () => {
 
     expect(PRIMARY_NAV_ITEMS.map((item) => item.href)).toEqual([
       "/dashboard",
-      "/dashboard/learning",
       "/dashboard/finance-management",
+      "/dashboard/learning",
       "/dashboard/practice-space",
     ]);
     expect(PRIMARY_NAV_ITEMS.at(-1)).toMatchObject({
