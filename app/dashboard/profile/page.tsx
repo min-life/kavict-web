@@ -1,235 +1,169 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/features/auth/AuthProvider";
+import type { ProfilePreferencesInput } from "@/features/auth/domain";
+import {
+  ACHIEVEMENT_SECTIONS,
+  AVATAR_OPTIONS,
+  findAvatar,
+  RESPONSE_STYLE_OPTIONS,
+  TONE_OPTIONS,
+} from "./profileModel";
+
+type ProfileTab = "information" | "achievement";
+
+function CharacterAvatar({ avatarKey, size = "large" }: { avatarKey: string | null | undefined; size?: "large" | "small" }) {
+  const avatar = findAvatar(avatarKey);
+  const dimensions = size === "large" ? "h-28 w-28 text-5xl" : "h-14 w-14 text-2xl";
+
+  if (!avatar) {
+    return (
+      <div className={`${dimensions} rounded-[2rem] border-2 border-dashed border-outline-variant bg-surface-container-low flex items-center justify-center text-on-surface-variant`}>
+        <span className="material-symbols-outlined text-[32px]">person</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${dimensions} rounded-[2rem] bg-gradient-to-br ${avatar.colors} shadow-soft flex items-center justify-center border-4 border-surface-container-lowest`} aria-label={`Avatar ${avatar.label}`}>
+      <span aria-hidden="true">{avatar.emoji}</span>
+    </div>
+  );
+}
+
+function DetailRow({ icon, label, value }: { icon: string; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl bg-surface-container-low p-3">
+      <span className="material-symbols-outlined text-primary">{icon}</span>
+      <div className="min-w-0">
+        <p className="font-label-sm text-label-sm text-on-surface-variant">{label}</p>
+        <p className="truncate font-label-md text-label-md text-on-surface">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function MetricCard({ icon, label, value, tone }: { icon: string; label: string; value: string; tone: string }) {
+  return (
+    <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-soft transition-shadow hover:shadow-hover">
+      <div className="mb-4 flex items-center gap-2 text-on-surface-variant">
+        <span className={`material-symbols-outlined ${tone}`}>{icon}</span>
+        <span className="font-label-sm text-label-sm uppercase tracking-wide">{label}</span>
+      </div>
+      <p className="font-headline-md text-headline-md text-on-surface">{value}</p>
+    </div>
+  );
+}
 
 export default function UserProfile() {
-  const { user } = useAuth();
-  
+  const { user, userProfile, updateProfilePreferences } = useAuth();
+  const [activeTab, setActiveTab] = useState<ProfileTab>("information");
+  const [draftPreferences, setDraftPreferences] = useState<ProfilePreferencesInput | null>(null);
+  const [showCharacterPicker, setShowCharacterPicker] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const profilePreferences = draftPreferences ?? {
+    avatarKey: userProfile?.avatarKey ?? null,
+    informationForKavi: userProfile?.informationForKavi ?? "",
+    kaviTone: userProfile?.kaviTone ?? "vui vẻ",
+    responseStyle: userProfile?.responseStyle ?? "concise",
+  };
+  const updatePreferences = (changes: Partial<ProfilePreferencesInput>) => {
+    setDraftPreferences({ ...profilePreferences, ...changes });
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveMessage(null);
+    try {
+      await updateProfilePreferences({ ...profilePreferences, informationForKavi: profilePreferences.informationForKavi.trim() });
+      setSaveMessage("Đã lưu cá nhân hóa của bạn.");
+    } catch {
+      setSaveMessage("Không thể lưu ngay lúc này. Vui lòng thử lại.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <>
+    <section className="mx-auto max-w-[72rem] pb-lg">
+      <header className="mb-lg">
+        <p className="mb-2 font-label-md text-label-md text-primary">Hồ sơ của bạn</p>
+        <h1 className="font-headline-lg text-headline-lg text-on-surface">Không gian của riêng bạn</h1>
+        <p className="mt-2 font-body-md text-body-md text-on-surface-variant">Cập nhật cách Kavi đồng hành và theo dõi hành trình bạn đã xây dựng.</p>
+      </header>
 
+      <div className="mb-lg inline-flex rounded-xl bg-surface-container p-1" role="tablist" aria-label="Hồ sơ người dùng">
+        <button id="profile-information-tab" role="tab" type="button" aria-selected={activeTab === "information"} aria-controls="profile-information-panel" onClick={() => setActiveTab("information")} className={`rounded-lg px-4 py-2.5 font-label-md text-label-md transition-colors ${activeTab === "information" ? "bg-primary text-on-primary shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high"}`}>
+          My Information
+        </button>
+        <button id="profile-achievement-tab" role="tab" type="button" aria-selected={activeTab === "achievement"} aria-controls="profile-achievement-panel" onClick={() => setActiveTab("achievement")} className={`rounded-lg px-4 py-2.5 font-label-md text-label-md transition-colors ${activeTab === "achievement" ? "bg-primary text-on-primary shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high"}`}>
+          My Achievement
+        </button>
+      </div>
 
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
-{/* Left Column: Profile, Membership */}
-<div className="lg:col-span-4 flex flex-col gap-md">
-{/* 1. Hồ sơ cá nhân */}
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
-<div className="flex flex-col items-center text-center">
-<div className="relative mb-4 group">
-<img className="w-24 h-24 rounded-full object-cover border-4 border-surface shadow-sm" src={user?.photoURL || "https://lh3.googleusercontent.com/aida-public/AB6AXuAhXHkdDj6h60s8VmIBtl2_gYPDCSAN84hELqW2hbQw6jLCjZjdXiFKHYOABqQhHvTN4wHsKiOC9IOEOiMcmdMA6wpUGfz7yat_euYPpMFcl4qYuy-m-TZ2RsZuIW7KfknJSL1pth_7fUgBGArFRl5tAzQhnzhQfiSXr3z9simZoZMz0HhRuwXmgKv7emWYs9JFYx9k7sVoMZzhBg1usfdSJMeCzDj9tRLTDaC3yKSuxW5NQR7dk4YfWLrSH-L5TpwVQwCkaNw1UHc"} alt="Avatar" />
-<button className="absolute bottom-0 right-0 bg-primary-container text-on-primary-container rounded-full p-1.5 shadow-md hover:bg-primary transition-colors">
-<span className="material-symbols-outlined text-[16px]">edit</span>
-</button>
-</div>
-<h2 className="font-headline-md text-headline-md text-on-surface mb-1">{user?.displayName || "Người dùng"}</h2>
-<p className="font-body-md text-body-md text-on-surface-variant mb-4">{user?.email || "Chưa cập nhật email"}</p>
-<div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-container/10 text-primary-container rounded-full mb-6">
-<span className="material-symbols-outlined text-[18px]">workspace_premium</span>
-<span className="font-label-md text-label-md font-semibold">Gói Premium</span>
-</div>
-<button className="w-full h-12 flex items-center justify-center gap-2 border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors">
-<span className="material-symbols-outlined text-[18px]">manage_accounts</span>
-                            Chỉnh sửa hồ sơ
-                        </button>
-</div>
-</div>
-{/* 8. Gói thành viên */}
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover relative overflow-hidden">
-<div className="absolute -right-6 -top-6 w-24 h-24 bg-primary-container/5 rounded-full blur-xl"></div>
-<div className="flex items-center gap-3 mb-4">
-<div className="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary-container">
-<span className="material-symbols-outlined">stars</span>
-</div>
-<div>
-<h3 className="font-headline-md text-body-lg font-semibold text-on-surface">Mastery Premium</h3>
-<p className="font-label-sm text-label-sm text-on-surface-variant">Đang hoạt động</p>
-</div>
-</div>
-<div className="bg-surface-container-low rounded-lg p-3 mb-4">
-<div className="flex justify-between items-center mb-1">
-<span className="font-label-md text-label-md text-on-surface-variant">Thời gian còn lại</span>
-<span className="font-label-md text-label-md font-semibold text-primary-container">18 ngày</span>
-</div>
-<div className="w-full bg-surface-variant rounded-full h-1.5 mt-2 overflow-hidden">
-<div className="bg-primary-container h-1.5 rounded-full" style={{width: '70%'}}></div>
-</div>
-</div>
-<button className="w-full h-12 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-lg hover:bg-primary transition-colors shadow-sm">
-                        Gia hạn / Nâng cấp
-                    </button>
-</div>
-</div>
-{/* Right Column: Stats, Progress, Activity */}
-<div className="lg:col-span-8 flex flex-col gap-md">
-{/* 2. Thành tích học tập (Bento style) */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-{/* XP & Level Card */}
-<div className="col-span-2 bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover flex flex-col justify-between relative overflow-hidden">
-<div className="absolute right-0 top-0 w-32 h-32 bg-primary-container/5 rounded-bl-full"></div>
-<div className="flex justify-between items-start mb-4 relative z-10">
-<div>
-<h3 className="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Tổng kinh nghiệm</h3>
-<div className="font-headline-lg text-headline-lg font-bold text-on-surface">15,820 <span className="text-sm font-normal text-on-surface-variant">XP</span></div>
-</div>
-<div className="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
-<span className="material-symbols-outlined text-[24px]">military_tech</span>
-</div>
-</div>
-<div className="relative z-10">
-<div className="flex justify-between items-end mb-2">
-<span className="font-label-md text-label-md font-semibold text-on-surface">Level 12</span>
-<span className="font-label-sm text-label-sm text-on-surface-variant">75% đến Lv 13</span>
-</div>
-<div className="w-full bg-surface-variant rounded-full h-2 overflow-hidden">
-<div className="bg-primary-container h-2 rounded-full" style={{width: '75%'}}></div>
-</div>
-</div>
-</div>
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-4 transition-all-300 shadow-hover flex flex-col justify-center">
-<div className="flex items-center gap-2 mb-2 text-on-surface-variant">
-<span className="material-symbols-outlined text-[18px]">menu_book</span>
-<span className="font-label-sm text-label-sm uppercase tracking-wider">Bài học</span>
-</div>
-<div className="font-headline-md text-headline-md font-bold text-on-surface">145</div>
-</div>
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-4 transition-all-300 shadow-hover flex flex-col justify-center">
-<div className="flex items-center gap-2 mb-2 text-on-surface-variant">
-<span className="material-symbols-outlined text-[18px]">local_fire_department</span>
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-orange-500">Streak</span>
-</div>
-<div className="font-headline-md text-headline-md font-bold text-on-surface">30 <span className="text-sm font-normal text-on-surface-variant">ngày</span></div>
-</div>
-</div>
-{/* 5. Thống kê tài khoản */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-4 flex items-center gap-4 transition-all-300 shadow-hover border border-transparent hover:border-primary-container/20">
-<div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-<span className="material-symbols-outlined">smart_toy</span>
-</div>
-<div>
-<div className="font-headline-md text-body-lg font-bold text-on-surface">124</div>
-<div className="font-label-sm text-label-sm text-on-surface-variant">Câu hỏi AI</div>
-</div>
-</div>
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-4 flex items-center gap-4 transition-all-300 shadow-hover border border-transparent hover:border-primary-container/20">
-<div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-<span className="material-symbols-outlined">edit_note</span>
-</div>
-<div>
-<div className="font-headline-md text-body-lg font-bold text-on-surface">56</div>
-<div className="font-label-sm text-label-sm text-on-surface-variant">Ghi chú</div>
-</div>
-</div>
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-4 flex items-center gap-4 transition-all-300 shadow-hover border border-transparent hover:border-primary-container/20">
-<div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
-<span className="material-symbols-outlined">style</span>
-</div>
-<div>
-<div className="font-headline-md text-body-lg font-bold text-on-surface">210</div>
-<div className="font-label-sm text-label-sm text-on-surface-variant">Flashcards</div>
-</div>
-</div>
-</div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-{/* 4. Mục tiêu tài chính */}
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
-<div className="flex justify-between items-center mb-6">
-<h3 className="font-headline-md text-body-lg font-semibold text-on-surface">Mục tiêu tài chính</h3>
-<button className="text-primary-container hover:text-primary transition-colors">
-<span className="material-symbols-outlined text-[20px]">add_circle</span>
-</button>
-</div>
-<div className="flex flex-col gap-5">
-<div>
-<div className="flex justify-between items-center mb-2">
-<div className="flex items-center gap-2">
-<span className="material-symbols-outlined text-[18px] text-on-surface-variant">home</span>
-<span className="font-label-md text-label-md text-on-surface">Mua nhà</span>
-</div>
-<span className="font-label-sm text-label-sm text-on-surface-variant">45%</span>
-</div>
-<div className="w-full bg-surface-variant rounded-full h-2 overflow-hidden">
-<div className="bg-primary-container h-2 rounded-full" style={{width: '45%'}}></div>
-</div>
-</div>
-<div>
-<div className="flex justify-between items-center mb-2">
-<div className="flex items-center gap-2">
-<span className="material-symbols-outlined text-[18px] text-on-surface-variant">health_and_safety</span>
-<span className="font-label-md text-label-md text-on-surface">Quỹ khẩn cấp</span>
-</div>
-<span className="font-label-sm text-label-sm text-on-surface-variant">80%</span>
-</div>
-<div className="w-full bg-surface-variant rounded-full h-2 overflow-hidden">
-<div className="bg-emerald-500 h-2 rounded-full" style={{width: '80%'}}></div>
-</div>
-</div>
-</div>
-</div>
-{/* 3. Huy hiệu đạt được */}
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
-<div className="flex justify-between items-center mb-6">
-<h3 className="font-headline-md text-body-lg font-semibold text-on-surface">Huy hiệu nổi bật</h3>
-<a className="font-label-sm text-label-sm text-primary-container hover:underline" href="#">Xem tất cả</a>
-</div>
-<div className="grid grid-cols-3 gap-3">
-<div className="flex flex-col items-center text-center group cursor-pointer">
-<div className="w-14 h-14 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 mb-2 group-hover:scale-110 transition-transform">
-<span className="material-symbols-outlined text-[28px]">trophy</span>
-</div>
-<span className="font-label-sm text-[10px] text-on-surface-variant leading-tight">Top 10<br/>Leaderboard</span>
-</div>
-<div className="flex flex-col items-center text-center group cursor-pointer">
-<div className="w-14 h-14 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-500 mb-2 group-hover:scale-110 transition-transform">
-<span className="material-symbols-outlined text-[28px]">local_fire_department</span>
-</div>
-<span className="font-label-sm text-[10px] text-on-surface-variant leading-tight">Streak<br/>30 ngày</span>
-</div>
-<div className="flex flex-col items-center text-center group cursor-pointer">
-<div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-500 mb-2 group-hover:scale-110 transition-transform">
-<span className="material-symbols-outlined text-[28px]">account_balance_wallet</span>
-</div>
-<span className="font-label-sm text-[10px] text-on-surface-variant leading-tight">Chuyên gia<br/>Chi tiêu</span>
-</div>
-</div>
-</div>
-</div>
-{/* 6. Hoạt động gần đây */}
-<div className="bg-surface-container-lowest rounded-2xl shadow-soft p-md transition-all-300 shadow-hover">
-<h3 className="font-headline-md text-body-lg font-semibold text-on-surface mb-6">Hoạt động gần đây</h3>
-<div className="relative border-l border-surface-variant ml-3 space-y-6">
-<div className="relative pl-6">
-<div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-primary-container border-4 border-surface-container-lowest"></div>
-<div className="flex justify-between items-start mb-1">
-<div className="font-label-md text-label-md font-medium text-on-surface">Hoàn thành bài học: Quản lý rủi ro cơ bản</div>
-<span className="font-label-sm text-label-sm text-on-surface-variant">2 giờ trước</span>
-</div>
-<p className="font-body-md text-sm text-on-surface-variant">+50 XP • Đạt điểm 95/100 Quiz</p>
-</div>
-<div className="relative pl-6">
-<div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-amber-500 border-4 border-surface-container-lowest"></div>
-<div className="flex justify-between items-start mb-1">
-<div className="font-label-md text-label-md font-medium text-on-surface">Đạt Streak 30 ngày liên tiếp</div>
-<span className="font-label-sm text-label-sm text-on-surface-variant">Hôm qua</span>
-</div>
-<p className="font-body-md text-sm text-on-surface-variant">Nhận huy hiệu mới và +200 XP thưởng</p>
-</div>
-<div className="relative pl-6">
-<div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-surface-variant border-4 border-surface-container-lowest"></div>
-<div className="flex justify-between items-start mb-1">
-<div className="font-label-md text-label-md font-medium text-on-surface">Nâng cấp gói Mastery Premium</div>
-<span className="font-label-sm text-label-sm text-on-surface-variant">12 ngày trước</span>
-</div>
-<p className="font-body-md text-sm text-on-surface-variant">Mở khóa toàn bộ tính năng AI và Simulator</p>
-</div>
-</div>
-<button className="w-full mt-6 py-2 text-center font-label-md text-label-md text-on-surface-variant hover:text-primary-container transition-colors">
-                        Tải thêm hoạt động
-                    </button>
-</div>
-</div>
-</div>
+      {activeTab === "information" ? (
+        <div id="profile-information-panel" role="tabpanel" aria-labelledby="profile-information-tab" className="space-y-md">
+          <div className="grid grid-cols-1 gap-md xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+            <div className="rounded-2xl bg-surface-container-lowest p-md shadow-soft">
+              <div className="flex flex-col items-center text-center">
+                <button type="button" onClick={() => setShowCharacterPicker((isOpen) => !isOpen)} className="group rounded-[2rem] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-surface" aria-expanded={showCharacterPicker} aria-controls="character-picker">
+                  <CharacterAvatar avatarKey={profilePreferences.avatarKey} />
+                  <span className="sr-only">Chọn nhân vật đại diện</span>
+                </button>
+                <h2 className="mt-4 font-headline-md text-headline-md text-on-surface">{userProfile?.preferredName || user?.displayName || "Người dùng"}</h2>
+                <p className="mt-1 font-body-md text-body-md text-on-surface-variant">{user?.email || "Chưa cập nhật email"}</p>
+                <button type="button" onClick={() => setShowCharacterPicker((isOpen) => !isOpen)} className="mt-5 inline-flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container" aria-expanded={showCharacterPicker} aria-controls="character-picker">
+                  <span className="material-symbols-outlined text-[18px]">face</span>
+                  Select character
+                </button>
+              </div>
 
-    </>
+              {showCharacterPicker && (
+                <div id="character-picker" className="mt-6 border-t border-outline-variant pt-5">
+                  <p className="mb-3 text-center font-label-md text-label-md text-on-surface">Chọn nhân vật vui nhộn cho hồ sơ</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    {AVATAR_OPTIONS.map((avatar) => (
+                      <button key={avatar.key} type="button" onClick={() => { updatePreferences({ avatarKey: avatar.key }); setShowCharacterPicker(false); }} className={`rounded-xl p-2 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary ${profilePreferences.avatarKey === avatar.key ? "bg-primary-container/20 ring-2 ring-primary" : "bg-surface-container-low"}`} aria-label={`Chọn ${avatar.label}`}>
+                        <div className={`mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${avatar.colors} text-2xl`}>{avatar.emoji}</div>
+                        <span className="mt-1 block truncate font-label-sm text-label-sm text-on-surface">{avatar.label.split(" ")[0]}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-2xl bg-surface-container-lowest p-md shadow-soft">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-container/15 text-primary"><span className="material-symbols-outlined">badge</span></div>
+                <div><h2 className="font-headline-md text-body-lg text-on-surface">Basic Information</h2><p className="font-body-sm text-body-sm text-on-surface-variant">Thông tin nền tảng của tài khoản.</p></div>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <DetailRow icon="person" label="Tên" value={userProfile?.preferredName || user?.displayName || "Chưa cập nhật"} />
+                <DetailRow icon="cake" label="Tuổi" value="Chưa cập nhật" />
+                <DetailRow icon="mail" label="Email" value={user?.email || "Chưa cập nhật"} />
+                <DetailRow icon="calendar_month" label="Tham gia nền tảng" value="Chưa cập nhật" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-surface-container-lowest p-md shadow-soft">
+            <div className="mb-6 flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-container/50 text-on-secondary-container"><span className="material-symbols-outlined">tune</span></div><div><h2 className="font-headline-md text-body-lg text-on-surface">Personalization</h2><p className="font-body-sm text-body-sm text-on-surface-variant">Giúp Kavi hiểu và trò chuyện với bạn phù hợp hơn.</p></div></div>
+            <label className="block"><span className="font-label-md text-label-md text-on-surface">What information you want Kavi to know</span><textarea value={profilePreferences.informationForKavi} onChange={(event) => updatePreferences({ informationForKavi: event.target.value })} rows={4} maxLength={500} placeholder="Ví dụ: Mình là sinh viên, muốn quản lý chi tiêu tốt hơn và đang tiết kiệm cho một chuyến đi..." className="mt-2 w-full resize-y rounded-xl border border-outline-variant bg-surface px-4 py-3 font-body-md text-body-md text-on-surface outline-none transition-colors placeholder:text-on-surface-variant focus:border-primary focus:ring-2 focus:ring-primary/20" /></label>
+            <div className="mt-6"><p className="font-label-md text-label-md text-on-surface">How you want Kavi behave</p><p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">Chọn tone giao tiếp của Kavi.</p><div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">{TONE_OPTIONS.map((tone) => <button key={tone.value} type="button" onClick={() => updatePreferences({ kaviTone: tone.value })} className={`rounded-xl border p-3 text-left transition-colors ${profilePreferences.kaviTone === tone.value ? "border-primary bg-primary-container/15 text-primary" : "border-outline-variant bg-surface text-on-surface hover:bg-surface-container"}`}><span className="material-symbols-outlined mb-2 block">{tone.icon}</span><span className="font-label-md text-label-md">{tone.label}</span></button>)}</div></div>
+            <div className="mt-6"><p className="font-label-md text-label-md text-on-surface">Cách trả lời</p><div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">{RESPONSE_STYLE_OPTIONS.map((option) => <button key={option.value} type="button" onClick={() => updatePreferences({ responseStyle: option.value })} className={`rounded-xl border p-4 text-left transition-colors ${profilePreferences.responseStyle === option.value ? "border-primary bg-primary-container/15" : "border-outline-variant bg-surface hover:bg-surface-container"}`}><span className="font-label-md text-label-md text-on-surface">{option.label}</span><span className="mt-1 block font-body-sm text-body-sm text-on-surface-variant">{option.description}</span></button>)}</div></div>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant pt-5"><p className={`font-label-sm text-label-sm ${saveMessage?.startsWith("Đã") ? "text-success" : "text-error"}`} aria-live="polite">{saveMessage}</p><button type="button" onClick={handleSave} disabled={isSaving} className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-5 font-label-md text-label-md text-on-primary transition-colors hover:bg-primary-fixed-variant disabled:cursor-not-allowed disabled:opacity-60">{isSaving && <span className="h-4 w-4 animate-spin rounded-full border-2 border-on-primary border-t-transparent" />}{isSaving ? "Đang lưu" : "Lưu thay đổi"}</button></div>
+          </div>
+        </div>
+      ) : (
+        <div id="profile-achievement-panel" role="tabpanel" aria-labelledby="profile-achievement-tab" className="space-y-md">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3"><MetricCard icon="workspace_premium" label="Tổng kinh nghiệm" value="15,820 XP" tone="text-primary" /><MetricCard icon="monetization_on" label="Kavi coin" value="1,240 coin" tone="text-amber-500" /><MetricCard icon="local_fire_department" label="Streak" value="30 ngày" tone="text-orange-500" /></div>
+          <div className="rounded-2xl bg-surface-container-lowest p-md shadow-soft"><div className="mb-6 flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-tertiary-container/50 text-on-tertiary-container"><span className="material-symbols-outlined">military_tech</span></div><div><h2 className="font-headline-md text-body-lg text-on-surface">Huy hiệu đã đạt được</h2><p className="font-body-sm text-body-sm text-on-surface-variant">Những cột mốc đáng tự hào trên hành trình của bạn.</p></div></div><div className="grid grid-cols-1 gap-3 sm:grid-cols-3">{[{ icon: "trophy", label: "Top 10 Leaderboard", color: "text-amber-500 bg-amber-50" }, { icon: "local_fire_department", label: "Streak 30 ngày", color: "text-orange-500 bg-orange-50" }, { icon: "account_balance_wallet", label: "Chuyên gia chi tiêu", color: "text-blue-500 bg-blue-50" }].map((badge) => <div key={badge.label} className="flex items-center gap-3 rounded-xl bg-surface-container-low p-4"><div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${badge.color}`}><span className="material-symbols-outlined">{badge.icon}</span></div><span className="font-label-md text-label-md text-on-surface">{badge.label}</span></div>)}</div></div>
+          <div className="grid grid-cols-1 gap-md lg:grid-cols-3">{ACHIEVEMENT_SECTIONS.map((section) => <div key={section.title} className="rounded-2xl bg-surface-container-lowest p-md shadow-soft"><div className="mb-5 flex items-center gap-3"><span className={`material-symbols-outlined ${section.color}`}>{section.icon}</span><h2 className="font-headline-md text-body-lg text-on-surface">{section.title}</h2></div><dl className="space-y-4">{section.items.map(([label, value]) => <div key={label} className="flex items-start justify-between gap-4 border-b border-outline-variant pb-3 last:border-0 last:pb-0"><dt className="font-body-sm text-body-sm text-on-surface-variant">{label}</dt><dd className="shrink-0 font-label-md text-label-md text-on-surface">{value}</dd></div>)}</dl></div>)}</div>
+        </div>
+      )}
+    </section>
   );
 }
