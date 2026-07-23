@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import type { FinancialPlan, Transaction } from "@/features/finance/domain";
+import { buildCashflowChartData } from "@/features/finance/chartData";
 import { AnimatedCounter, AnimatedProgressBar } from "./SharedUI";
 
 type ChartFilterState = { type: 'year' | 'month', year: number, month?: number };
@@ -21,91 +22,59 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
         let chartInstance = Chart.getChart(chartRef.current);
         if (chartInstance) chartInstance.destroy();
 
-        let labels: string[] = [];
-        let data: Array<number | null> = [];
-        const now = new Date();
-
-        if (chartFilter.type === 'year') {
-          labels = Array.from({length: 12}, (_, i) => `T${i + 1}`);
-          const balances: Array<number | null> = new Array(12).fill(0);
-          
-          for (let m = 0; m < 12; m++) {
-            const startOfMonth = new Date(chartFilter.year, m, 1).getTime();
-            
-            if (startOfMonth > now.getTime()) {
-              balances[m] = null;
-            } else {
-              const endOfMonth = new Date(chartFilter.year, m + 1, 0, 23, 59, 59, 999).getTime();
-              const targetTime = Math.min(endOfMonth, now.getTime());
-              const txAfter = transactions.filter(tx => tx.date > targetTime);
-              const netAfter = txAfter.reduce((sum, tx) => sum + (tx.type === 'income' ? tx.amount : -tx.amount), 0);
-              balances[m] = plan.currentBalance - netAfter;
-            }
-          }
-          data = balances.map(b => b !== null ? b / 1000000 : null);
-        } else {
-          const year = chartFilter.year;
-          const month = chartFilter.month !== undefined ? chartFilter.month : new Date().getMonth();
-          const daysInMonth = new Date(year, month + 1, 0).getDate();
-          
-          labels = Array.from({length: daysInMonth}, (_, i) => (i + 1).toString());
-          const balances: Array<number | null> = new Array(daysInMonth).fill(0);
-          
-          for (let d = 1; d <= daysInMonth; d++) {
-            const startOfDay = new Date(year, month, d).getTime();
-            if (startOfDay > now.getTime()) {
-              balances[d - 1] = null;
-            } else {
-              const endOfDay = new Date(year, month, d, 23, 59, 59, 999).getTime();
-              const targetTime = Math.min(endOfDay, now.getTime());
-              const txAfter = transactions.filter(tx => tx.date > targetTime);
-              const netAfter = txAfter.reduce((sum, tx) => sum + (tx.type === 'income' ? tx.amount : -tx.amount), 0);
-              balances[d - 1] = plan.currentBalance - netAfter;
-            }
-          }
-          data = balances.map(b => b !== null ? b / 1000000 : null);
-        }
-
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-        gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+        const cashflow = buildCashflowChartData(transactions, chartFilter);
+        const formatCurrency = (amount: number) => `${new Intl.NumberFormat('vi-VN').format(Math.abs(amount))} ₫`;
         const xGrid = { display: false, drawBorder: false };
-        const yGrid = { color: '#e6e8ea', drawBorder: false, borderDash: [5, 5] };
+        const yGrid = {
+          color: (context: { tick: { value: number } }) => context.tick.value === 0 ? '#9ca3af' : '#e6e8ea',
+          lineWidth: (context: { tick: { value: number } }) => context.tick.value === 0 ? 2 : 1,
+          drawBorder: false,
+          borderDash: [5, 5],
+        };
 
         chartInstance = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels,
-                datasets: [{
-                    label: 'Tổng tài sản',
-                    data,
-                    borderColor: '#2563eb',
-                    backgroundColor: gradient,
-                    borderWidth: 2,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#2563eb',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    tension: 0.4,
-                    spanGaps: true
-                }]
+                labels: cashflow.labels,
+                datasets: [
+                  {
+                    label: 'Thu vào',
+                    data: cashflow.income,
+                    backgroundColor: '#10b981',
+                    borderColor: '#059669',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                  },
+                  {
+                    label: 'Chi tiêu',
+                    data: cashflow.expense,
+                    backgroundColor: '#ef4444',
+                    borderColor: '#dc2626',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                  },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                      display: true,
+                      position: 'top',
+                      labels: { font: { family: 'Geist', size: 12 }, usePointStyle: true, pointStyle: 'rectRounded' },
+                    },
                     tooltip: {
                         backgroundColor: '#2d3133',
                         titleFont: { family: 'Geist', size: 12 },
                         bodyFont: { family: 'Geist', size: 14, weight: 'bold' },
                         padding: 12,
-                        displayColors: false,
+                        displayColors: true,
                         callbacks: {
                             label: function(context) {
-                                return context.parsed.y + ' Tr VNĐ';
+                                const amount = context.parsed.y ?? 0;
+                                const prefix = amount < 0 ? '-' : '';
+                                return `${context.dataset.label}: ${prefix}${formatCurrency(amount)}`;
                             }
                         }
                     }
@@ -117,7 +86,13 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
                     },
                     y: {
                         grid: yGrid,
-                        ticks: { font: { family: 'Geist', size: 12 }, color: '#737686', maxTicksLimit: 5 }
+                        beginAtZero: true,
+                        ticks: {
+                          font: { family: 'Geist', size: 12 },
+                          color: '#737686',
+                          maxTicksLimit: 5,
+                          callback: (value) => `${new Intl.NumberFormat('vi-VN', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(value))} ₫`,
+                        },
                     }
                 },
                 interaction: {
@@ -133,7 +108,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, titleAction 
         return () => chartInstance?.destroy();
       }
     }
-  }, [transactions, plan.currentBalance, chartFilter]);
+  }, [transactions, chartFilter]);
 
   const isTargetPeriod = (ts: number) => {
     const d = new Date(ts);
