@@ -35,6 +35,15 @@ describe("finance workspace composition", () => {
     expect(entrySource).toContain('plan?.budgets[0]?.category ?? "Ăn uống"');
   });
 
+  it("offers AI quick entry but keeps transaction persistence behind an explicit confirmation", () => {
+    const entrySource = readFileSync(resolve(componentDirectory, "TransactionEntryTab.tsx"), "utf8");
+
+    expect(entrySource).toContain('fetch("/api/finance-parse"');
+    expect(entrySource).toContain("Nhập nhanh bằng AI");
+    expect(entrySource).toContain("Lưu giao dịch");
+    expect(entrySource).toContain("saveTransactionAndUpdateBalance");
+  });
+
   it("lets local users attempt the Advisor request before enabling the sample fallback", () => {
     const advisorSource = readFileSync(resolve(componentDirectory, "KaviAdvisorTab.tsx"), "utf8");
 

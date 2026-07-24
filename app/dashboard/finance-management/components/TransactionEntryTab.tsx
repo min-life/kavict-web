@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import type { FinancialPlan, Transaction, TransactionType } from "@/features/finance/domain";
 import { getFinanceRepository } from "@/features/finance/provider";
+import type { QuickTransactionParseResponse, QuickTransactionReady } from "@/features/finance/quickTransaction";
+import { saveTransactionAndUpdateBalance } from "@/features/finance/transactionMutation";
 import MoneyInput from "./MoneyInput";
 
 const EXPENSE_CATEGORIES = ["Ăn uống", "Nhà ở", "Đi lại", "Học tập", "Mua sắm", "Sức khỏe", "Khác"];
@@ -25,36 +27,74 @@ export default function TransactionEntryTab({ userId, plan, transactions, onSave
   const [note, setNote] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [isSaving, setIsSaving] = useState(false);
+  const [quickMessage, setQuickMessage] = useState("");
+  const [quickResult, setQuickResult] = useState<QuickTransactionParseResponse | null>(null);
+  const [quickError, setQuickError] = useState("");
+  const [isParsingQuick, setIsParsingQuick] = useState(false);
 
   const categories = useMemo(() => {
     if (type === "income") return INCOME_CATEGORIES;
     return Array.from(new Set([...(plan?.budgets.map((budget) => budget.category) ?? []), ...EXPENSE_CATEGORIES]));
   }, [plan, type]);
 
+  const quickCategories = useMemo(() => Array.from(new Set([
+    ...(plan?.budgets.map((budget) => budget.category) ?? []),
+    ...EXPENSE_CATEGORIES,
+    ...INCOME_CATEGORIES,
+  ])), [plan]);
+
   const selectType = (nextType: TransactionType) => {
     setType(nextType);
     setCategory(nextType === "income" ? "Tiền lương" : plan?.budgets[0]?.category ?? "Ăn uống");
   };
 
-  const submit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (amount <= 0 || !date || isSaving) return;
-
+  const saveTransaction = async (transaction: QuickTransactionReady["transaction"]) => {
+    if (isSaving) return;
     setIsSaving(true);
     try {
       const repository = getFinanceRepository();
-      const transactionDate = new Date(`${date}T12:00:00`).getTime();
-      await repository.addTransaction(userId, { amount, type, category, note: note.trim(), date: transactionDate, createdAt: Date.now() });
-      if (plan) {
-        const currentBalance = plan.currentBalance + (type === "income" ? amount : -amount);
-        await repository.savePlan(userId, { currentBalance });
-      }
-      setAmount(0);
-      setNote("");
+      await saveTransactionAndUpdateBalance(repository, userId, plan, transaction);
       await onSaved();
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (amount <= 0 || !date || isSaving) return;
+    await saveTransaction({ amount, type, category, note: note.trim(), date: new Date(`${date}T12:00:00`).getTime() });
+    setAmount(0);
+    setNote("");
+  };
+
+  const parseQuickTransaction = async () => {
+    const message = quickMessage.trim();
+    if (!message || isParsingQuick) return;
+    setIsParsingQuick(true);
+    setQuickError("");
+    setQuickResult(null);
+    try {
+      const response = await fetch("/api/finance-parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, categories: quickCategories, now: Date.now() }),
+      });
+      const data = await response.json() as QuickTransactionParseResponse & { error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Không thể phân tích giao dịch.");
+      setQuickResult(data);
+    } catch (error) {
+      setQuickError(error instanceof Error ? error.message : "Không thể phân tích giao dịch.");
+    } finally {
+      setIsParsingQuick(false);
+    }
+  };
+
+  const saveQuickTransaction = async () => {
+    if (!quickResult || quickResult.status !== "ready") return;
+    await saveTransaction(quickResult.transaction);
+    setQuickMessage("");
+    setQuickResult(null);
   };
 
   const remove = async (transaction: Transaction) => {
@@ -78,6 +118,25 @@ export default function TransactionEntryTab({ userId, plan, transactions, onSave
           </div>
           <span className="material-symbols-outlined rounded-full bg-primary/10 p-2 text-primary">edit_note</span>
         </div>
+
+        <section className="mb-5 rounded-xl border border-primary/20 bg-primary/5 p-4" aria-label="Nhập nhanh bằng AI">
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined mt-0.5 text-primary">auto_awesome</span>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-bold text-on-surface">Nhập nhanh bằng AI</h3>
+              <p className="mt-1 text-xs text-on-surface-variant">Ví dụ: “tôi tiêu 20k ăn bánh mì hôm nay”. Kavi chỉ tạo bản nháp, bạn luôn xác nhận trước khi lưu.</p>
+              <div className="mt-3 flex gap-2">
+                <input value={quickMessage} onChange={(event) => setQuickMessage(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void parseQuickTransaction(); } }} placeholder="Mô tả khoản thu hoặc chi..." className="min-w-0 flex-1 rounded-xl border border-outline-variant/50 bg-surface px-3 py-2.5 text-sm text-on-surface outline-none focus:border-primary" />
+                <button type="button" onClick={() => void parseQuickTransaction()} disabled={!quickMessage.trim() || isParsingQuick} className="rounded-xl bg-primary px-3 text-on-primary disabled:opacity-50" aria-label="Phân tích giao dịch bằng AI">
+                  <span className="material-symbols-outlined">{isParsingQuick ? "progress_activity" : "arrow_forward"}</span>
+                </button>
+              </div>
+              {quickError && <p role="alert" className="mt-2 text-sm text-error">{quickError}</p>}
+              {quickResult?.status === "needs_clarification" && <p role="status" className="mt-2 text-sm text-on-surface-variant">{quickResult.question}</p>}
+              {quickResult?.status === "ready" && <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-surface p-3"><p className="text-sm font-medium text-on-surface"><span className={quickResult.transaction.type === "income" ? "text-success" : "text-error"}>{quickResult.transaction.type === "income" ? "Thu" : "Chi"} {formatVnd(quickResult.transaction.amount)}₫</span> · {quickResult.transaction.category} · {new Date(quickResult.transaction.date).toLocaleDateString("vi-VN")}<span className="block text-xs font-normal text-on-surface-variant">{quickResult.transaction.note}</span></p><button type="button" onClick={() => void saveQuickTransaction()} disabled={isSaving} className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-on-primary disabled:opacity-50">Lưu giao dịch</button></div>}
+            </div>
+          </div>
+        </section>
 
         <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl bg-surface-container p-1">
           <button type="button" onClick={() => selectType("expense")} className={`rounded-lg px-3 py-2.5 text-sm font-bold transition-colors ${type === "expense" ? "bg-error text-white shadow-sm" : "text-on-surface-variant"}`}>

@@ -12,7 +12,7 @@ vi.mock("@google/genai", () => ({
 }));
 vi.mock("server-only", () => ({}));
 
-import { getGeminiResponse } from "@/lib/server/gemini";
+import { generateGeminiJson, getGeminiResponse } from "@/lib/server/gemini";
 
 describe("local AI fallback", () => {
   it("returns useful Vietnamese copy without an API key", () => {
@@ -44,5 +44,25 @@ describe("Gemini model selection", () => {
     expect(generateContent).toHaveBeenCalledWith(expect.objectContaining({
       model: "gemini-3.6-flash",
     }));
+  });
+
+  it("returns structured data only after the caller validator accepts it", async () => {
+    generateContent.mockResolvedValueOnce({ text: '{"amount":20000}' });
+
+    const result = await generateGeminiJson({
+      contents: "tôi tiêu 20k",
+      config: { responseMimeType: "application/json" },
+    }, (value) => {
+      const amount = (value as { amount?: unknown }).amount;
+      return typeof amount === "number" && amount > 0 ? { amount } : null;
+    });
+
+    expect(result).toEqual({ amount: 20_000 });
+  });
+
+  it("returns null for invalid structured JSON", async () => {
+    generateContent.mockResolvedValueOnce({ text: "not json" });
+
+    await expect(generateGeminiJson({ contents: "tôi tiêu 20k", config: {} }, () => ({ amount: 20_000 }))).resolves.toBeNull();
   });
 });
