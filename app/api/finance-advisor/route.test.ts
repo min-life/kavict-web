@@ -38,4 +38,23 @@ describe("POST /api/finance-advisor", () => {
     });
     expect(getGeminiResponse).toHaveBeenCalledOnce();
   });
+
+  it("marks the response as a fallback when Gemini is unavailable", async () => {
+    getGeminiResponse.mockResolvedValueOnce({
+      text: "Phản hồi mẫu local",
+      fallback: true,
+    });
+
+    const response = await POST(new Request("http://localhost/api/finance-advisor", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message: "Xin chào", history: [], plan: null, monthlySummary: { income: 0, expense: 0 } }),
+    }));
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      text: "Phản hồi mẫu local",
+      fallback: true,
+    });
+  });
 });

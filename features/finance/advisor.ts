@@ -16,6 +16,7 @@ export type FinanceAdvisorRequest = {
 export type FinanceAdvisorResponse = {
   text: string;
   plan: FinancialPlan | null;
+  fallback: boolean;
 };
 
 export function extractPlanCandidate(text: string): FinancialPlan | null {

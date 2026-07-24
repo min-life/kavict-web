@@ -35,6 +35,14 @@ describe("finance workspace composition", () => {
     expect(entrySource).toContain('plan?.budgets[0]?.category ?? "Ăn uống"');
   });
 
+  it("lets local users attempt the Advisor request before enabling the sample fallback", () => {
+    const advisorSource = readFileSync(resolve(componentDirectory, "KaviAdvisorTab.tsx"), "utf8");
+
+    expect(advisorSource).toContain("const [isFallbackMode, setIsFallbackMode] = useState(false)");
+    expect(advisorSource).toContain("if (data.fallback)");
+    expect(advisorSource).not.toContain("if (!aiAvailable)");
+  });
+
   it("defines the green success token used by the selected income button", () => {
     const globalStyles = readFileSync(globalStylesPath, "utf8");
 

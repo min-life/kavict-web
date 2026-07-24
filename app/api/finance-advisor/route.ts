@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       text: removePlanCandidate(response.text),
       plan: extractPlanCandidate(response.text),
+      fallback: response.fallback,
     });
   } catch (error) {
     console.error("Finance advisor API error", error);
