@@ -35,6 +35,20 @@ describe("finance workspace composition", () => {
     expect(entrySource).toContain('plan?.budgets[0]?.category ?? "Ăn uống"');
   });
 
+  it("keeps dashboard overview separate and gives reports its two chart tabs", () => {
+    const reportsSource = readFileSync(resolve(componentDirectory, "ReportsTab.tsx"), "utf8");
+    const dashboardOverview = readFileSync(resolve(__dirname, "../components/FinancialOverview.tsx"), "utf8");
+
+    expect(reportsSource).toContain("Diễn biến thu chi");
+    expect(reportsSource).toContain("Tỷ trọng thu chi");
+    expect(reportsSource).toContain('["aggregate", "Tổng hợp"]');
+    expect(reportsSource).toContain('["expense", "Chi tiêu"]');
+    expect(reportsSource).toContain('["income", "Thu nhập"]');
+    expect(reportsSource).toContain("buildCategoryShareData");
+    expect(reportsSource).toContain("Chưa có dữ liệu");
+    expect(dashboardOverview).toContain("FinancialOverview");
+  });
+
   it("offers AI quick entry but keeps transaction persistence behind an explicit confirmation", () => {
     const entrySource = readFileSync(resolve(componentDirectory, "TransactionEntryTab.tsx"), "utf8");
 

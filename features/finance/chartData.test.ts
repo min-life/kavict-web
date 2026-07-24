@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCashflowChartData, buildPeriodFinancialSummary } from "./chartData";
+import { buildCashflowChartData, buildCategoryShareData, buildPeriodFinancialSummary } from "./chartData";
 
 describe("cashflow chart data", () => {
   it("exports the cashflow chart data builder", async () => {
@@ -120,6 +120,46 @@ describe("cashflow chart data", () => {
       previousNet: 0,
       growthRate: null,
       growthStatus: "previous-period-zero",
+    });
+  });
+
+  it("groups the selected year's expenses by category and computes total shares", () => {
+    const result = buildCategoryShareData([
+      { amount: 120_000, type: "expense", category: "Ăn uống", date: new Date(2026, 0, 5).getTime(), createdAt: 1 },
+      { amount: 80_000, type: "expense", category: "Ăn uống", date: new Date(2026, 6, 5).getTime(), createdAt: 2 },
+      { amount: 300_000, type: "expense", category: "Nhà ở", date: new Date(2026, 3, 2).getTime(), createdAt: 3 },
+      { amount: 1_000_000, type: "income", category: "Lương", date: new Date(2026, 1, 1).getTime(), createdAt: 4 },
+      { amount: 50_000, type: "expense", category: "Ăn uống", date: new Date(2025, 11, 1).getTime(), createdAt: 5 },
+    ], { type: "year", year: 2026 }, "expense");
+
+    expect(result).toEqual({
+      labels: ["Nhà ở", "Ăn uống"],
+      values: [300_000, 200_000],
+      percentages: [60, 40],
+      total: 500_000,
+    });
+  });
+
+  it("isolates the selected month and ignores invalid transactions", () => {
+    const result = buildCategoryShareData([
+      { amount: 250_000, type: "income", category: "Lương", date: new Date(2026, 4, 2).getTime(), createdAt: 1 },
+      { amount: 50_000, type: "income", category: "Freelance", date: new Date(2026, 4, 8).getTime(), createdAt: 2 },
+      { amount: 300_000, type: "income", category: "Lương", date: new Date(2026, 3, 2).getTime(), createdAt: 3 },
+      { amount: 0, type: "income", category: "Khác", date: new Date(2026, 4, 2).getTime(), createdAt: 4 },
+      { amount: 1, type: "income", category: "Khác", date: Number.NaN, createdAt: 5 },
+    ], { type: "month", year: 2026, month: 4 }, "income");
+
+    expect(result).toEqual({
+      labels: ["Lương", "Freelance"],
+      values: [250_000, 50_000],
+      percentages: [83.33, 16.67],
+      total: 300_000,
+    });
+  });
+
+  it("returns an empty share result when the period has no matching type", () => {
+    expect(buildCategoryShareData([], { type: "year", year: 2026 }, "expense")).toEqual({
+      labels: [], values: [], percentages: [], total: 0,
     });
   });
 });

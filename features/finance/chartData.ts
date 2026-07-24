@@ -1,4 +1,4 @@
-import type { Transaction } from "./domain";
+import type { Transaction, TransactionType } from "./domain";
 
 export type CashflowChartFilter = {
   type: "year" | "month";
@@ -20,6 +20,13 @@ export type PeriodFinancialSummary = {
   previousNet: number | null;
   growthRate: number | null;
   growthStatus: "available" | "no-previous-data" | "previous-period-zero";
+};
+
+export type CategoryShareData = {
+  labels: string[];
+  values: number[];
+  percentages: number[];
+  total: number;
 };
 
 function isValidTransaction(transaction: Transaction): boolean {
@@ -100,6 +107,33 @@ export function buildPeriodFinancialSummary(
     previousNet,
     growthRate: ((net - previousNet) / Math.abs(previousNet)) * 100,
     growthStatus: "available",
+  };
+}
+
+export function buildCategoryShareData(
+  transactions: Transaction[],
+  filter: CashflowChartFilter,
+  type: TransactionType,
+): CategoryShareData {
+  const totals = new Map<string, number>();
+
+  for (const transaction of transactions) {
+    if (!isValidTransaction(transaction) || transaction.type !== type || !isInPeriod(transaction, filter)) {
+      continue;
+    }
+
+    const category = transaction.category.trim() || "Khác";
+    totals.set(category, (totals.get(category) ?? 0) + transaction.amount);
+  }
+
+  const entries = [...totals.entries()].sort(([, left], [, right]) => right - left);
+  const total = entries.reduce((sum, [, amount]) => sum + amount, 0);
+
+  return {
+    labels: entries.map(([category]) => category),
+    values: entries.map(([, amount]) => amount),
+    percentages: entries.map(([, amount]) => Number(((amount / total) * 100).toFixed(2))),
+    total,
   };
 }
 
