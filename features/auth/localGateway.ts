@@ -61,7 +61,11 @@ export function createLocalAuthGateway(storage: Storage): AuthGateway {
       notify();
     },
     async completeOnboarding(input: OnboardingInput) {
-      storage.setItem(PROFILE_KEY, JSON.stringify({ ...input, onboarded: true }));
+      storage.setItem(PROFILE_KEY, JSON.stringify({
+        ...input,
+        onboarded: true,
+        createdAt: (read<UserProfile>(storage, PROFILE_KEY)?.createdAt as string | undefined) ?? new Date().toISOString(),
+      }));
       const user = read<AppUser>(storage, USER_KEY);
       if (user) storage.setItem(USER_KEY, JSON.stringify({ ...user, displayName: input.preferredName }));
       notify();
@@ -71,6 +75,10 @@ export function createLocalAuthGateway(storage: Storage): AuthGateway {
         ...(read<UserProfile>(storage, PROFILE_KEY) ?? {}),
         ...input,
       }));
+      const user = read<AppUser>(storage, USER_KEY);
+      if (user && input.preferredName) {
+        storage.setItem(USER_KEY, JSON.stringify({ ...user, displayName: input.preferredName }));
+      }
       notify();
     },
     subscribe(listener) {

@@ -60,3 +60,24 @@ export const ACHIEVEMENT_SECTIONS = [
     ],
   },
 ] as const;
+
+export function formatProfileJoinDate(value: unknown): string {
+  const date = typeof value === "string"
+    ? new Date(value)
+    : typeof value === "object" && value && typeof (value as { toDate?: unknown }).toDate === "function"
+      ? (value as { toDate: () => Date }).toDate()
+      : null;
+  return date && !Number.isNaN(date.getTime())
+    ? new Intl.DateTimeFormat("vi-VN", { dateStyle: "long" }).format(date)
+    : "Chưa cập nhật";
+}
+
+export function validateBasicProfile({ preferredName, age }: { preferredName: string; age: string }) {
+  const errors: { preferredName?: string; age?: string } = {};
+  if (!preferredName.trim()) errors.preferredName = "Tên không được để trống.";
+  const numericAge = Number(age);
+  if (!age || !Number.isInteger(numericAge) || numericAge < 1 || numericAge > 120) {
+    errors.age = "Tuổi cần nằm trong khoảng 1 đến 120.";
+  }
+  return errors;
+}

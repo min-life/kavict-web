@@ -64,6 +64,9 @@ export function createFirebaseAuthGateway(): AuthGateway {
     },
     async updateProfilePreferences(input: ProfilePreferencesInput) {
       if (!auth.currentUser) throw new Error("No authenticated user");
+      if (input.preferredName) {
+        await updateProfile(auth.currentUser, { displayName: input.preferredName });
+      }
       await setDoc(doc(db, "users", auth.currentUser.uid), input, { merge: true });
     },
     subscribe(listener) {

@@ -7,6 +7,8 @@ export interface AppUser {
 
 export interface UserProfile {
   preferredName?: string;
+  age?: number;
+  createdAt?: string | { toDate(): Date };
   occupationGroup?: string;
   monthlyIncome?: string;
   highestExpenses?: string[];
@@ -26,6 +28,8 @@ export interface ProfilePreferencesInput {
   informationForKavi: string;
   kaviTone: KaviTone;
   responseStyle: ResponseStyle;
+  preferredName?: string;
+  age?: number;
 }
 
 export interface OnboardingInput {

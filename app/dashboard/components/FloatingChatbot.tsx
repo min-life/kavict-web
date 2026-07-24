@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 type ChatMessage = {
   sender: "user" | "assistant";
@@ -13,6 +14,7 @@ type FloatingChatbotProps = {
 };
 
 export default function FloatingChatbot({ pathname }: FloatingChatbotProps) {
+  const { userProfile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -44,6 +46,11 @@ export default function FloatingChatbot({ pathname }: FloatingChatbotProps) {
           history: messages,
           message,
           lessonContext: "Khu vực dashboard KAVICT",
+          personalization: {
+            informationForKavi: userProfile?.informationForKavi?.slice(0, 500) ?? "",
+            kaviTone: userProfile?.kaviTone,
+            responseStyle: userProfile?.responseStyle,
+          },
         }),
       });
       const data = (await response.json()) as { text?: string; error?: string };
