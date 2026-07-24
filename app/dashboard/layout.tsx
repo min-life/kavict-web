@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Sidebar from "@/app/components/Sidebar";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
 import LocalDemoNotice from "@/features/runtime/components/LocalDemoNotice";
+import FloatingChatbot from "./components/FloatingChatbot";
 
 export default function DashboardLayout({
   children,
@@ -36,6 +37,7 @@ export default function DashboardLayout({
           <LocalDemoNotice />
           {children}
         </main>
+        <FloatingChatbot pathname={pathname} />
       </div>
     </ProtectedRoute>
   );
