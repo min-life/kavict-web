@@ -161,7 +161,7 @@ export default function FloatingChatbot({ pathname }: FloatingChatbotProps) {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-label="Mở trò chuyện với Kavi"
-        className="ml-auto block h-16 w-16 overflow-hidden rounded-full bg-surface-container-lowest p-1 shadow-lg ring-2 ring-primary/20 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="ml-auto block h-48 w-48 bg-transparent transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         onClick={() => setIsOpen((open) => !open)}
         type="button"
       >

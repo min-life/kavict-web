@@ -17,6 +17,8 @@ describe("FloatingChatbot contract", () => {
     expect(source).toContain("autoplay");
     expect(source).toContain("loop");
     expect(source).toContain('pathname.startsWith("/dashboard/profile")');
+    expect(source).toContain('className="ml-auto block h-48 w-48 bg-transparent transition-transform hover:scale-105');
+    expect(source).not.toContain("overflow-hidden rounded-full bg-surface-container-lowest p-1 shadow-lg ring-2");
   });
 
   it("posts in-session history and exposes loading and error states", () => {
