@@ -20,4 +20,13 @@ describe("dashboard content", () => {
     expect(dashboardPage).not.toContain("Bảng xếp hạng");
     expect(sidebar).toContain("LEADERBOARD_NAV_ITEM");
   });
+
+  it("offers separate expense, income, and aggregate chart tabs", () => {
+    expect(financialOverview).toContain('["expense", "Chi tiêu"]');
+    expect(financialOverview).toContain('["income", "Thu nhập"]');
+    expect(financialOverview).toContain('["aggregate", "Tổng hợp"]');
+    expect(financialOverview).toContain("cashflow.net");
+    expect(financialOverview).toContain('type: "line"');
+    expect(financialOverview).toContain("cashflow.net.map");
+  });
 });

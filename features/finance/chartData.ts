@@ -10,12 +10,19 @@ export type CashflowChartData = {
   labels: string[];
   income: number[];
   expense: number[];
+  net: number[];
 };
 
 export function buildCashflowChartData(
   transactions: Transaction[],
   filter: CashflowChartFilter,
 ): CashflowChartData {
+  const length = filter.type === "year"
+    ? 12
+    : new Date(filter.year, (filter.month ?? 0) + 1, 0).getDate();
+  const income = new Array<number>(length).fill(0);
+  const expense = new Array<number>(length).fill(0);
+
   const bucketedTransactions = transactions.flatMap((transaction) => {
     if (!Number.isFinite(transaction.amount) || transaction.amount <= 0 || !Number.isFinite(transaction.date)) {
       return [];
@@ -32,31 +39,21 @@ export function buildCashflowChartData(
     }];
   });
 
-  if (bucketedTransactions.length === 0) {
-    return { labels: [], income: [], expense: [] };
-  }
-
-  const firstBucket = Math.min(...bucketedTransactions.map(({ bucket }) => bucket));
-  const lastBucket = Math.max(...bucketedTransactions.map(({ bucket }) => bucket));
-  const length = lastBucket - firstBucket + 1;
-  const income = new Array<number>(length).fill(0);
-  const expense = new Array<number>(length).fill(0);
-
   for (const { bucket, transaction } of bucketedTransactions) {
-    const index = bucket - firstBucket;
     if (transaction.type === "income") {
-      income[index] += transaction.amount;
+      income[bucket] += transaction.amount;
     } else {
-      expense[index] -= transaction.amount;
+      expense[bucket] += transaction.amount;
     }
   }
 
   return {
     labels: Array.from({ length }, (_, index) => {
-      const period = firstBucket + index + 1;
+      const period = index + 1;
       return filter.type === "year" ? `T${period}` : period.toString();
     }),
     income,
     expense,
+    net: income.map((amount, index) => amount - expense[index]),
   };
 }

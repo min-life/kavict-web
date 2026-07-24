@@ -7,6 +7,7 @@ import { buildCashflowChartData } from "@/features/finance/chartData";
 import { AnimatedCounter, AnimatedProgressBar } from "./SharedUI";
 
 type ChartFilterState = { type: 'year' | 'month', year: number, month?: number };
+type ChartDisplayMode = "expense" | "income" | "aggregate";
 
 export function FinancialOverview({ plan, transactions, onEditPlan, title = "Quản lý tài chính", titleAction }: { plan: FinancialPlan, transactions: Transaction[], onEditPlan?: () => void, title?: string, titleAction?: React.ReactNode }) {
   const chartRef = useRef<HTMLCanvasElement>(null);
@@ -14,6 +15,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
   
   const currentYear = new Date().getFullYear();
   const [chartFilter, setChartFilter] = useState<ChartFilterState>({ type: 'year', year: currentYear });
+  const [chartMode, setChartMode] = useState<ChartDisplayMode>("expense");
   
   useEffect(() => {
     if (chartRef.current) {
@@ -23,6 +25,11 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
         if (chartInstance) chartInstance.destroy();
 
         const cashflow = buildCashflowChartData(transactions, chartFilter);
+        const selectedChart = chartMode === "expense"
+          ? { label: "Chi tiêu", data: cashflow.expense, barColor: "#3b82f6", lineColor: "#2563eb" }
+          : chartMode === "income"
+            ? { label: "Thu nhập", data: cashflow.income, barColor: "#ef4444", lineColor: "#dc2626" }
+            : { label: "Tổng hợp", data: cashflow.net, barColor: cashflow.net.map((amount) => amount >= 0 ? "#3b82f6" : "#ef4444"), lineColor: "#6366f1" };
         const formatCurrency = (amount: number) => `${new Intl.NumberFormat('vi-VN').format(Math.abs(amount))} ₫`;
         const xGrid = { display: false, drawBorder: false };
         const yGrid = {
@@ -35,32 +42,35 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
         chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: cashflow.labels,
-                datasets: [
-                  {
-                    label: 'Thu vào',
-                    data: cashflow.income,
-                    backgroundColor: '#10b981',
-                    borderColor: '#059669',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                  },
-                  {
-                    label: 'Chi tiêu',
-                    data: cashflow.expense,
-                    backgroundColor: '#ef4444',
-                    borderColor: '#dc2626',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                  },
-                ],
+                 labels: cashflow.labels,
+                 datasets: [
+                   {
+                     label: selectedChart.label,
+                     data: selectedChart.data,
+                     backgroundColor: selectedChart.barColor,
+                     borderColor: selectedChart.barColor,
+                     borderWidth: 1,
+                     borderRadius: 5,
+                   },
+                   {
+                     type: "line",
+                     label: "Xu hướng",
+                     data: selectedChart.data,
+                     borderColor: selectedChart.lineColor,
+                     backgroundColor: selectedChart.lineColor,
+                     borderWidth: 2,
+                     pointRadius: 2,
+                     pointHoverRadius: 4,
+                     tension: 0.25,
+                   },
+                 ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                      display: true,
+                      display: false,
                       position: 'top',
                       labels: { font: { family: 'Geist', size: 12 }, usePointStyle: true, pointStyle: 'rectRounded' },
                     },
@@ -70,6 +80,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
                         bodyFont: { family: 'Geist', size: 14, weight: 'bold' },
                         padding: 12,
                         displayColors: true,
+                        filter: (context) => context.datasetIndex === 0,
                         callbacks: {
                             label: function(context) {
                                 const amount = context.parsed.y ?? 0;
@@ -108,7 +119,7 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
         return () => chartInstance?.destroy();
       }
     }
-  }, [transactions, chartFilter]);
+  }, [transactions, chartFilter, chartMode]);
 
   const isTargetPeriod = (ts: number) => {
     const d = new Date(ts);
@@ -192,6 +203,23 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
             />
           )}
         </div>
+      </div>
+
+      <div className="flex gap-1 px-6 pb-2" role="tablist" aria-label="Loại biểu đồ tài chính">
+        {([
+          ["expense", "Chi tiêu"],
+          ["income", "Thu nhập"],
+          ["aggregate", "Tổng hợp"],
+        ] as const).map(([mode, label]) => (
+          <button
+            key={mode}
+            type="button"
+            role="tab"
+            aria-selected={chartMode === mode}
+            onClick={() => setChartMode(mode)}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${chartMode === mode ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:text-on-surface"}`}
+          >{label}</button>
+        ))}
       </div>
 
       {/* Chart Area */}
