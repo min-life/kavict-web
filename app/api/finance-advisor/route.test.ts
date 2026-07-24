@@ -59,6 +59,27 @@ describe("POST /api/finance-advisor", () => {
     }));
   });
 
+  it("asks Kavi to return the spending, income, and objective plan sections", async () => {
+    getGeminiResponse.mockResolvedValueOnce({ text: "Mình cần thêm một chút thông tin." });
+
+    await POST(new Request("http://localhost/api/finance-advisor", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message: "Hãy điều chỉnh kế hoạch của mình",
+        history: [],
+        useCase: "plan-adjustment",
+        plan: null,
+        monthlySummary: { income: 0, expense: 0 },
+      }),
+    }));
+
+    const instruction = getGeminiResponse.mock.calls.at(-1)?.[0].config.systemInstruction;
+    expect(instruction).toContain("incomePlans");
+    expect(instruction).toContain("objectives");
+    expect(instruction).toContain("không đổi");
+  });
+
   it("includes recorded transactions only for spending analysis", async () => {
     getGeminiResponse.mockResolvedValueOnce({ text: "Bạn đang chi nhiều cho ăn uống." });
 

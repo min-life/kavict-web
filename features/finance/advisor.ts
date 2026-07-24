@@ -1,4 +1,4 @@
-import type { FinancialPlan, Transaction } from "./domain";
+import type { FinancialPlan, IncomePlan, Objective, Transaction } from "./domain";
 import type { MonthlySummary } from "./workspace";
 
 export type AdvisorMessage = {
@@ -46,7 +46,25 @@ export type FinanceAdvisorResponse = {
   fallback: boolean;
 };
 
-export function extractPlanCandidate(text: string): FinancialPlan | null {
+function isIncomePlan(value: unknown): value is IncomePlan {
+  if (typeof value !== "object" || value === null) return false;
+  const plan = value as Partial<IncomePlan>;
+  return typeof plan.id === "string"
+    && typeof plan.name === "string"
+    && (plan.unit === "amount" || plan.unit === "count")
+    && typeof plan.target === "number"
+    && typeof plan.manualProgress === "number";
+}
+
+function isObjective(value: unknown): value is Objective {
+  if (typeof value !== "object" || value === null) return false;
+  const objective = value as Partial<Objective>;
+  return typeof objective.id === "string"
+    && typeof objective.name === "string"
+    && typeof objective.isCompleted === "boolean";
+}
+
+export function extractPlanCandidate(text: string, currentPlan?: FinancialPlan | null): FinancialPlan | null {
   const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
   if (!match) return null;
 
@@ -62,6 +80,13 @@ export function extractPlanCandidate(text: string): FinancialPlan | null {
       return null;
     }
 
+    if (
+      (value.incomePlans !== undefined && (!Array.isArray(value.incomePlans) || !value.incomePlans.every(isIncomePlan)))
+      || (value.objectives !== undefined && (!Array.isArray(value.objectives) || !value.objectives.every(isObjective)))
+    ) {
+      return null;
+    }
+
     const now = Date.now();
     return {
       currentBalance: value.currentBalance,
@@ -69,7 +94,9 @@ export function extractPlanCandidate(text: string): FinancialPlan | null {
       fixedExpenses: value.fixedExpenses,
       goals: value.goals,
       budgets: value.budgets,
-      createdAt: now,
+      incomePlans: value.incomePlans ?? currentPlan?.incomePlans,
+      objectives: value.objectives ?? currentPlan?.objectives,
+      createdAt: currentPlan?.createdAt ?? now,
       updatedAt: now,
     };
   } catch {

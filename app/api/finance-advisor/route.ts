@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       text: removePlanCandidate(response.text),
-      plan: extractPlanCandidate(response.text),
+      plan: extractPlanCandidate(response.text, context.plan),
       fallback: response.fallback,
     });
   } catch (error) {

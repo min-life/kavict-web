@@ -159,6 +159,12 @@ describe("finance workspace composition", () => {
     expect(objectives).toContain("disabled={isSaving || hasPendingToggles}");
   });
 
+  it("uses the primary outlined edit button for objectives in every state", () => {
+    const objectives = readFileSync(resolve(componentDirectory, "ObjectivesSection.tsx"), "utf8");
+
+    expect(objectives).toContain('const editButtonClassName = "rounded-xl border border-primary px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/10 disabled:cursor-wait disabled:opacity-50";');
+  });
+
   it("removes the superseded forced onboarding components", () => {
     expect(existsSync(resolve(componentDirectory, "OnboardingPlanner.tsx"))).toBe(false);
     expect(existsSync(resolve(componentDirectory, "FinancialDashboard.tsx"))).toBe(false);

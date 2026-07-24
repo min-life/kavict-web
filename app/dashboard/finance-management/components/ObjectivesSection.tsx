@@ -21,9 +21,7 @@ export default function ObjectivesSection({ objectives, onSave, onToggleComplete
   const isEmpty = !isEditing && displayObjectives.length === 0;
   const sectionToneClass = isEmpty ? "border-outline-variant/20 bg-surface-container-low" : "border-outline-variant/30 bg-surface";
   const headingClassName = isEmpty ? "text-lg font-bold text-on-surface-variant" : "text-lg font-bold text-on-surface";
-  const editButtonClassName = isEmpty
-    ? "rounded-xl border border-outline-variant/50 px-4 py-2.5 text-sm font-bold text-on-surface-variant hover:bg-surface-container"
-    : "rounded-xl border border-primary px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/10 disabled:cursor-wait disabled:opacity-50";
+  const editButtonClassName = "rounded-xl border border-primary px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/10 disabled:cursor-wait disabled:opacity-50";
 
   const toggle = async (objective: Objective) => {
     if (pendingIds.has(objective.id)) return;
