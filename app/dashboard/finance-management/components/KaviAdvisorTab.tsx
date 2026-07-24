@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import type { AdvisorLaunchRequest } from "./FinanceWorkspace";
 import type { FinancialPlan, Transaction } from "@/features/finance/domain";
 import type { AdvisorMessage, AdvisorUseCase, FinanceAdvisorResponse } from "@/features/finance/advisor";
 import { getFinanceRepository } from "@/features/finance/provider";
 import { createLocalSamplePlan, getMonthlySummary, isLocalSampleConfirmation } from "@/features/finance/workspace";
 
-type KaviAdvisorTabProps = { userId: string; plan: FinancialPlan | null; transactions: Transaction[]; onPlanApplied: (plan: FinancialPlan) => Promise<void> };
+type KaviAdvisorTabProps = { userId: string; plan: FinancialPlan | null; transactions: Transaction[]; onPlanApplied: (plan: FinancialPlan) => Promise<void>; launchRequest?: AdvisorLaunchRequest; onLaunchRequestConsumed?: () => void };
 type AdvisorUseCaseCard = { id: Exclude<AdvisorUseCase, "general-advice">; title: string; description: string; icon: string; iconClass: string; greeting: string };
 
 const LOCAL_MESSAGE = "bạn đang ở môi trường local nên không thể kết nối AI. Bạn muốn tôi tạo sample thì hãy enter Yes.";
@@ -26,7 +27,7 @@ function getGreeting(useCase: AdvisorUseCase) {
   return ADVISOR_USE_CASES.find((item) => item.id === useCase)?.greeting ?? "Chào bạn, mình là Kavi Advisor. Hãy cho mình biết nhu cầu tài chính của bạn nhé.";
 }
 
-export default function KaviAdvisorTab({ userId, plan, transactions, onPlanApplied }: KaviAdvisorTabProps) {
+export default function KaviAdvisorTab({ userId, plan, transactions, onPlanApplied, launchRequest, onLaunchRequestConsumed }: KaviAdvisorTabProps) {
   const [selectedUseCase, setSelectedUseCase] = useState<AdvisorUseCase | null>(null);
   const [messages, setMessages] = useState<AdvisorMessage[]>([]);
   const [input, setInput] = useState("");
@@ -75,13 +76,23 @@ export default function KaviAdvisorTab({ userId, plan, transactions, onPlanAppli
     }
   };
 
-  const startConversation = (useCase: AdvisorUseCase) => {
+  const startConversation = useCallback((useCase: AdvisorUseCase) => {
     setSelectedUseCase(useCase);
     setMessages([{ sender: "assistant", text: getGreeting(useCase) }]);
     setInput("");
     setProposal(null);
     setIsFallbackMode(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!launchRequest) return;
+    const timeout = window.setTimeout(() => {
+      startConversation(launchRequest.useCase);
+      setInput(launchRequest.prompt);
+      onLaunchRequestConsumed?.();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [launchRequest, onLaunchRequestConsumed, startConversation]);
 
   const send = async (event: React.FormEvent) => {
     event.preventDefault();

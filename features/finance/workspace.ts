@@ -1,4 +1,4 @@
-import type { FinancialPlan, Transaction } from "./domain";
+import type { FinancialPlan, IncomePlan, Transaction } from "./domain";
 
 export type BudgetStatus = "on-track" | "near-limit" | "over-budget";
 
@@ -18,6 +18,38 @@ export type BudgetProgressItem = {
 export type BudgetProgress = MonthlySummary & {
   categories: BudgetProgressItem[];
   allocated: number;
+};
+
+export type IncomePlanProgress = IncomePlan & {
+  transactionProgress: number;
+  current: number;
+  percent: number;
+  displayPercent: number;
+};
+
+export type SpendingStatusTone = "complete" | "warning" | "danger" | "neutral";
+export type IncomeStatusTone = "complete" | "progress" | "neutral";
+export type ObjectiveStatusTone = "complete" | "neutral";
+
+export type PlanStatusSummary = {
+  spending: {
+    total: number;
+    onTrack: number;
+    percent: number;
+    tone: SpendingStatusTone;
+  };
+  income: {
+    total: number;
+    completed: number;
+    percent: number;
+    tone: IncomeStatusTone;
+  };
+  objectives: {
+    total: number;
+    completed: number;
+    percent: number;
+    tone: ObjectiveStatusTone;
+  };
 };
 
 function isInMonth(timestamp: number, monthTimestamp: number) {
@@ -50,7 +82,7 @@ export function getBudgetProgress(
         && isInMonth(transaction.date, monthTimestamp)
       ))
       .reduce((total, transaction) => total + transaction.amount, 0);
-    const percent = budget.amount === 0 ? 0 : Math.round((spent / budget.amount) * 100);
+    const percent = budget.amount === 0 ? (spent > 0 ? 101 : 0) : Math.round((spent / budget.amount) * 100);
     const status: BudgetStatus = percent > 100 ? "over-budget" : percent >= 80 ? "near-limit" : "on-track";
 
     return { category: budget.category, budget: budget.amount, spent, percent, status };
@@ -60,6 +92,98 @@ export function getBudgetProgress(
     ...summary,
     categories,
     allocated: categories.reduce((total, item) => total + item.budget, 0),
+  };
+}
+
+function nonNegativeFinite(value: number) {
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+}
+
+export function getIncomePlanProgress(
+  plan: FinancialPlan | null,
+  transactions: Transaction[],
+  monthTimestamp: number,
+): IncomePlanProgress[] {
+  return (plan?.incomePlans ?? []).map((incomePlan) => {
+    const target = nonNegativeFinite(incomePlan.target);
+    const manualProgress = nonNegativeFinite(incomePlan.manualProgress);
+    const transactionProgress = transactions
+      .filter((transaction) => (
+        transaction.type === "income"
+        && transaction.category === incomePlan.transactionCategory
+        && isInMonth(transaction.date, monthTimestamp)
+      ))
+      .reduce((total, transaction) => total + (incomePlan.unit === "count" ? 1 : transaction.amount), 0);
+    const current = manualProgress + transactionProgress;
+    const percent = target > 0 ? Math.round((current / target) * 100) : 0;
+
+    return {
+      ...incomePlan,
+      target,
+      manualProgress,
+      transactionProgress,
+      current,
+      percent,
+      displayPercent: Math.min(percent, 100),
+    };
+  });
+}
+
+export function getPlanStatusSummary(
+  plan: FinancialPlan | null,
+  transactions: Transaction[],
+  monthTimestamp: number,
+): PlanStatusSummary {
+  const budgetProgress = getBudgetProgress(plan, transactions, monthTimestamp).categories;
+  const spendingTotal = budgetProgress.length;
+  const onTrack = budgetProgress.filter((budget) => budget.percent <= 100).length;
+  const spendingPercent = spendingTotal > 0 ? Math.round((onTrack / spendingTotal) * 100) : 0;
+  const spendingTone: SpendingStatusTone = spendingTotal === 0
+    ? "neutral"
+    : spendingPercent === 100
+      ? "complete"
+      : spendingPercent >= 70
+        ? "warning"
+        : "danger";
+
+  const incomeProgress = getIncomePlanProgress(plan, transactions, monthTimestamp);
+  const incomeTotal = incomeProgress.length;
+  const incomeCompleted = incomeProgress.filter((incomePlan) => incomePlan.percent >= 100).length;
+  const incomePercent = incomeTotal > 0
+    ? Math.round(incomeProgress.reduce((total, incomePlan) => total + incomePlan.displayPercent, 0) / incomeTotal)
+    : 0;
+  const incomeTone: IncomeStatusTone = incomeTotal === 0 || incomePercent === 0
+    ? "neutral"
+    : incomeCompleted === incomeTotal
+      ? "complete"
+      : incomeProgress.some((incomePlan) => incomePlan.current > 0)
+        ? "progress"
+        : "neutral";
+
+  const objectives = plan?.objectives ?? [];
+  const objectivesTotal = objectives.length;
+  const objectivesCompleted = objectives.filter((objective) => objective.isCompleted).length;
+  const objectivesPercent = objectivesTotal > 0 ? Math.round((objectivesCompleted / objectivesTotal) * 100) : 0;
+
+  return {
+    spending: {
+      total: spendingTotal,
+      onTrack,
+      percent: spendingPercent,
+      tone: spendingTone,
+    },
+    income: {
+      total: incomeTotal,
+      completed: incomeCompleted,
+      percent: incomePercent,
+      tone: incomeTone,
+    },
+    objectives: {
+      total: objectivesTotal,
+      completed: objectivesCompleted,
+      percent: objectivesPercent,
+      tone: objectivesCompleted > 0 ? "complete" : "neutral",
+    },
   };
 }
 

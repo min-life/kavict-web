@@ -80,10 +80,79 @@ describe("finance workspace composition", () => {
     expect(advisorSource).toContain("Chọn nhu cầu khác");
   });
 
+  it("routes the two budget AI actions to a prefilled Advisor conversation", () => {
+    const planSource = readFileSync(resolve(componentDirectory, "PlanBudgetTab.tsx"), "utf8");
+    const workspaceSource = readFileSync(componentPath, "utf8");
+    const advisorSource = readFileSync(resolve(componentDirectory, "KaviAdvisorTab.tsx"), "utf8");
+
+    expect(planSource).toContain("Lập kế hoạch tài chính cho bạn");
+    expect(planSource).toContain("Chỉnh sửa plan theo thay đổi của bạn");
+    expect(workspaceSource).toContain('setActiveTab("advisor")');
+    expect(workspaceSource).toContain("advisorLaunchRequest");
+    expect(advisorSource).toContain("launchRequest");
+    expect(advisorSource).toContain("setInput(launchRequest.prompt)");
+    expect(advisorSource).toContain("window.setTimeout");
+    expect(advisorSource).toContain("window.clearTimeout");
+  });
+
   it("defines the green success token used by the selected income button", () => {
     const globalStyles = readFileSync(globalStylesPath, "utf8");
 
     expect(globalStyles).toContain("--color-success:");
+  });
+
+  it("keeps the spending plan read-only until the explicit edit action", () => {
+    const source = readFileSync(resolve(componentDirectory, "SpendingPlanSection.tsx"), "utf8");
+
+    expect(source).toContain("Chỉnh sửa kế hoạch");
+    expect(source).toContain("Lưu kế hoạch");
+    expect(source).toContain("Hủy");
+    expect(source).not.toContain("Mức độ chi tiêu:");
+  });
+
+  it("labels a zero-budget category with spending as infinite instead of a fabricated percentage", () => {
+    const source = readFileSync(resolve(componentDirectory, "SpendingPlanSection.tsx"), "utf8");
+
+    expect(source).toContain('function formatBudgetPercentage(item: BudgetProgressItem)');
+    expect(source).toContain('return item.budget === 0 && item.spent > 0 ? "∞%" : `${item.percent}%`;');
+    expect(source).toContain('{formatBudgetPercentage(item)}');
+  });
+
+  it("renders the selected-month budget summary and plan status cards", () => {
+    const source = readFileSync(resolve(componentDirectory, "PlanBudgetSummary.tsx"), "utf8");
+
+    expect(source).toContain("Tổng thu nhập");
+    expect(source).toContain("Tổng plan tháng này");
+    expect(source).toContain("Đã tiêu dùng");
+    expect(source).toContain("Kế hoạch chi tiêu");
+    expect(source).toContain("Kế hoạch thu nhập");
+    expect(source).toContain("Mục tiêu tài chính");
+    expect(source).toContain("${statusSummary.spending.percent}%");
+    expect(source).toContain("${statusSummary.income.percent}%");
+    expect(source).toContain("${statusSummary.objectives.percent}%");
+  });
+
+  it("supports read-only income plans and manual objectives", () => {
+    const income = readFileSync(resolve(componentDirectory, "IncomePlanSection.tsx"), "utf8");
+    const objectives = readFileSync(resolve(componentDirectory, "ObjectivesSection.tsx"), "utf8");
+
+    expect(income).toContain("Kế hoạch thu nhập");
+    expect(income).toContain("Chỉnh sửa kế hoạch thu nhập");
+    expect(income).toContain('unit === "amount"');
+    expect(income).toContain("Tiến độ nhập tay");
+    expect(objectives).toContain("Objective");
+    expect(objectives).toContain("Đã hoàn thành");
+    expect(objectives).toContain("Chỉnh sửa objective");
+  });
+
+  it("blocks objective editing while any checkbox save is pending", () => {
+    const objectives = readFileSync(resolve(componentDirectory, "ObjectivesSection.tsx"), "utf8");
+
+    expect(objectives).toContain("const hasPendingToggles = pendingIds.size > 0;");
+    expect(objectives).toContain("const startEditing = () => { if (hasPendingToggles) return;");
+    expect(objectives).toContain("onClick={startEditing}");
+    expect(objectives).toContain("disabled={hasPendingToggles}");
+    expect(objectives).toContain("disabled={isSaving || hasPendingToggles}");
   });
 
   it("removes the superseded forced onboarding components", () => {
