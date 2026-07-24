@@ -87,6 +87,10 @@ describe("finance workspace composition", () => {
 
     expect(planSource).toContain("Lập kế hoạch tài chính cho bạn");
     expect(planSource).toContain("Chỉnh sửa plan theo thay đổi của bạn");
+    expect(planSource).toContain("auto_awesome");
+    expect(planSource).toContain("track_changes");
+    expect(planSource).toContain("edit_note");
+    expect(planSource).toContain("bg-surface");
     expect(workspaceSource).toContain('setActiveTab("advisor")');
     expect(workspaceSource).toContain("advisorLaunchRequest");
     expect(advisorSource).toContain("launchRequest");

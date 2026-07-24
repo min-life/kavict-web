@@ -67,11 +67,24 @@ export default function PlanBudgetTab({ userId, plan, transactions, onSaved, onO
       <p className="sr-only">Đã theo dõi {incomeProgress.length} kế hoạch thu nhập.</p>
     </section>
     <section className="rounded-2xl border border-primary/20 bg-primary/5 p-5 shadow-sm sm:p-6">
-      <h2 className="text-lg font-bold text-on-surface">Kavi Advisor</h2>
-      <p className="mt-1 text-sm text-on-surface-variant">Nhận gợi ý để lập mới hoặc điều chỉnh kế hoạch tài chính của bạn.</p>
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-        <button type="button" onClick={() => onOpenAdvisor("financial-planning")} className="rounded-xl bg-primary px-4 py-3 font-bold text-on-primary hover:bg-primary-fixed-variant">Lập kế hoạch tài chính cho bạn</button>
-        <button type="button" onClick={() => onOpenAdvisor("plan-adjustment")} className="rounded-xl border border-primary/30 px-4 py-3 font-bold text-primary hover:bg-primary/10">Chỉnh sửa plan theo thay đổi của bạn</button>
+      <div className="flex items-center gap-3">
+        <span className="material-symbols-outlined rounded-xl bg-primary/10 p-2 text-primary" aria-hidden="true">auto_awesome</span>
+        <div>
+          <h2 className="text-lg font-bold text-on-surface">Kavi Advisor</h2>
+          <p className="mt-1 text-sm text-on-surface-variant">Nhận gợi ý để lập mới hoặc điều chỉnh kế hoạch tài chính của bạn.</p>
+        </div>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <button type="button" onClick={() => onOpenAdvisor("financial-planning")} className="group flex items-center gap-3 rounded-2xl border border-outline-variant/30 bg-surface p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+          <span className="material-symbols-outlined rounded-full bg-primary/10 p-3 text-2xl text-primary" aria-hidden="true">track_changes</span>
+          <span className="min-w-0 flex-1"><span className="block font-bold text-on-surface">Lập kế hoạch tài chính cho bạn</span><span className="mt-1 block text-sm font-normal text-on-surface-variant">Xây dựng kế hoạch phù hợp với thu nhập, mục tiêu và thời hạn của bạn.</span></span>
+          <span className="material-symbols-outlined text-on-surface-variant transition group-hover:translate-x-0.5" aria-hidden="true">chevron_right</span>
+        </button>
+        <button type="button" onClick={() => onOpenAdvisor("plan-adjustment")} className="group flex items-center gap-3 rounded-2xl border border-outline-variant/30 bg-surface p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+          <span className="material-symbols-outlined rounded-full bg-amber-500/10 p-3 text-2xl text-amber-600" aria-hidden="true">edit_note</span>
+          <span className="min-w-0 flex-1"><span className="block font-bold text-on-surface">Chỉnh sửa plan theo thay đổi của bạn</span><span className="mt-1 block text-sm font-normal text-on-surface-variant">Cập nhật kế hoạch khi thu nhập, mục tiêu hoặc ưu tiên thay đổi.</span></span>
+          <span className="material-symbols-outlined text-on-surface-variant transition group-hover:translate-x-0.5" aria-hidden="true">chevron_right</span>
+        </button>
       </div>
     </section>
     <SpendingPlanSection plan={plan} categories={budgetProgress.categories} onSave={saveSpendingPlan} />
