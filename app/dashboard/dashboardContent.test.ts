@@ -29,4 +29,14 @@ describe("dashboard content", () => {
     expect(financialOverview).toContain('type: "line"');
     expect(financialOverview).toContain("cashflow.net.map");
   });
+
+  it("shows four period-aware finance summary cards", () => {
+    expect(financialOverview).toContain("buildPeriodFinancialSummary");
+    expect(financialOverview).toContain("Tổng chi tiêu");
+    expect(financialOverview).toContain("Tổng thu nhập");
+    expect(financialOverview).toContain("Chênh lệch thu chi");
+    expect(financialOverview).toContain("% tăng trưởng");
+    expect(financialOverview).toContain("Chưa có dữ liệu trước đó");
+    expect(financialOverview).toContain("Không thể tính % (kỳ trước = 0)");
+  });
 });

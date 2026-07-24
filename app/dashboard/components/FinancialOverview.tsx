@@ -3,13 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import type { FinancialPlan, Transaction } from "@/features/finance/domain";
-import { buildCashflowChartData } from "@/features/finance/chartData";
-import { AnimatedCounter, AnimatedProgressBar } from "./SharedUI";
+import { buildCashflowChartData, buildPeriodFinancialSummary } from "@/features/finance/chartData";
+import { AnimatedCounter } from "./SharedUI";
 
 type ChartFilterState = { type: 'year' | 'month', year: number, month?: number };
 type ChartDisplayMode = "expense" | "income" | "aggregate";
+type FinancialOverviewProps = {
+  plan: FinancialPlan;
+  transactions: Transaction[];
+  onEditPlan?: () => void;
+  title?: string;
+  titleAction?: React.ReactNode;
+};
 
-export function FinancialOverview({ plan, transactions, onEditPlan, title = "Quản lý tài chính", titleAction }: { plan: FinancialPlan, transactions: Transaction[], onEditPlan?: () => void, title?: string, titleAction?: React.ReactNode }) {
+export function FinancialOverview({ plan, transactions, title = "Quản lý tài chính", titleAction }: FinancialOverviewProps) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const [mountedAt] = useState(Date.now);
   
@@ -121,32 +128,23 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
     }
   }, [transactions, chartFilter, chartMode]);
 
-  const isTargetPeriod = (ts: number) => {
-    const d = new Date(ts);
-    if (chartFilter.type === 'year') {
-      return d.getFullYear() === chartFilter.year;
-    }
-    return d.getFullYear() === chartFilter.year && d.getMonth() === chartFilter.month;
-  };
-
-  const incomeThisPeriod = transactions
-    .filter(tx => tx.type === 'income' && isTargetPeriod(tx.date))
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const expenseThisPeriod = transactions
-    .filter(tx => tx.type === 'expense' && isTargetPeriod(tx.date))
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const netThisPeriod = incomeThisPeriod - expenseThisPeriod;
-  const prevPeriodBalance = plan.currentBalance - netThisPeriod;
-  const assetGrowth = prevPeriodBalance === 0 ? 0 : ((plan.currentBalance - prevPeriodBalance) / prevPeriodBalance) * 100;
-  const assetGrowthText = `${assetGrowth > 0 ? '+' : ''}${assetGrowth.toFixed(1)}% trong kỳ này`;
-  const assetGrowthColor = assetGrowth >= 0 ? 'text-success' : 'text-error';
-
-  const totalGoalsTarget = plan.goals?.reduce((sum, g) => sum + g.targetAmount, 0) || 1;
-  const totalGoalsProgress = totalGoalsTarget > 0 
-    ? Math.min((plan.currentBalance / totalGoalsTarget) * 100, 100) 
-    : 0;
+  const periodSummary = buildPeriodFinancialSummary(transactions, chartFilter);
+  const periodDescription = chartFilter.type === "year"
+    ? `Năm ${chartFilter.year}`
+    : `Tháng ${(chartFilter.month ?? 0) + 1}/${chartFilter.year}`;
+  const comparisonDescription = chartFilter.type === "year" ? "So với năm trước" : "So với tháng trước";
+  const growthText = periodSummary.growthStatus === "no-previous-data"
+    ? "Chưa có dữ liệu trước đó"
+    : periodSummary.growthStatus === "previous-period-zero"
+      ? "Không thể tính % (kỳ trước = 0)"
+      : `${periodSummary.growthRate! > 0 ? "+" : ""}${periodSummary.growthRate!.toFixed(1)}%`;
+  const growthColor = periodSummary.growthRate === null
+    ? "text-on-surface-variant"
+    : periodSummary.growthRate > 0
+      ? "text-success"
+      : periodSummary.growthRate < 0
+        ? "text-error"
+        : "text-on-surface-variant";
 
   const startLimit = new Date(plan.createdAt || mountedAt);
   const minYear = startLimit.getFullYear();
@@ -229,48 +227,33 @@ export function FinancialOverview({ plan, transactions, onEditPlan, title = "Qu�
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-sm p-4 mt-auto">
-        {/* Metric 1 */}
         <div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors flex flex-col justify-between">
           <div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-            <span>💰</span> Tổng tài sản
+            <span>💳</span> Tổng chi tiêu
           </div>
-          <div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={plan.currentBalance} /></div>
-          <div className={`text-[12px] mt-1 ${assetGrowthColor}`}>{assetGrowthText}</div>
+          <div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={periodSummary.expense} /></div>
+          <div className="text-[12px] text-on-surface-variant mt-1">{periodDescription}</div>
         </div>
-        {/* Metric 2 */}
         <div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors flex flex-col justify-between">
           <div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-            <span>📈</span> Tăng trưởng
+            <span>💰</span> Tổng thu nhập
           </div>
-          <div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={incomeThisPeriod} /></div>
-          <div className="text-[12px] text-on-surface-variant mt-1">Thu vào kỳ này</div>
+          <div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={periodSummary.income} /></div>
+          <div className="text-[12px] text-on-surface-variant mt-1">{periodDescription}</div>
         </div>
-        {/* Metric 3 */}
         <div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors flex flex-col justify-between">
           <div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
-            <span>💳</span> Chi tiêu
+            <span>⚖️</span> Chênh lệch thu chi
           </div>
-          <div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={expenseThisPeriod} /></div>
-          <div className="text-[12px] text-on-surface-variant mt-1">Trong kỳ này</div>
+          <div className="font-headline-md text-headline-md text-on-surface font-bold"><AnimatedCounter target={periodSummary.net} /></div>
+          <div className="text-[12px] text-on-surface-variant mt-1">{periodDescription}</div>
         </div>
-        {/* Metric 4 */}
-        <div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors flex flex-col justify-between relative group">
-          <div className="flex justify-between items-center mb-xs">
-            <div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm">
-              <span>🎯</span> Mục tiêu tiết kiệm
-            </div>
-            {onEditPlan && (
-              <button onClick={onEditPlan} className="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary bg-surface-container w-6 h-6 rounded-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-[14px]">edit</span>
-              </button>
-            )}
+        <div className="p-sm bg-surface rounded-xl border border-surface-variant hover:border-primary-fixed-dim transition-colors flex flex-col justify-between">
+          <div className="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-xs">
+            <span>📈</span> % tăng trưởng
           </div>
-          <div className="w-full bg-surface-variant rounded-full h-2 mt-2 mb-1 overflow-hidden">
-            <AnimatedProgressBar percent={totalGoalsProgress} className="bg-primary h-2 rounded-full" />
-          </div>
-          <div className="font-label-md text-label-md text-on-surface text-right mt-1">
-            <AnimatedCounter target={plan.currentBalance} /> / {new Intl.NumberFormat('vi-VN').format(totalGoalsTarget)} đ
-          </div>
+          <div className={`font-headline-md text-headline-md font-bold ${growthColor}`}>{growthText}</div>
+          <div className="text-[12px] text-on-surface-variant mt-1">{comparisonDescription}</div>
         </div>
       </div>
     </div>

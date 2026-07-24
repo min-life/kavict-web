@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCashflowChartData } from "./chartData";
+import { buildCashflowChartData, buildPeriodFinancialSummary } from "./chartData";
 
 describe("cashflow chart data", () => {
   it("exports the cashflow chart data builder", async () => {
@@ -59,5 +59,67 @@ describe("cashflow chart data", () => {
 
     expect(result.labels).toHaveLength(29);
     expect(result.labels.at(-1)).toBe("29");
+  });
+
+  it("summarizes a selected month and compares its net result with the previous month", () => {
+    const result = buildPeriodFinancialSummary([
+      { amount: 1_000_000, type: "income", category: "Lương", date: new Date(2026, 4, 5).getTime(), createdAt: 1 },
+      { amount: 200_000, type: "expense", category: "Ăn uống", date: new Date(2026, 4, 8).getTime(), createdAt: 2 },
+      { amount: 500_000, type: "income", category: "Lương", date: new Date(2026, 3, 2).getTime(), createdAt: 3 },
+      { amount: 100_000, type: "expense", category: "Ăn uống", date: new Date(2026, 3, 9).getTime(), createdAt: 4 },
+    ], { type: "month", year: 2026, month: 4 });
+
+    expect(result).toMatchObject({
+      income: 1_000_000,
+      expense: 200_000,
+      net: 800_000,
+      previousNet: 400_000,
+      growthRate: 100,
+      growthStatus: "available",
+    });
+  });
+
+  it("compares yearly totals with the previous calendar year", () => {
+    const result = buildPeriodFinancialSummary([
+      { amount: 900_000, type: "income", category: "Lương", date: new Date(2026, 0, 1).getTime(), createdAt: 1 },
+      { amount: 300_000, type: "expense", category: "Nhà ở", date: new Date(2026, 8, 1).getTime(), createdAt: 2 },
+      { amount: 600_000, type: "income", category: "Lương", date: new Date(2025, 5, 1).getTime(), createdAt: 3 },
+      { amount: 400_000, type: "expense", category: "Nhà ở", date: new Date(2025, 9, 1).getTime(), createdAt: 4 },
+    ], { type: "year", year: 2026 });
+
+    expect(result).toMatchObject({
+      income: 900_000,
+      expense: 300_000,
+      net: 600_000,
+      previousNet: 200_000,
+      growthRate: 200,
+      growthStatus: "available",
+    });
+  });
+
+  it("reports when the previous period has no transactions", () => {
+    const result = buildPeriodFinancialSummary([
+      { amount: 600_000, type: "income", category: "Lương", date: new Date(2026, 4, 5).getTime(), createdAt: 1 },
+    ], { type: "month", year: 2026, month: 4 });
+
+    expect(result).toMatchObject({
+      previousNet: null,
+      growthRate: null,
+      growthStatus: "no-previous-data",
+    });
+  });
+
+  it("does not calculate growth when the previous period net is zero", () => {
+    const result = buildPeriodFinancialSummary([
+      { amount: 600_000, type: "income", category: "Lương", date: new Date(2026, 4, 5).getTime(), createdAt: 1 },
+      { amount: 300_000, type: "income", category: "Lương", date: new Date(2026, 3, 2).getTime(), createdAt: 2 },
+      { amount: 300_000, type: "expense", category: "Ăn uống", date: new Date(2026, 3, 9).getTime(), createdAt: 3 },
+    ], { type: "month", year: 2026, month: 4 });
+
+    expect(result).toMatchObject({
+      previousNet: 0,
+      growthRate: null,
+      growthStatus: "previous-period-zero",
+    });
   });
 });
