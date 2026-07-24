@@ -52,6 +52,20 @@ describe("finance workspace composition", () => {
     expect(advisorSource).not.toContain("if (!aiAvailable)");
   });
 
+  it("shows an Advisor use-case selection screen before starting chat", () => {
+    const advisorSource = readFileSync(resolve(componentDirectory, "KaviAdvisorTab.tsx"), "utf8");
+
+    expect(advisorSource).toContain("Bạn muốn Kavi làm gì cho bạn?");
+    expect(advisorSource).toContain("Lập kế hoạch tài chính cho bạn");
+    expect(advisorSource).toContain("Phân tích chi tiêu của bạn");
+    expect(advisorSource).toContain("Tư vấn cho bạn về tài chính");
+    expect(advisorSource).toContain("Chỉnh sửa plan theo thay đổi của bạn");
+    expect(advisorSource).toContain("useCase,");
+    expect(advisorSource).toContain('useCase === "spending-analysis"');
+    expect(advisorSource).toContain("askAdvisor(message, selectedUseCase, messages)");
+    expect(advisorSource).toContain("Chọn nhu cầu khác");
+  });
+
   it("defines the green success token used by the selected income button", () => {
     const globalStyles = readFileSync(globalStylesPath, "utf8");
 

@@ -1,4 +1,4 @@
-import type { FinancialPlan } from "./domain";
+import type { FinancialPlan, Transaction } from "./domain";
 import type { MonthlySummary } from "./workspace";
 
 export type AdvisorMessage = {
@@ -6,11 +6,38 @@ export type AdvisorMessage = {
   text: string;
 };
 
+export const ADVISOR_USE_CASES = [
+  "financial-planning",
+  "spending-analysis",
+  "financial-advice",
+  "plan-adjustment",
+  "general-advice",
+] as const;
+
+export type AdvisorUseCase = (typeof ADVISOR_USE_CASES)[number];
+export type AdvisorTransactionContext = Pick<Transaction, "date" | "type" | "category" | "amount" | "note">;
+
+export function isAdvisorUseCase(value: unknown): value is AdvisorUseCase {
+  return typeof value === "string" && ADVISOR_USE_CASES.includes(value as AdvisorUseCase);
+}
+
+export function isAdvisorTransactionContext(value: unknown): value is AdvisorTransactionContext {
+  if (typeof value !== "object" || value === null) return false;
+  const transaction = value as Partial<AdvisorTransactionContext>;
+  return typeof transaction.date === "number"
+    && (transaction.type === "income" || transaction.type === "expense")
+    && typeof transaction.category === "string"
+    && typeof transaction.amount === "number"
+    && (transaction.note === undefined || typeof transaction.note === "string");
+}
+
 export type FinanceAdvisorRequest = {
   message: string;
   history: AdvisorMessage[];
+  useCase: AdvisorUseCase;
   plan: FinancialPlan | null;
   monthlySummary: MonthlySummary;
+  transactions?: AdvisorTransactionContext[];
 };
 
 export type FinanceAdvisorResponse = {

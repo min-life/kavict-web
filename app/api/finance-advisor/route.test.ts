@@ -39,6 +39,71 @@ describe("POST /api/finance-advisor", () => {
     expect(getGeminiResponse).toHaveBeenCalledOnce();
   });
 
+  it("uses the selected financial-planning instruction", async () => {
+    getGeminiResponse.mockResolvedValueOnce({ text: "Hãy bắt đầu bằng mục tiêu của bạn." });
+
+    await POST(new Request("http://localhost/api/finance-advisor", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message: "Mình muốn lập kế hoạch tiết kiệm",
+        history: [],
+        useCase: "financial-planning",
+        plan: null,
+        monthlySummary: { income: 0, expense: 0 },
+      }),
+    }));
+
+    expect(getGeminiResponse).toHaveBeenLastCalledWith(expect.objectContaining({
+      config: expect.objectContaining({ systemInstruction: expect.stringContaining("Lập kế hoạch tài chính") }),
+    }));
+  });
+
+  it("includes recorded transactions only for spending analysis", async () => {
+    getGeminiResponse.mockResolvedValueOnce({ text: "Bạn đang chi nhiều cho ăn uống." });
+
+    await POST(new Request("http://localhost/api/finance-advisor", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message: "Phân tích chi tiêu giúp mình",
+        history: [],
+        useCase: "spending-analysis",
+        plan: null,
+        monthlySummary: { income: 0, expense: 250000 },
+        transactions: [{ date: 1721433600000, type: "expense", category: "Ăn uống", amount: 250000, note: "Ăn trưa" }],
+      }),
+    }));
+
+    expect(getGeminiResponse).toHaveBeenLastCalledWith(expect.objectContaining({
+      config: expect.objectContaining({ systemInstruction: expect.stringContaining("Ăn trưa") }),
+    }));
+  });
+
+  it("does not include transaction history for other advice modes", async () => {
+    getGeminiResponse.mockResolvedValueOnce({ text: "Hãy cho mình biết mục tiêu của bạn." });
+
+    await POST(new Request("http://localhost/api/finance-advisor", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message: "Tư vấn giúp mình",
+        history: [],
+        useCase: "financial-advice",
+        plan: null,
+        monthlySummary: { income: 0, expense: 0 },
+        transactions: [{ date: 1721433600000, type: "expense", category: "Ăn uống", amount: 250000, note: "Chi tiết riêng tư" }],
+      }),
+    }));
+
+    expect(getGeminiResponse).toHaveBeenLastCalledWith(expect.objectContaining({
+      config: expect.objectContaining({
+        systemInstruction: expect.stringContaining("Tư vấn cho bạn về tài chính"),
+      }),
+    }));
+    expect(getGeminiResponse.mock.calls.at(-1)?.[0].config.systemInstruction).not.toContain("Chi tiết riêng tư");
+  });
+
   it("marks the response as a fallback when Gemini is unavailable", async () => {
     getGeminiResponse.mockResolvedValueOnce({
       text: "Phản hồi mẫu local",
