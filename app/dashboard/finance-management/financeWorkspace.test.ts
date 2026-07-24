@@ -22,6 +22,20 @@ describe("finance workspace composition", () => {
     expect(workspaceSource).toContain('label: "Kavi Advisor"');
   });
 
+  it("renders the four finance tabs as the illustrated navigation strip", () => {
+    const workspaceSource = readFileSync(componentPath, "utf8");
+
+    expect(workspaceSource).toContain("bg-gradient-to-br from-[#0f62fe] via-[#155eef] to-[#004ee6]");
+    expect(workspaceSource).toContain("after:border-x-[10px] after:border-t-[9px] after:border-x-transparent after:border-t-[#004ee6]");
+    expect(workspaceSource).toContain("border-[#73c9ff]/80 bg-gradient-to-r from-[#f8fbff] via-white to-[#fff8ff]");
+    expect(workspaceSource).toContain("bg-[#e8f3ff] text-[#1877f2]");
+    expect(workspaceSource).toContain("bg-[#e4fbf8] text-[#0bb8ac]");
+    expect(workspaceSource).toContain("bg-[#e7f1ff] text-[#17b6ff]");
+    expect(workspaceSource).toContain("bg-gradient-to-br from-[#eef4ff] via-white to-[#f8ebff]");
+    expect(workspaceSource).toContain("flex h-20 w-20 shrink-0 items-center justify-center");
+    expect(workspaceSource).toContain('className="material-symbols-outlined text-[44px]"');
+  });
+
   it("splits entry, budgets, reports, and advisor into dedicated panels", () => {
     for (const component of ["TransactionEntryTab", "PlanBudgetTab", "ReportsTab", "KaviAdvisorTab"]) {
       expect(existsSync(resolve(componentDirectory, `${component}.tsx`))).toBe(true);
